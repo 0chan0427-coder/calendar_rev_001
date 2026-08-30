@@ -125,23 +125,25 @@ export default function CalendarApp() {
         <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>{isSignUp ? '회원가입' : '로그인'}</h2>
         <form onSubmit={handleAuth} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <input 
-            type="email" 
-            placeholder="이메일" 
-            value={email} 
-            onChange={e => setEmail(e.target.value)} 
-            required 
-            autoComplete="username"
-            style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} 
-          />
-          <input 
-            type="password" 
-            placeholder="비밀번호" 
-            value={password} 
-            onChange={e => setPassword(e.target.value)} 
-            required 
-            autoComplete="current-password"
-            style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} 
-          />
+  type="email" 
+  name="email"
+  placeholder="이메일" 
+  value={email} 
+  onChange={e => setEmail(e.target.value)} 
+  required 
+  autoComplete="email"
+  style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} 
+/>
+<input 
+  type="password" 
+  name="password"
+  placeholder="비밀번호" 
+  value={password} 
+  onChange={e => setPassword(e.target.value)} 
+  required 
+  autoComplete="current-password"
+  style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} 
+/>
           
           {isSignUp && (
             <>

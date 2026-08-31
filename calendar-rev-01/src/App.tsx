@@ -1085,6 +1085,6 @@ export default function CalendarApp() {
         </div>
       )}
 
-    </div> {/* <-- 최상위 메인 </div> 닫기 */}
+    </div>
   );
 }

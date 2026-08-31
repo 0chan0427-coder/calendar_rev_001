@@ -355,7 +355,29 @@ export default function CalendarApp() {
       }
     }
   };
-
+  
+<div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
+  <button
+    onClick={() => {
+      setEditEventTitle(selectedEvent.title);
+      setEditEventStartDate(selectedEvent.event_date);
+      setEditEventEndDate(selectedEvent.end_date || '');
+      setEditEventColor(selectedEvent.color || '#339af0');
+      setEventEditModalOpen(true);
+    }}
+    style={{ padding: '6px 12px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}
+  >
+    일정 수정
+  </button>
+  
+  <button 
+    onClick={() => deleteEvent(selectedEvent.id)} 
+    style={{ padding: '6px 12px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}
+  >
+    일정 삭제
+  </button>
+</div>
+  
   const addComment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newCommentText.trim() || !selectedEvent) return;

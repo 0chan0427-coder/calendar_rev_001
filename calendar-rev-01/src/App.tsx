@@ -1084,7 +1084,5 @@ export default function CalendarApp() {
             </div>
           </div>
         )}
-
-      </div>
     );
   }

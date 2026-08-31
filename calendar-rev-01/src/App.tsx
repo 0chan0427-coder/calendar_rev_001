@@ -66,6 +66,13 @@ export default function CalendarApp() {
   const [comments, setComments] = useState<any[]>([]);
   const [newCommentText, setNewCommentText] = useState('');
 
+  // 일정 수정 관련 상태
+  const [eventEditModalOpen, setEventEditModalOpen] = useState(false);
+  const [editEventTitle, setEditEventTitle] = useState('');
+  const [editEventStartDate, setEditEventStartDate] = useState('');
+  const [editEventEndDate, setEditEventEndDate] = useState('');
+  const [editEventColor, setEditEventColor] = useState('#339af0');
+  
   // 폼 입력 상태
   const [newRoomName, setNewRoomName] = useState('');
   const [newEventTitle, setNewEventTitle] = useState('');

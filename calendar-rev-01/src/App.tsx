@@ -1034,7 +1034,7 @@ export default function CalendarApp() {
       )}
 
       {/* 일정 수정 모달 */}
-{eventEditModalOpen && 
+{eventEditModalOpen && (
   <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
     <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', width: '350px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
       <h3 style={{ margin: '0 0 16px 0', fontSize: '18px' }}>일정 수정</h3>
@@ -1044,7 +1044,7 @@ export default function CalendarApp() {
           <input
             type="text"
             value={editEventTitle}
-            onChange={e => setEditEventTitle(e.target.value)}
+            onChange={(e) => setEditEventTitle(e.target.value)}
             required
             style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }}
           />
@@ -1054,7 +1054,7 @@ export default function CalendarApp() {
           <input
             type="date"
             value={editEventStartDate}
-            onChange={e => setEditEventStartDate(e.target.value)}
+            onChange={(e) => setEditEventStartDate(e.target.value)}
             required
             style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }}
           />
@@ -1064,7 +1064,7 @@ export default function CalendarApp() {
           <input
             type="date"
             value={editEventEndDate}
-            onChange={e => setEditEventEndDate(e.target.value)}
+            onChange={(e) => setEditEventEndDate(e.target.value)}
             style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }}
           />
         </div>
@@ -1073,14 +1073,15 @@ export default function CalendarApp() {
           <input
             type="color"
             value={editEventColor}
-            onChange={e => setEditEventColor(e.target.value)}
+            onChange={(e) => setEditEventColor(e.target.value)}
             style={{ width: '100%', height: '35px', border: 'none', cursor: 'pointer', background: 'none' }}
           />
         </div>
         <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
           <button type="submit" style={{ flex: 1, padding: '10px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>저장</button>
-          <button type="button" onClick={() => setEventEditModalOpen(false)} style={{ flex: 1, padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>취소</button>
+          <button type="button" onClick={() => setEditEventModalOpen(false)} style={{ flex: 1, padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>취소</button>
         </div>
       </form>
-</div>
-}
+    </div>
+  </div>
+)}

@@ -885,7 +885,7 @@ export default function CalendarApp() {
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <label style={{ fontSize: '12px', fontWeight: 'bold' >>}>시작일</label>
+                  <label style={{ fontSize: '12px', fontWeight: 'bold' }}>시작일</label>
                   <input type="date" value={newEventStartDate} onChange={e => setNewEventStartDate(e.target.value)} required style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} />
                 </div>
 

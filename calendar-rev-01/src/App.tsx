@@ -798,7 +798,6 @@ export default function CalendarApp() {
             )}
           </div>
         </div>
-      </div>
 
       {/* 4. 화면 하단 고정 네비게이션 바 */}
       <div style={{

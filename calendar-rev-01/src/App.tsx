@@ -913,6 +913,7 @@ export default function CalendarApp() {
           {/* ... 방 관리하기 모달 내용 ... */}
         </div>
       )}
+      
 {/* 일정 등록 모달 */}
       {eventAddModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>

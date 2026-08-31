@@ -356,28 +356,6 @@ export default function CalendarApp() {
     }
   };
   
-<div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
-  <button
-    onClick={() => {
-      setEditEventTitle(selectedEvent.title);
-      setEditEventStartDate(selectedEvent.event_date);
-      setEditEventEndDate(selectedEvent.end_date || '');
-      setEditEventColor(selectedEvent.color || '#339af0');
-      setEventEditModalOpen(true);
-    }}
-    style={{ padding: '6px 12px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}
-  >
-    일정 수정
-  </button>
-  
-  <button 
-    onClick={() => deleteEvent(selectedEvent.id)} 
-    style={{ padding: '6px 12px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}
-  >
-    일정 삭제
-  </button>
-</div>
-  
   const addComment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newCommentText.trim() || !selectedEvent) return;
@@ -759,9 +737,29 @@ export default function CalendarApp() {
                   <p style={{ margin: '0 0 6px 0' }}><strong>제목:</strong> {selectedEvent.title}</p>
                   <p style={{ margin: '0 0 6px 0' }}><strong>기간:</strong> {selectedEvent.event_date} {selectedEvent.end_date ? `~ ${selectedEvent.end_date}` : ''}</p>
                   <p style={{ margin: '0 0 10px 0', fontSize: '13px', color: '#666' }}>작성자: {profilesMap[selectedEvent.user_id]?.name || '알 수 없음'}</p>
-                  {(selectedEvent.user_id === session.user.id || profile?.role === 'admin') && (
-                    <button onClick={() => deleteEvent(selectedEvent.id)} style={{ padding: '4px 8px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}>일정 삭제</button>
-                  )}
+                  {(selectedEvent.user_id === session?.user?.id || profile?.role === 'admin') && (
+        <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
+          <button
+            onClick={() => {
+              setEditEventTitle(selectedEvent.title);
+              setEditEventStartDate(selectedEvent.event_date);
+              setEditEventEndDate(selectedEvent.end_date || '');
+              setEditEventColor(selectedEvent.color || '#339af0');
+              setEventEditModalOpen(true);
+            }}
+            style={{ padding: '4px 8px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
+          >
+            일정 수정
+          </button>
+          
+          <button 
+            onClick={() => deleteEvent(selectedEvent.id)} 
+            style={{ padding: '4px 8px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
+          >
+            일정 삭제
+          </button>
+        </div>
+      )}
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>

@@ -24,6 +24,11 @@ export default function CalendarApp() {
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
   const [selectedDateForAdd, setSelectedDateForAdd] = useState<string | null>(null);
 
+  // 날짜 더블클릭 시 뜨는 일자별 관리 모달 상태
+  const [dateDetailModalOpen, setDateDetailModalOpen] = useState(false);
+  const [clickedDateEvents, setClickedDateEvents] = useState<any[]>([]);
+  const [clickedDateStr, setClickedDateStr] = useState('');
+
   // 데이터 상태
   const [rooms, setRooms] = useState<any[]>([]);
   const [events, setEvents] = useState<any[]>([]);
@@ -242,6 +247,14 @@ export default function CalendarApp() {
     } else {
       setSelectedEvent(null);
       fetchEvents();
+      // 날짜별 모달이 열려있다면 해당 목록도 갱신
+      if (dateDetailModalOpen) {
+        const updatedEvents = events.filter(ev => {
+          if (!selectedRoomIds.includes(ev.room_id)) return false;
+          return clickedDateStr >= ev.event_date && clickedDateStr <= (ev.end_date || ev.event_date);
+        });
+        setClickedDateEvents(updatedEvents.filter(ev => ev.id !== eventId));
+      }
     }
   };
 
@@ -502,11 +515,15 @@ export default function CalendarApp() {
                 return (
                   <div 
                     key={`day-${dayNum}`} 
-                    onClick={() => {
+                    onDoubleClick={() => {
+                      // 캘린더 그리드 더블클릭 이벤트 처리
+                      setClickedDateStr(formattedDate);
+                      setClickedDateEvents(dayEvents);
                       setSelectedDateForAdd(formattedDate);
                       if (selectedRoomIds.length > 0) setTargetRoomIdForAdd(selectedRoomIds[0]);
                       setNewEventStartDate(formattedDate);
                       setNewEventEndDate(formattedDate);
+                      setDateDetailModalOpen(true);
                     }}
                     style={{ background: '#fff', minHeight: '100px', padding: '5px', overflowY: 'auto', border: '1px solid #eee', display: 'flex', flexDirection: 'column', cursor: 'pointer' }}
                   >
@@ -654,7 +671,70 @@ export default function CalendarApp() {
         </button>
       </div>
 
-      {/* 5. 모달 창들 (멤버 관리, 방 생성, 방 관리, 일정 추가) */}
+      {/* 5. 날짜 더블클릭 시 열리는 일자별 관리 모달 */}
+      {dateDetailModalOpen && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
+          <div style={{ background: '#fff', padding: '24px', borderRadius: '10px', width: '420px', maxHeight: '80vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '15px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0, fontSize: '18px' }}>📅 {clickedDateStr} 일정 관리</h3>
+              <button onClick={() => setDateDetailModalOpen(false)} style={{ background: 'none', border: 'none', fontSize: '16px', cursor: 'pointer', fontWeight: 'bold' }}>✕</button>
+            </div>
+
+            {/* 맨 위: 일정 등록 버튼 */}
+            <button 
+              onClick={() => {
+                setDateDetailModalOpen(false);
+                setEventAddModalOpen(true);
+              }}
+              style={{ width: '100%', padding: '10px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px' }}
+            >
+              이 날짜에 일정 등록하기 +
+            </button>
+
+            {/* 그 아래: 등록되어 있는 일정들 제목 나열 */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <h4 style={{ margin: '5px 0 0 0', fontSize: '14px', color: '#555' }}>등록된 일정 목록</h4>
+              {clickedDateEvents.length === 0 ? (
+                <p style={{ fontSize: '13px', color: '#888', textAlign: 'center', padding: '15px 0' }}>이 날짜에 등록된 일정이 없습니다.</p>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '250px', overflowY: 'auto' }}>
+                  {clickedDateEvents.map(ev => {
+                    const roomInfo = rooms.find(r => r.id === ev.room_id);
+                    return (
+                      <div 
+                        key={ev.id}
+                        onClick={() => {
+                          setSelectedEvent(ev);
+                          setRightSidebarOpen(true);
+                          setDateDetailModalOpen(false);
+                        }}
+                        style={{ padding: '10px 12px', background: '#f8f9fa', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'background 0.2s' }}
+                      >
+                        <div>
+                          <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#333' }}>{ev.title}</div>
+                          <div style={{ fontSize: '11px', color: '#666', marginTop: '2px' }}>
+                            방: {roomInfo?.name || '알 수 없음'} | 작성자: {profilesMap[ev.user_id]?.name || '익명'}
+                          </div>
+                        </div>
+                        <span style={{ fontSize: '12px', color: '#007bff', fontWeight: 'bold' }}>상세/댓글 &gt;</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            <button 
+              onClick={() => setDateDetailModalOpen(false)} 
+              style={{ width: '100%', padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+            >
+              닫기
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 6. 기존 모달들 (멤버 관리, 방 생성, 방 관리, 일정 추가) */}
       {adminModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
           <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '450px', maxHeight: '80vh', overflowY: 'auto' }}>
@@ -677,23 +757,21 @@ export default function CalendarApp() {
               )}
             </div>
 
-            <button onClick={() => setAdminModalOpen(false)} style={{ marginTop: '20px', width: '100%', padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>닫기</button>
+            <button onClick={() => setAdminModalOpen(false)} style={{ marginTop: '20px', width: '100%', padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>닫기</button>
           </div>
         </div>
       )}
 
       {roomModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
-          <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '400px' }}>
-            <h3>방 생성하기</h3>
-            <form onSubmit={createRoom} style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '15px' }}>
-              <input type="text" placeholder="방 이름 입력" value={newRoomName} onChange={e => setNewRoomName(e.target.value)} required style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} />
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <button type="submit" style={{ flex: 1, padding: '10px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>생성</button>
-                <button type="button" onClick={() => setRoomModalOpen(false)} style={{ flex: 1, padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>취소</button>
-              </div>
-            </form>
-          </div>
+          <form onSubmit={createRoom} style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '350px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <h3>새로운 방 생성</h3>
+            <input type="text" placeholder="방 이름 입력" value={newRoomName} onChange={e => setNewRoomName(e.target.value)} required style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} />
+            <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
+              <button type="submit" style={{ flex: 1, padding: '10px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>생성</button>
+              <button type="button" onClick={() => setRoomModalOpen(false)} style={{ flex: 1, padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>취소</button>
+            </div>
+          </form>
         </div>
       )}
 
@@ -701,51 +779,48 @@ export default function CalendarApp() {
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
           <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '400px', maxHeight: '80vh', overflowY: 'auto' }}>
             <h3>방 관리하기</h3>
-            <p style={{ color: '#666', fontSize: '13px', marginBottom: '15px' }}>원하는 방을 삭제할 수 있습니다.</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', margin: '15px 0' }}>
               {rooms.map(room => (
                 <div key={room.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', background: '#f8f9fa', borderRadius: '6px', border: '1px solid #ddd' }}>
                   <span style={{ fontWeight: 'bold', fontSize: '14px' }}>{room.name}</span>
-                  <button onClick={() => deleteRoom(room.id)} style={{ padding: '6px 10px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}>삭제</button>
+                  <button onClick={() => deleteRoom(room.id)} style={{ padding: '6px 10px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}>방 삭제</button>
                 </div>
               ))}
             </div>
-            <button onClick={() => setRoomManageModalOpen(false)} style={{ marginTop: '20px', width: '100%', padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>닫기</button>
+            <button onClick={() => setRoomManageModalOpen(false)} style={{ width: '100%', padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>닫기</button>
           </div>
         </div>
       )}
 
       {eventAddModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
-          <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '400px' }}>
-            <h3>일정 추가</h3>
-            <form onSubmit={createEvent} style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '15px' }}>
-              <div>
-                <label style={{ fontSize: '13px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>대상 방</label>
-                <select value={targetRoomIdForAdd || ''} onChange={e => setTargetRoomIdForAdd(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }}>
-                  {rooms.map(room => (
-                    <option key={room.id} value={room.id}>{room.name}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label style={{ fontSize: '13px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>일정 제목</label>
-                <input type="text" placeholder="예: 제주도 여행" value={newEventTitle} onChange={e => setNewEventTitle(e.target.value)} required style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }} />
-              </div>
-              <div>
-                <label style={{ fontSize: '13px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>시작일</label>
-                <input type="date" value={newEventStartDate} onChange={e => setNewEventStartDate(e.target.value)} required style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }} />
-              </div>
-              <div>
-                <label style={{ fontSize: '13px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>종료일 (선택)</label>
-                <input type="date" value={newEventEndDate} onChange={e => setNewEventEndDate(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }} />
-              </div>
-              <div style={{ display: 'flex', gap: '8px', marginTop: '5px' }}>
-                <button type="submit" style={{ flex: 1, padding: '10px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>등록</button>
-                <button type="button" onClick={() => setEventAddModalOpen(false)} style={{ flex: 1, padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>취소</button>
-              </div>
-            </form>
-          </div>
+          <form onSubmit={createEvent} style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '380px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <h3>일정 등록</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <label style={{ fontSize: '12px', fontWeight: 'bold' }}>대상 방</label>
+              <select value={targetRoomIdForAdd || ''} onChange={e => setTargetRoomIdForAdd(e.target.value)} style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }}>
+                {rooms.map(room => (
+                  <option key={room.id} value={room.id}>{room.name}</option>
+                ))}
+              </select>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <label style={{ fontSize: '12px', fontWeight: 'bold' }}>일정 제목</label>
+              <input type="text" placeholder="일정 제목 입력" value={newEventTitle} onChange={e => setNewEventTitle(e.target.value)} required style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <label style={{ fontSize: '12px', fontWeight: 'bold' }}>시작일</label>
+              <input type="date" value={newEventStartDate} onChange={e => setNewEventStartDate(e.target.value)} required style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <label style={{ fontSize: '12px', fontWeight: 'bold' }}>종료일 (선택)</label>
+              <input type="date" value={newEventEndDate} onChange={e => setNewEventEndDate(e.target.value)} style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} />
+            </div>
+            <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
+              <button type="submit" style={{ flex: 1, padding: '10px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>등록</button>
+              <button type="button" onClick={() => setEventAddModalOpen(false)} style={{ flex: 1, padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>취소</button>
+            </div>
+          </form>
         </div>
       )}
 

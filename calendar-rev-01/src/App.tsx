@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
 // 본인의 Supabase 프로젝트 URL과 Anon Key를 입력해주세요
@@ -33,6 +33,42 @@ export default function CalendarApp() {
   const rooms: any[] = [];
   const events: any[] = [];
   const profilesMap: Record<string, any> = {};
+
+  // 인증 상태 변화 감지 및 프로필 로드
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session?.user) {
+        fetchProfile(session.user.id);
+      }
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      if (session?.user) {
+        fetchProfile(session.user.id);
+      } else {
+        setProfile(null);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const fetchProfile = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      
+      if (error) throw error;
+      setProfile(data);
+    } catch (err) {
+      console.error('프로필 조회 실패:', err);
+    }
+  };
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,8 +107,6 @@ export default function CalendarApp() {
         });
 
         if (error) throw error;
-        
-        // 로그인 성공 시 세션은 Supabase의 onAuthStateChange 등에서 자동으로 감지되거나 처리됩니다.
       }
     } catch (error: any) {
       alert(error.message || '오류가 발생했습니다.');
@@ -82,6 +116,7 @@ export default function CalendarApp() {
   };
 
   const handleLogout = async () => {
+    await supabase.auth.signOut();
     setSession(null);
     setProfile(null);
   };
@@ -125,25 +160,25 @@ export default function CalendarApp() {
         <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>{isSignUp ? '회원가입' : '로그인'}</h2>
         <form onSubmit={handleAuth} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <input 
-  type="email" 
-  name="email"
-  placeholder="이메일" 
-  value={email} 
-  onChange={e => setEmail(e.target.value)} 
-  required 
-  autoComplete="email"
-  style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} 
-/>
-<input 
-  type="password" 
-  name="password"
-  placeholder="비밀번호" 
-  value={password} 
-  onChange={e => setPassword(e.target.value)} 
-  required 
-  autoComplete="current-password"
-  style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} 
-/>
+            type="email" 
+            name="email"
+            placeholder="이메일" 
+            value={email} 
+            onChange={e => setEmail(e.target.value)} 
+            required 
+            autoComplete="email"
+            style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} 
+          />
+          <input 
+            type="password" 
+            name="password"
+            placeholder="비밀번호" 
+            value={password} 
+            onChange={e => setPassword(e.target.value)} 
+            required 
+            autoComplete="current-password"
+            style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} 
+          />
           
           {isSignUp && (
             <>
@@ -426,7 +461,7 @@ export default function CalendarApp() {
         {rightSidebarOpen ? '상세 닫기 ▲' : '상세/댓글 ▶'}
       </button>
 
-      {/* 4. 우측 상세 패널 (오른쪽 끝에 고정형으로 배치) */}
+      {/* 4. 우측 상세 패널 */}
       <div style={{
         position: 'relative',
         zIndex: 30,
@@ -442,7 +477,6 @@ export default function CalendarApp() {
         boxSizing: 'border-box',
         flexShrink: 0
       }}>
-        {/* 우측 패널 내부 콘텐츠 영역 */}
         <div style={{ padding: '20px', width: '320px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', height: '100%' }}>
           <h3 style={{ marginTop: '0', borderBottom: '1px solid #ddd', paddingBottom: '10px' }}>일정 상세 / 댓글</h3>
           
@@ -451,7 +485,6 @@ export default function CalendarApp() {
               <div>
                 <p><strong>제목:</strong> {selectedEvent.title}</p>
                 <p><strong>기간:</strong> {selectedEvent.event_date} {selectedEvent.end_date ? `~ ${selectedEvent.end_date}` : ''}</p>
-                {/* 상세 내용 및 댓글 컴포넌트가 들어가는 자리 */}
               </div>
             ) : (
               <div>

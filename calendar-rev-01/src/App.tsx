@@ -176,28 +176,39 @@ export default function CalendarApp() {
     }
   };
 
-  const handleTouchEnd = () => {
+ const handleTouchEnd = () => {
     if (!touchStartX || !touchEndX) return;
     
     const distance = touchEndX - touchStartX;
-    const minSwipeDistance = 50; // 스와이프 인식 최소 거리 (조금 더 민감하게 50px로 조정 가능)
-    const edgeLimit = 120;       // 화면 가장자리에서 시작해야 하는 기준 범위 (기존 50px -> 120px로 확대)
+    const minSwipeDistance = 50; 
+    const edgeLimit = 120;       
 
-    // 1. 좌측 바가 열려있는 상태에서 왼쪽으로 밀면 -> 좌측 바 닫기 (어디서 밀든 닫힘)
+    // 1. 좌측 바가 열려있는 상태에서 왼쪽으로 밀면 -> 좌측 바 닫기
     if (leftSidebarOpen && distance < -minSwipeDistance) {
       setLeftSidebarOpen(false);
     }
-    // 2. 우측 바가 열려있는 상태에서 오른쪽으로 밀면 -> 우측 바 닫기 (어디서 밀든 닫힘)
+    // 2. 우측 바가 열려있는 상태에서 오른쪽으로 밀면 -> 우측 바 닫기
     else if (rightSidebarOpen && distance > minSwipeDistance) {
       setRightSidebarOpen(false);
     }
-    // 3. 닫혀있는 상태: 왼쪽 영역(120px 이내)에서 오른쪽으로 밀면 -> 좌측 바 열기
+    // 3. 닫혀있는 상태: 왼쪽 테두리 영역에서 오른쪽으로 밀면 -> 좌측 바 열기
     else if (!leftSidebarOpen && !rightSidebarOpen && touchStartX < edgeLimit && distance > minSwipeDistance) {
       setLeftSidebarOpen(true);
     }
-    // 4. 닫혀있는 상태: 오른쪽 영역(전체 너비에서 120px 이내)에서 왼쪽으로 밀면 -> 우측 바 열기
+    // 4. 닫혀있는 상태: 오른쪽 테두리 영역에서 왼쪽으로 밀면 -> 우측 바 열기
     else if (!leftSidebarOpen && !rightSidebarOpen && touchStartX > window.innerWidth - edgeLimit && distance < -minSwipeDistance) {
       setRightSidebarOpen(true);
+    }
+    // 5. [추가] 양쪽 바가 닫혀있고, 가장자리가 아닌 중앙 영역에서 스와이프했을 때 -> 달(Month) 변경
+    else if (!leftSidebarOpen && !rightSidebarOpen && Math.abs(distance) > minSwipeDistance) {
+      // 오른쪽으로 밀면(->) 이전 달로 이동
+      if (distance > 0) {
+        setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
+      } 
+      // 왼쪽으로 밀면(<-) 다음 달로 이동
+      else {
+        setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+      }
     }
 
     // 값 초기화

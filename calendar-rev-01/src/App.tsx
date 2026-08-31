@@ -765,8 +765,7 @@ export default function CalendarApp() {
           </button>
         </div>
       )}
-                </div>
-
+               
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   <h4>댓글</h4>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '200px', overflowY: 'auto' }}>

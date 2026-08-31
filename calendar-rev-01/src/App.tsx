@@ -247,7 +247,6 @@ export default function CalendarApp() {
     } else {
       setSelectedEvent(null);
       fetchEvents();
-      // 날짜별 모달이 열려있다면 해당 목록도 갱신
       if (dateDetailModalOpen) {
         const updatedEvents = events.filter(ev => {
           if (!selectedRoomIds.includes(ev.room_id)) return false;
@@ -515,8 +514,8 @@ export default function CalendarApp() {
                 return (
                   <div 
                     key={`day-${dayNum}`} 
-                    onDoubleClick={() => {
-                      // 캘린더 그리드 더블클릭 이벤트 처리
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
                       setClickedDateStr(formattedDate);
                       setClickedDateEvents(dayEvents);
                       setSelectedDateForAdd(formattedDate);
@@ -525,7 +524,18 @@ export default function CalendarApp() {
                       setNewEventEndDate(formattedDate);
                       setDateDetailModalOpen(true);
                     }}
-                    style={{ background: '#fff', minHeight: '100px', padding: '5px', overflowY: 'auto', border: '1px solid #eee', display: 'flex', flexDirection: 'column', cursor: 'pointer' }}
+                    style={{ 
+                      background: '#fff', 
+                      minHeight: '100px', 
+                      padding: '5px', 
+                      overflowY: 'auto', 
+                      border: '1px solid #eee', 
+                      display: 'flex', 
+                      flexDirection: 'column', 
+                      cursor: 'pointer',
+                      userSelect: 'none',
+                      WebkitUserSelect: 'none'
+                    }}
                   >
                     <div style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '4px', color: '#333' }}>{dayNum}</div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', overflowY: 'auto' }}>
@@ -680,7 +690,6 @@ export default function CalendarApp() {
               <button onClick={() => setDateDetailModalOpen(false)} style={{ background: 'none', border: 'none', fontSize: '16px', cursor: 'pointer', fontWeight: 'bold' }}>✕</button>
             </div>
 
-            {/* 맨 위: 일정 등록 버튼 */}
             <button 
               onClick={() => {
                 setDateDetailModalOpen(false);
@@ -691,7 +700,6 @@ export default function CalendarApp() {
               이 날짜에 일정 등록하기 +
             </button>
 
-            {/* 그 아래: 등록되어 있는 일정들 제목 나열 */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <h4 style={{ margin: '5px 0 0 0', fontSize: '14px', color: '#555' }}>등록된 일정 목록</h4>
               {clickedDateEvents.length === 0 ? (
@@ -734,7 +742,7 @@ export default function CalendarApp() {
         </div>
       )}
 
-      {/* 6. 기존 모달들 (멤버 관리, 방 생성, 방 관리, 일정 추가) */}
+      {/* 6. 기존 모달들 */}
       {adminModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
           <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '450px', maxHeight: '80vh', overflowY: 'auto' }}>

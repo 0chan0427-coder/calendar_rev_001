@@ -5,6 +5,13 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
+// 15가지 구분되는 추천 색상 팔레트
+const PRESET_COLORS = [
+  '#ff6b6b', '#fa5252', '#ff922b', '#fab005', '#fcc419',
+  '#82c91e', '#40c057', '#12b886', '#22b8cf', '#15aabf',
+  '#339af0', '#4c6ef5', '#7950f2', '#be4bdb', '#f06595'
+];
+
 export default function CalendarApp() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
@@ -43,6 +50,7 @@ export default function CalendarApp() {
   const [newEventTitle, setNewEventTitle] = useState('');
   const [newEventStartDate, setNewEventStartDate] = useState('');
   const [newEventEndDate, setNewEventEndDate] = useState('');
+  const [newEventColor, setNewEventColor] = useState(PRESET_COLORS[0]); // 일정별 지정 색상
 
   // 모달 상태
   const [adminModalOpen, setAdminModalOpen] = useState(false);
@@ -226,7 +234,8 @@ export default function CalendarApp() {
       user_id: session.user.id,
       title: newEventTitle,
       event_date: newEventStartDate,
-      end_date: newEventEndDate || newEventStartDate
+      end_date: newEventEndDate || newEventStartDate,
+      color: newEventColor // 선택한 색상 저장
     }]);
     if (error) {
       alert('일정 등록 실패: ' + error.message);
@@ -234,6 +243,7 @@ export default function CalendarApp() {
       setNewEventTitle('');
       setNewEventStartDate('');
       setNewEventEndDate('');
+      setNewEventColor(PRESET_COLORS[0]);
       setEventAddModalOpen(false);
       fetchEvents();
     }
@@ -317,7 +327,7 @@ export default function CalendarApp() {
             <>
               <input type="text" placeholder="본인 이름 (닉네임)" value={signupName} onChange={e => setSignupName(e.target.value)} required style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} />
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px' }}>
-                <span>내 색상 선택:</span>
+                <span>기본 프로필 색상:</span>
                 <input type="color" value={signupColor} onChange={e => setSignupColor(e.target.value)} style={{ width: '40px', height: '35px', border: 'none', cursor: 'pointer', background: 'none' }} />
               </div>
             </>
@@ -510,12 +520,13 @@ export default function CalendarApp() {
                       if (selectedRoomIds.length > 0) setTargetRoomIdForAdd(selectedRoomIds[0]);
                       setNewEventStartDate(formattedDate);
                       setNewEventEndDate(formattedDate);
+                      setNewEventColor(PRESET_COLORS[0]);
                       setDateDetailModalOpen(true);
                     }}
                     style={{ 
                       background: '#fff', 
                       minHeight: '100px', 
-                      padding: '5px 0', // 좌우 패딩을 제거하여 형광펜 바가 셀 끝까지 닿게 함
+                      padding: '5px 0', 
                       overflowY: 'auto', 
                       border: '1px solid #eee', 
                       display: 'flex', 
@@ -528,7 +539,8 @@ export default function CalendarApp() {
                     <div style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '4px', color: '#333', padding: '0 5px' }}>{dayNum}</div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', overflowY: 'auto' }}>
                       {dayEvents.map(ev => {
-                        const authorColor = profilesMap[ev.user_id]?.color || '#339af0';
+                        // 일정이 지정한 고유 색상이 있으면 사용하고, 없으면 작성자의 프로필 색상을 디폴트로 사용
+                        const eventColor = ev.color || profilesMap[ev.user_id]?.color || '#339af0';
                         const start = ev.event_date;
                         const end = ev.end_date || ev.event_date;
                         
@@ -544,7 +556,7 @@ export default function CalendarApp() {
                               setRightSidebarOpen(true); 
                             }}
                             style={{ 
-                              background: authorColor, 
+                              background: eventColor, 
                               color: '#fff', 
                               padding: '3px 6px', 
                               fontSize: '11px', 
@@ -822,11 +834,33 @@ export default function CalendarApp() {
               <label style={{ fontSize: '12px', fontWeight: 'bold' }}>일정 제목</label>
               <input type="text" placeholder="일정 제목 입력" value={newEventTitle} onChange={e => setNewEventTitle(e.target.value)} required style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} />
             </div>
+            
+            {/* 15가지 프리셋 색상 선택 영역 */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <label style={{ fontSize: '12px', fontWeight: 'bold' }}>일정 색상 선택</label>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '6px' }}>
+                {PRESET_COLORS.map(colorCode => (
+                  <div
+                    key={colorCode}
+                    onClick={() => setNewEventColor(colorCode)}
+                    style={{
+                      height: '28px',
+                      backgroundColor: colorCode,
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      border: newEventColor === colorCode ? '3px solid #000' : '1px solid #ddd',
+                      boxSizing: 'border-box'
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
               <label style={{ fontSize: '12px', fontWeight: 'bold' }}>시작일</label>
               <input type="date" value={newEventStartDate} onChange={e => setNewEventStartDate(e.target.value)} required style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} />
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', logo: 'gap: 4px' }}>
               <label style={{ fontSize: '12px', fontWeight: 'bold' }}>종료일 (선택)</label>
               <input type="date" value={newEventEndDate} onChange={e => setNewEventEndDate(e.target.value)} style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} />
             </div>

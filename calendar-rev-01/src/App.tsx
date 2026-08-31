@@ -75,6 +75,14 @@ export default function CalendarApp() {
   const [targetRoomIdForAdd, setTargetRoomIdForAdd] = useState<string | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
 
+  const [autoLogin, setAutoLogin] = useState(() => {
+    return localStorage.getItem('keepLoggedIn') !== 'false';
+  });
+
+  const handleAutoLoginChange = (e) => {
+    setAutoLogin(e.target.checked);
+    localStorage.setItem('keepLoggedIn', e.target.checked.toString());
+  };
   // 모달 상태들
   const [adminModalOpen, setAdminModalOpen] = useState(false);
   const [roomModalOpen, setRoomModalOpen] = useState(false);

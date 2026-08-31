@@ -169,6 +169,35 @@ export default function CalendarApp() {
     }
   };
 
+  const handleTouchEnd = () => {
+    if (!touchStartX || !touchEndX) return;
+    
+    const distance = touchEndX - touchStartX;
+    const minSwipeDistance = 50; // 스와이프 인식 최소 거리 (조금 더 민감하게 50px로 조정 가능)
+    const edgeLimit = 120;       // 화면 가장자리에서 시작해야 하는 기준 범위 (기존 50px -> 120px로 확대)
+
+    // 1. 좌측 바가 열려있는 상태에서 왼쪽으로 밀면 -> 좌측 바 닫기 (어디서 밀든 닫힘)
+    if (leftSidebarOpen && distance < -minSwipeDistance) {
+      setLeftSidebarOpen(false);
+    }
+    // 2. 우측 바가 열려있는 상태에서 오른쪽으로 밀면 -> 우측 바 닫기 (어디서 밀든 닫힘)
+    else if (rightSidebarOpen && distance > minSwipeDistance) {
+      setRightSidebarOpen(false);
+    }
+    // 3. 닫혀있는 상태: 왼쪽 영역(120px 이내)에서 오른쪽으로 밀면 -> 좌측 바 열기
+    else if (!leftSidebarOpen && !rightSidebarOpen && touchStartX < edgeLimit && distance > minSwipeDistance) {
+      setLeftSidebarOpen(true);
+    }
+    // 4. 닫혀있는 상태: 오른쪽 영역(전체 너비에서 120px 이내)에서 왼쪽으로 밀면 -> 우측 바 열기
+    else if (!leftSidebarOpen && !rightSidebarOpen && touchStartX > window.innerWidth - edgeLimit && distance < -minSwipeDistance) {
+      setRightSidebarOpen(true);
+    }
+
+    // 값 초기화
+    setTouchStartX(0);
+    setTouchEndX(0);
+  };
+  
   const fetchRooms = async () => {
     const { data, error } = await supabase.from('rooms').select('*').order('created_at', { ascending: true });
     if (!error && data) {

@@ -7,8 +7,8 @@
   "theme_color": "#007bff",
   "icons": [
     {
-      "src": "/icon-192.png",
-      "sizes": "192x192",
+      "src": "/calendar icon.png",
+      "sizes": "1254x1254",
       "type": "image/png"
     },
     {

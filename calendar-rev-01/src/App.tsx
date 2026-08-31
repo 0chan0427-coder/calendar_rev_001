@@ -515,7 +515,7 @@ export default function CalendarApp() {
                     style={{ 
                       background: '#fff', 
                       minHeight: '100px', 
-                      padding: '5px', 
+                      padding: '5px 0', // 좌우 패딩을 제거하여 형광펜 바가 셀 끝까지 닿게 함
                       overflowY: 'auto', 
                       border: '1px solid #eee', 
                       display: 'flex', 
@@ -525,12 +525,15 @@ export default function CalendarApp() {
                       WebkitUserSelect: 'none'
                     }}
                   >
-                    <div style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '4px', color: '#333' }}>{dayNum}</div>
+                    <div style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '4px', color: '#333', padding: '0 5px' }}>{dayNum}</div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', overflowY: 'auto' }}>
                       {dayEvents.map(ev => {
                         const authorColor = profilesMap[ev.user_id]?.color || '#339af0';
                         const start = ev.event_date;
-                        const isStartDay = formattedDate === start;
+                        const end = ev.end_date || ev.event_date;
+                        
+                        const isStart = formattedDate === start;
+                        const isEnd = formattedDate === end;
 
                         return (
                           <div 
@@ -540,9 +543,24 @@ export default function CalendarApp() {
                               setSelectedEvent(ev); 
                               setRightSidebarOpen(true); 
                             }}
-                            style={{ background: authorColor, color: '#fff', padding: '2px 4px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer' }}
+                            style={{ 
+                              background: authorColor, 
+                              color: '#fff', 
+                              padding: '3px 6px', 
+                              fontSize: '11px', 
+                              cursor: 'pointer',
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              marginLeft: isStart ? '4px' : '0px',
+                              marginRight: isEnd ? '4px' : '0px',
+                              borderTopLeftRadius: isStart ? '4px' : '0px',
+                              borderBottomLeftRadius: isStart ? '4px' : '0px',
+                              borderTopRightRadius: isEnd ? '4px' : '0px',
+                              borderBottomRightRadius: isEnd ? '4px' : '0px',
+                            }}
                           >
-                            {isStartDay || formattedDate.endsWith('-01') ? ev.title : '\u00A0'}
+                            {isStart || formattedDate.endsWith('-01') ? ev.title : '\u00A0'}
                           </div>
                         );
                       })}

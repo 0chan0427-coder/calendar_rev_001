@@ -555,7 +555,17 @@ export default function CalendarApp() {
               </div>
             </>
           )}
-
+{!isSignUp && (
+            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', cursor: 'pointer', userSelect: 'none' }}>
+              <input 
+                type="checkbox" 
+                checked={autoLogin} 
+                onChange={handleAutoLoginChange} 
+                style={{ cursor: 'pointer' }}
+              />
+              자동로그인
+            </label>
+          )}
           <button type="submit" style={{ padding: '12px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
             {isSignUp ? '가입 신청' : '로그인'}
           </button>

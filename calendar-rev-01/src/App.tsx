@@ -1043,6 +1043,59 @@ export default function CalendarApp() {
           </div>
         </div>
       )}
+
+                {/* 일정 수정 모달 */}
+      {eventEditModalOpen && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
+          <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', width: '350px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
+            <h3 style={{ margin: '0 0 16px 0', fontSize: '18px' }}>일정 수정</h3>
+            <form onSubmit={updateEvent} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div>
+                <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>제목</label>
+                <input 
+                  type="text" 
+                  value={editEventTitle} 
+                  onChange={e => setEditEventTitle(e.target.value)} 
+                  required 
+                  style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }} 
+                />
+              </div>
+              <div>
+                <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>시작일</label>
+                <input 
+                  type="date" 
+                  value={editEventStartDate} 
+                  onChange={e => setEditEventStartDate(e.target.value)} 
+                  required 
+                  style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }} 
+                />
+              </div>
+              <div>
+                <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>종료일 (선택)</label>
+                <input 
+                  type="date" 
+                  value={editEventEndDate} 
+                  onChange={e => setEditEventEndDate(e.target.value)} 
+                  style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }} 
+                />
+              </div>
+              <div>
+                <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>색상 선택</label>
+                <input 
+                  type="color" 
+                  value={editEventColor} 
+                  onChange={e => setEditEventColor(e.target.value)} 
+                  style={{ width: '100%', height: '35px', border: 'none', cursor: 'pointer', background: 'none' }} 
+                />
+              </div>
+              <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                <button type="submit" style={{ flex: 1, padding: '10px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>저장</button>
+                <button type="button" onClick={() => setEventEditModalOpen(false)} style={{ flex: 1, padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>취소</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
                 
                 {/* 색상 선택 영역 리스트 */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', maxHeight: '250px', overflowY: 'auto', paddingRight: '4px' }}>

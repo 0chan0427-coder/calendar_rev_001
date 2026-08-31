@@ -22,14 +22,28 @@ export default function CalendarApp() {
   const [selectedRoomIds, setSelectedRoomIds] = useState<string[]>([]);
   const [targetRoomIdForAdd, setTargetRoomIdForAdd] = useState<string | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
-  
+  const [selectedDateForAdd, setSelectedDateForAdd] = useState<string | null>(null);
+
+  // 데이터 상태
+  const [rooms, setRooms] = useState<any[]>([]);
+  const [events, setEvents] = useState<any[]>([]);
+  const [profilesMap, setProfilesMap] = useState<Record<string, any>>({});
+  const [pendingProfiles, setPendingProfiles] = useState<any[]>([]);
+  const [allProfiles, setAllProfiles] = useState<any[]>([]);
+  const [comments, setComments] = useState<any[]>([]);
+  const [newCommentText, setNewCommentText] = useState('');
+
+  // 폼 입력 상태
+  const [newRoomName, setNewRoomName] = useState('');
+  const [newEventTitle, setNewEventTitle] = useState('');
+  const [newEventStartDate, setNewEventStartDate] = useState('');
+  const [newEventEndDate, setNewEventEndDate] = useState('');
+
+  // 모달 상태
   const [adminModalOpen, setAdminModalOpen] = useState(false);
   const [roomModalOpen, setRoomModalOpen] = useState(false);
   const [roomManageModalOpen, setRoomManageModalOpen] = useState(false);
-
-  const rooms: any[] = [];
-  const events: any[] = [];
-  const profilesMap: Record<string, any> = {};
+  const [eventAddModalOpen, setEventAddModalOpen] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -51,6 +65,26 @@ export default function CalendarApp() {
     return () => subscription.unsubscribe();
   }, []);
 
+  useEffect(() => {
+    if (session && profile && profile.status === 'approved') {
+      fetchRooms();
+      fetchEvents();
+      fetchProfilesMap();
+      if (profile.role === 'admin') {
+        fetchPendingProfiles();
+        fetchAllProfiles();
+      }
+    }
+  }, [session, profile]);
+
+  useEffect(() => {
+    if (selectedEvent) {
+      fetchComments(selectedEvent.id);
+    } else {
+      setComments([]);
+    }
+  }, [selectedEvent]);
+
   const fetchProfile = async (userId: string) => {
     try {
       const { data, error } = await supabase
@@ -58,7 +92,6 @@ export default function CalendarApp() {
         .select('*')
         .eq('id', userId)
         .single();
-      
       if (error) throw error;
       setProfile(data);
     } catch (err) {
@@ -66,10 +99,49 @@ export default function CalendarApp() {
     }
   };
 
+  const fetchRooms = async () => {
+    const { data, error } = await supabase.from('rooms').select('*').order('created_at', { ascending: true });
+    if (!error && data) {
+      setRooms(data);
+      if (selectedRoomIds.length === 0 && data.length > 0) {
+        setSelectedRoomIds([data[0].id]);
+        setTargetRoomIdForAdd(data[0].id);
+      }
+    }
+  };
+
+  const fetchEvents = async () => {
+    const { data, error } = await supabase.from('events').select('*');
+    if (!error && data) setEvents(data);
+  };
+
+  const fetchProfilesMap = async () => {
+    const { data, error } = await supabase.from('profiles').select('*');
+    if (!error && data) {
+      const map: Record<string, any> = {};
+      data.forEach(p => { map[p.id] = p; });
+      setProfilesMap(map);
+    }
+  };
+
+  const fetchPendingProfiles = async () => {
+    const { data, error } = await supabase.from('profiles').select('*').eq('status', 'pending');
+    if (!error && data) setPendingProfiles(data);
+  };
+
+  const fetchAllProfiles = async () => {
+    const { data, error } = await supabase.from('profiles').select('*');
+    if (!error && data) setAllProfiles(data);
+  };
+
+  const fetchComments = async (eventId: string) => {
+    const { data, error } = await supabase.from('comments').select('*').eq('event_id', eventId).order('created_at', { ascending: true });
+    if (!error && data) setComments(data);
+  };
+
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
     try {
       if (isSignUp) {
         if (!signupName.trim()) {
@@ -77,29 +149,16 @@ export default function CalendarApp() {
           setLoading(false);
           return;
         }
-
         const { error } = await supabase.auth.signUp({
           email,
           password,
-          options: {
-            data: {
-              name: signupName,
-              color: signupColor,
-            }
-          }
+          options: { data: { name: signupName, color: signupColor } }
         });
-
         if (error) throw error;
-
         alert('가입 신청 완료. 관리자 승인을 기다려주세요.');
         setIsSignUp(false);
-
       } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
       }
     } catch (error: any) {
@@ -113,6 +172,93 @@ export default function CalendarApp() {
     await supabase.auth.signOut();
     setSession(null);
     setProfile(null);
+  };
+
+  const approveUser = async (userId: string) => {
+    const { error } = await supabase.from('profiles').update({ status: 'approved' }).eq('id', userId);
+    if (error) {
+      alert('승인 실패: ' + error.message);
+    } else {
+      alert('승인되었습니다.');
+      fetchPendingProfiles();
+      fetchAllProfiles();
+    }
+  };
+
+  const createRoom = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newRoomName.trim()) return;
+    const { error } = await supabase.from('rooms').insert([{ name: newRoomName }]);
+    if (error) {
+      alert('방 생성 실패: ' + error.message);
+    } else {
+      setNewRoomName('');
+      setRoomModalOpen(false);
+      fetchRooms();
+    }
+  };
+
+  const deleteRoom = async (roomId: string) => {
+    if (!confirm('정말 이 방을 삭제하시겠습니까? 관련된 일정과 댓글도 모두 삭제될 수 있습니다.')) return;
+    const { error } = await supabase.from('rooms').delete().eq('id', roomId);
+    if (error) {
+      alert('방 삭제 실패: ' + error.message);
+    } else {
+      setSelectedRoomIds(selectedRoomIds.filter(id => id !== roomId));
+      fetchRooms();
+      fetchEvents();
+    }
+  };
+
+  const createEvent = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newEventTitle.trim() || !targetRoomIdForAdd || !newEventStartDate) {
+      alert('방, 제목, 시작일을 모두 확인해주세요.');
+      return;
+    }
+    const { error } = await supabase.from('events').insert([{
+      room_id: targetRoomIdForAdd,
+      user_id: session.user.id,
+      title: newEventTitle,
+      event_date: newEventStartDate,
+      end_date: newEventEndDate || newEventStartDate
+    }]);
+    if (error) {
+      alert('일정 등록 실패: ' + error.message);
+    } else {
+      setNewEventTitle('');
+      setNewEventStartDate('');
+      setNewEventEndDate('');
+      setEventAddModalOpen(false);
+      fetchEvents();
+    }
+  };
+
+  const deleteEvent = async (eventId: string) => {
+    if (!confirm('일정을 삭제하시겠습니까?')) return;
+    const { error } = await supabase.from('events').delete().eq('id', eventId);
+    if (error) {
+      alert('삭제 실패: ' + error.message);
+    } else {
+      setSelectedEvent(null);
+      fetchEvents();
+    }
+  };
+
+  const addComment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCommentText.trim() || !selectedEvent) return;
+    const { error } = await supabase.from('comments').insert([{
+      event_id: selectedEvent.id,
+      user_id: session.user.id,
+      content: newCommentText
+    }]);
+    if (error) {
+      alert('댓글 등록 실패: ' + error.message);
+    } else {
+      setNewCommentText('');
+      fetchComments(selectedEvent.id);
+    }
   };
 
   const year = currentDate.getFullYear();
@@ -152,26 +298,8 @@ export default function CalendarApp() {
       <div style={{ maxWidth: '400px', margin: '80px auto', padding: '30px', border: '1px solid #ddd', borderRadius: '12px', fontFamily: 'sans-serif', background: '#fff' }}>
         <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>{isSignUp ? '회원가입' : '로그인'}</h2>
         <form onSubmit={handleAuth} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <input 
-            type="email" 
-            name="email"
-            placeholder="이메일" 
-            value={email} 
-            onChange={e => setEmail(e.target.value)} 
-            required 
-            autoComplete="email"
-            style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} 
-          />
-          <input 
-            type="password" 
-            name="password"
-            placeholder="비밀번호" 
-            value={password} 
-            onChange={e => setPassword(e.target.value)} 
-            required 
-            autoComplete="current-password"
-            style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} 
-          />
+          <input type="email" name="email" placeholder="이메일" value={email} onChange={e => setEmail(e.target.value)} required autoComplete="email" style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} />
+          <input type="password" name="password" placeholder="비밀번호" value={password} onChange={e => setPassword(e.target.value)} required autoComplete="current-password" style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} />
           
           {isSignUp && (
             <>
@@ -261,9 +389,7 @@ export default function CalendarApp() {
                     alert('링크 복사에 실패했습니다.');
                   });
                 }}
-                style={{ 
-                  width: '100%', background: '#007bff', color: '#fff', border: 'none', padding: '6px 8px', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px'
-                }}
+                style={{ width: '100%', background: '#007bff', color: '#fff', border: 'none', padding: '6px 8px', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
               >
                 🔗 초대 링크 복사하기
               </button>
@@ -314,12 +440,26 @@ export default function CalendarApp() {
       <div style={{ flex: 1, height: '100vh', padding: '20px', paddingBottom: '75px', overflowY: 'auto', background: '#fff', display: 'flex', flexDirection: 'column', boxSizing: 'border-box', minWidth: 0 }}>
         {selectedRoomIds.length > 0 ? (
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            <h2>
-              통합 캘린더 보기 
-              <span style={{ fontSize: '13px', fontWeight: 'normal', color: '#666', marginLeft: '10px' }}>
-                ({selectedRoomIds.map(id => rooms.find(r => r.id === id)?.name).filter(Boolean).join(', ')})
-              </span>
-            </h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+              <h2>
+                통합 캘린더 보기 
+                <span style={{ fontSize: '13px', fontWeight: 'normal', color: '#666', marginLeft: '10px' }}>
+                  ({selectedRoomIds.map(id => rooms.find(r => r.id === id)?.name).filter(Boolean).join(', ')})
+                </span>
+              </h2>
+              {selectedRoomIds.length > 0 && (
+                <button 
+                  onClick={() => {
+                    setTargetRoomIdForAdd(selectedRoomIds[0]);
+                    setNewEventStartDate(`${year}-${String(month + 1).padStart(2, '0')}-01`);
+                    setEventAddModalOpen(true);
+                  }}
+                  style={{ padding: '8px 14px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+                >
+                  일정 추가 +
+                </button>
+              )}
+            </div>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '10px 0' }}>
               <button onClick={prevMonth} style={{ padding: '6px 12px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>&lt; 이전 달</button>
@@ -362,7 +502,12 @@ export default function CalendarApp() {
                 return (
                   <div 
                     key={`day-${dayNum}`} 
-                    onClick={() => setRightSidebarOpen(true)}
+                    onClick={() => {
+                      setSelectedDateForAdd(formattedDate);
+                      if (selectedRoomIds.length > 0) setTargetRoomIdForAdd(selectedRoomIds[0]);
+                      setNewEventStartDate(formattedDate);
+                      setNewEventEndDate(formattedDate);
+                    }}
                     style={{ background: '#fff', minHeight: '100px', padding: '5px', overflowY: 'auto', border: '1px solid #eee', display: 'flex', flexDirection: 'column', cursor: 'pointer' }}
                   >
                     <div style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '4px', color: '#333' }}>{dayNum}</div>
@@ -430,16 +575,45 @@ export default function CalendarApp() {
         <div style={{ width: '320px', height: '100vh', display: 'flex', flexDirection: 'column', boxSizing: 'border-box', padding: '20px', paddingBottom: '75px', overflowY: 'auto' }}>
           <h3 style={{ marginTop: '0', borderBottom: '1px solid #ddd', paddingBottom: '10px' }}>일정 상세 / 댓글</h3>
           
-          <div style={{ flex: 1, overflowY: 'auto', marginTop: '10px' }}>
+          <div style={{ flex: 1, overflowY: 'auto', marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
             {selectedEvent ? (
-              <div>
-                <p><strong>제목:</strong> {selectedEvent.title}</p>
-                <p><strong>기간:</strong> {selectedEvent.event_date} {selectedEvent.end_date ? `~ ${selectedEvent.end_date}` : ''}</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <div style={{ background: '#fff', padding: '12px', borderRadius: '6px', border: '1px solid #ddd' }}>
+                  <p style={{ margin: '0 0 6px 0' }}><strong>제목:</strong> {selectedEvent.title}</p>
+                  <p style={{ margin: '0 0 6px 0' }}><strong>기간:</strong> {selectedEvent.event_date} {selectedEvent.end_date ? `~ ${selectedEvent.end_date}` : ''}</p>
+                  <p style={{ margin: '0 0 10px 0', fontSize: '13px', color: '#666' }}>작성자: {profilesMap[selectedEvent.user_id]?.name || '알 수 없음'}</p>
+                  {(selectedEvent.user_id === session.user.id || profile?.role === 'admin') && (
+                    <button onClick={() => deleteEvent(selectedEvent.id)} style={{ padding: '4px 8px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}>일정 삭제</button>
+                  )}
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <h4>댓글</h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '200px', overflowY: 'auto' }}>
+                    {comments.length === 0 ? (
+                      <p style={{ fontSize: '13px', color: '#888' }}>작성된 댓글이 없습니다.</p>
+                    ) : (
+                      comments.map(c => (
+                        <div key={c.id} style={{ background: '#fff', padding: '8px', borderRadius: '4px', border: '1px solid #eee', fontSize: '13px' }}>
+                          <div style={{ fontWeight: 'bold', fontSize: '11px', color: '#555', marginBottom: '2px' }}>
+                            {profilesMap[c.user_id]?.name || '익명'}
+                          </div>
+                          <div>{c.content}</div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+
+                  <form onSubmit={addComment} style={{ display: 'flex', gap: '6px', marginTop: '5px' }}>
+                    <input type="text" placeholder="댓글을 입력하세요..." value={newCommentText} onChange={e => setNewCommentText(e.target.value)} style={{ flex: 1, padding: '8px', borderRadius: '4px', border: '1px solid #ccc', fontSize: '13px' }} />
+                    <button type="submit" style={{ padding: '8px 12px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>등록</button>
+                  </form>
+                </div>
               </div>
             ) : (
               <div>
                 <p style={{ color: '#666', fontSize: '13px' }}>
-                  달력에서 일정을 클릭하거나 날짜를 선택하여 상세 내용을 확인하고 댓글을 남겨보세요.
+                  달력에서 일정을 클릭하여 상세 내용을 확인하고 댓글을 남겨보세요.
                 </p>
               </div>
             )}
@@ -465,20 +639,7 @@ export default function CalendarApp() {
       }}>
         <button 
           onClick={() => setLeftSidebarOpen(!leftSidebarOpen)}
-          style={{
-            flex: 1,
-            height: '100%',
-            background: leftSidebarOpen ? '#495057' : 'transparent',
-            color: '#fff',
-            border: 'none',
-            fontSize: '14px',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '6px'
-          }}
+          style={{ flex: 1, height: '100%', background: leftSidebarOpen ? '#495057' : 'transparent', color: '#fff', border: 'none', fontSize: '14px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
         >
           📁 방 목록 / 메뉴 {leftSidebarOpen ? '▼' : '▲'}
         </button>
@@ -487,42 +648,51 @@ export default function CalendarApp() {
 
         <button 
           onClick={() => setRightSidebarOpen(!rightSidebarOpen)}
-          style={{
-            flex: 1,
-            height: '100%',
-            background: rightSidebarOpen ? '#495057' : 'transparent',
-            color: '#fff',
-            border: 'none',
-            fontSize: '14px',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '6px'
-          }}
+          style={{ flex: 1, height: '100%', background: rightSidebarOpen ? '#495057' : 'transparent', color: '#fff', border: 'none', fontSize: '14px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
         >
           💬 상세 / 댓글 {rightSidebarOpen ? '▼' : '▲'}
         </button>
       </div>
 
-      {/* 5. 모달 창들 (멤버 관리, 방 생성, 방 관리) */}
+      {/* 5. 모달 창들 (멤버 관리, 방 생성, 방 관리, 일정 추가) */}
       {adminModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
-          <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '400px', maxHeight: '80vh', overflowY: 'auto' }}>
+          <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '450px', maxHeight: '80vh', overflowY: 'auto' }}>
             <h3>멤버 관리</h3>
-            <p style={{ color: '#666', fontSize: '14px' }}>멤버 승인 및 권한 관리 창입니다.</p>
-            <button onClick={() => setAdminModalOpen(false)} style={{ marginTop: '15px', padding: '8px 16px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>닫기</button>
+            <p style={{ color: '#666', fontSize: '13px', marginBottom: '15px' }}>가입 대기 중인 회원들을 승인할 수 있습니다.</p>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {pendingProfiles.length === 0 ? (
+                <p style={{ fontSize: '14px', color: '#888' }}>대기 중인 멤버가 없습니다.</p>
+              ) : (
+                pendingProfiles.map(p => (
+                  <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', background: '#f8f9fa', borderRadius: '6px', border: '1px solid #ddd' }}>
+                    <div>
+                      <div style={{ fontWeight: 'bold', fontSize: '14px' }}>{p.name}</div>
+                      <div style={{ fontSize: '12px', color: '#666' }}>{p.email}</div>
+                    </div>
+                    <button onClick={() => approveUser(p.id)} style={{ padding: '6px 12px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>승인</button>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <button onClick={() => setAdminModalOpen(false)} style={{ marginTop: '20px', width: '100%', padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>닫기</button>
           </div>
         </div>
       )}
 
       {roomModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
-          <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '400px', maxHeight: '80vh', overflowY: 'auto' }}>
+          <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '400px' }}>
             <h3>방 생성하기</h3>
-            <p style={{ color: '#666', fontSize: '14px' }}>새로운 캘린더 방을 생성하는 창입니다.</p>
-            <button onClick={() => setRoomModalOpen(false)} style={{ marginTop: '15px', padding: '8px 16px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>닫기</button>
+            <form onSubmit={createRoom} style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '15px' }}>
+              <input type="text" placeholder="방 이름 입력" value={newRoomName} onChange={e => setNewRoomName(e.target.value)} required style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} />
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button type="submit" style={{ flex: 1, padding: '10px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>생성</button>
+                <button type="button" onClick={() => setRoomModalOpen(false)} style={{ flex: 1, padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>취소</button>
+              </div>
+            </form>
           </div>
         </div>
       )}
@@ -531,8 +701,50 @@ export default function CalendarApp() {
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
           <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '400px', maxHeight: '80vh', overflowY: 'auto' }}>
             <h3>방 관리하기</h3>
-            <p style={{ color: '#666', fontSize: '14px' }}>생성된 방을 수정하거나 삭제하는 창입니다.</p>
-            <button onClick={() => setRoomManageModalOpen(false)} style={{ marginTop: '15px', padding: '8px 16px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>닫기</button>
+            <p style={{ color: '#666', fontSize: '13px', marginBottom: '15px' }}>원하는 방을 삭제할 수 있습니다.</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {rooms.map(room => (
+                <div key={room.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', background: '#f8f9fa', borderRadius: '6px', border: '1px solid #ddd' }}>
+                  <span style={{ fontWeight: 'bold', fontSize: '14px' }}>{room.name}</span>
+                  <button onClick={() => deleteRoom(room.id)} style={{ padding: '6px 10px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}>삭제</button>
+                </div>
+              ))}
+            </div>
+            <button onClick={() => setRoomManageModalOpen(false)} style={{ marginTop: '20px', width: '100%', padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>닫기</button>
+          </div>
+        </div>
+      )}
+
+      {eventAddModalOpen && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
+          <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '400px' }}>
+            <h3>일정 추가</h3>
+            <form onSubmit={createEvent} style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '15px' }}>
+              <div>
+                <label style={{ fontSize: '13px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>대상 방</label>
+                <select value={targetRoomIdForAdd || ''} onChange={e => setTargetRoomIdForAdd(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }}>
+                  {rooms.map(room => (
+                    <option key={room.id} value={room.id}>{room.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label style={{ fontSize: '13px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>일정 제목</label>
+                <input type="text" placeholder="예: 제주도 여행" value={newEventTitle} onChange={e => setNewEventTitle(e.target.value)} required style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }} />
+              </div>
+              <div>
+                <label style={{ fontSize: '13px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>시작일</label>
+                <input type="date" value={newEventStartDate} onChange={e => setNewEventStartDate(e.target.value)} required style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }} />
+              </div>
+              <div>
+                <label style={{ fontSize: '13px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>종료일 (선택)</label>
+                <input type="date" value={newEventEndDate} onChange={e => setNewEventEndDate(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }} />
+              </div>
+              <div style={{ display: 'flex', gap: '8px', marginTop: '5px' }}>
+                <button type="submit" style={{ flex: 1, padding: '10px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>등록</button>
+                <button type="button" onClick={() => setEventAddModalOpen(false)} style={{ flex: 1, padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>취소</button>
+              </div>
+            </form>
           </div>
         </div>
       )}

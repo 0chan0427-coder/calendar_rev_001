@@ -459,18 +459,6 @@ export default function CalendarApp() {
                   ({selectedRoomIds.map(id => rooms.find(r => r.id === id)?.name).filter(Boolean).join(', ')})
                 </span>
               </h2>
-              {selectedRoomIds.length > 0 && (
-                <button 
-                  onClick={() => {
-                    setTargetRoomIdForAdd(selectedRoomIds[0]);
-                    setNewEventStartDate(`${year}-${String(month + 1).padStart(2, '0')}-01`);
-                    setEventAddModalOpen(true);
-                  }}
-                  style={{ padding: '8px 14px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
-                >
-                  일정 추가 +
-                </button>
-              )}
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '10px 0' }}>

@@ -3,7 +3,34 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-export const supabase = createClient(supabaseUrl, supabaseKey);
+
+// 💡 자동로그인 체크 여부에 따라 localStorage / sessionStorage를 동적으로 선택
+const customStorage = {
+  getItem: (key) => {
+    return window.localStorage.getItem(key) || window.sessionStorage.getItem(key);
+  },
+  setItem: (key, value) => {
+    const keepLoggedIn = window.localStorage.getItem('keepLoggedIn') !== 'false';
+    if (keepLoggedIn) {
+      window.localStorage.setItem(key, value);
+    } else {
+      window.sessionStorage.setItem(key, value);
+    }
+  },
+  removeItem: (key) => {
+    window.localStorage.removeItem(key);
+    window.sessionStorage.removeItem(key);
+  }
+};
+
+export const supabase = createClient(supabaseUrl, supabaseKey, {
+  auth: {
+    storage: customStorage,
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true
+  }
+});
 
 // 15가지 고정 색상 팔레트
 const PRESET_COLORS = [

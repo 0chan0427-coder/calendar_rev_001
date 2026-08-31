@@ -7,7 +7,6 @@ const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default function CalendarApp() {
-  // 상태 관리 (기존에 선언되어 있는 상태들)
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -29,12 +28,10 @@ export default function CalendarApp() {
   const [roomModalOpen, setRoomModalOpen] = useState(false);
   const [roomManageModalOpen, setRoomManageModalOpen] = useState(false);
 
-  // 더미 데이터 및 함수들 (실제 코드에 맞게 연결되어 있다고 가정)
   const rooms: any[] = [];
   const events: any[] = [];
   const profilesMap: Record<string, any> = {};
 
-  // 인증 상태 변화 감지 및 프로필 로드
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -82,7 +79,6 @@ export default function CalendarApp() {
           return;
         }
 
-        // Supabase 회원가입 로직
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
@@ -100,7 +96,6 @@ export default function CalendarApp() {
         setIsSignUp(false);
 
       } else {
-        // Supabase 로그인 로직
         const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password,
@@ -224,7 +219,7 @@ export default function CalendarApp() {
     <div style={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden', fontFamily: 'sans-serif', position: 'relative' }}>
       
       {/* 모바일 백드롭 */}
-      {((leftSidebarOpen || rightSidebarOpen)) && (
+      {(leftSidebarOpen || rightSidebarOpen) && (
         <div 
           onClick={() => { setLeftSidebarOpen(false); setRightSidebarOpen(false); }}
           style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 20 }}
@@ -247,7 +242,7 @@ export default function CalendarApp() {
         boxSizing: 'border-box',
         flexShrink: 0
       }}>
-        <div style={{ padding: '20px', width: '260px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <div style={{ padding: '20px', width: '260px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', height: '100%', paddingBottom: '70px' }}>
           
           <div style={{ flex: 1 }}>
             <div style={{ marginBottom: '15px', lineHeight: '1.2', textAlign: 'center' }}>
@@ -333,8 +328,8 @@ export default function CalendarApp() {
         </div>
       </div>
 
-      {/* 2. 중앙 메인: 달력 그리드 뷰 */}
-      <div style={{ flex: 1, padding: '70px 20px 20px 20px', overflowY: 'auto', background: '#fff', display: 'flex', flexDirection: 'column', height: '100%', boxSizing: 'border-box', minWidth: 0 }}>
+      {/* 2. 중앙 메인: 달력 그리드 뷰 (하단 바 공간 확보를 위해 paddingBottom 추가) */}
+      <div style={{ flex: 1, padding: '20px 20px 70px 20px', overflowY: 'auto', background: '#fff', display: 'flex', flexDirection: 'column', height: '100%', boxSizing: 'border-box', minWidth: 0 }}>
         {selectedRoomIds.length > 0 ? (
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <h2>
@@ -435,33 +430,11 @@ export default function CalendarApp() {
             </div>
           </div>
         ) : (
-          <h3 style={{ textAlign: 'center', marginTop: '50px', color: '#666' }}>좌측 메뉴에서 캘린더에 표시할 방을 하나 이상 선택해주세요.</h3>
+          <h3 style={{ textAlign: 'center', marginTop: '50px', color: '#666' }}>하단 메뉴에서 좌측 바를 열어 캘린더에 표시할 방을 선택해주세요.</h3>
         )}
       </div>
 
-      {/* 3. 우측 사이드바 토글 버튼 (우측 상단 고정) */}
-      <button 
-        onClick={() => setRightSidebarOpen(!rightSidebarOpen)}
-        style={{ 
-          position: 'absolute', 
-          right: rightSidebarOpen ? '335px' : '15px', 
-          top: '15px', 
-          zIndex: 35, 
-          background: '#343a40', 
-          color: '#fff', 
-          border: 'none', 
-          padding: '8px 12px', 
-          cursor: 'pointer', 
-          borderRadius: '4px', 
-          transition: 'right 0.3s',
-          fontWeight: 'bold',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-        }}
-      >
-        {rightSidebarOpen ? '상세 닫기 ▲' : '상세/댓글 ▶'}
-      </button>
-
-      {/* 4. 우측 상세 패널 */}
+      {/* 3. 우측 상세 패널 */}
       <div style={{
         position: 'relative',
         zIndex: 30,
@@ -475,9 +448,9 @@ export default function CalendarApp() {
         display: 'flex',
         flexDirection: 'column',
         boxSizing: 'border-box',
-        flexShrink: 0
+        flexShrink: '0'
       }}>
-        <div style={{ padding: '20px', width: '320px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <div style={{ padding: '20px', width: '320px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', height: '100%', paddingBottom: '70px' }}>
           <h3 style={{ marginTop: '0', borderBottom: '1px solid #ddd', paddingBottom: '10px' }}>일정 상세 / 댓글</h3>
           
           <div style={{ flex: 1, overflowY: 'auto', marginTop: '10px' }}>
@@ -495,6 +468,65 @@ export default function CalendarApp() {
             )}
           </div>
         </div>
+      </div>
+
+      {/* 4. 화면 하단 고정 네비게이션 바 (좌측/우측 바 토글 버튼 포함) */}
+      <div style={{
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        width: '100vw',
+        height: '55px',
+        background: '#343a40',
+        borderTop: '1px solid #495057',
+        display: 'flex',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        zIndex: 40,
+        boxShadow: '0 -2px 6px rgba(0,0,0,0.15)',
+        boxSizing: 'border-box'
+      }}>
+        <button 
+          onClick={() => { setLeftSidebarOpen(!leftSidebarOpen); setRightSidebarOpen(false); }}
+          style={{
+            flex: 1,
+            height: '100%',
+            background: leftSidebarOpen ? '#495057' : 'transparent',
+            color: '#fff',
+            border: 'none',
+            fontSize: '14px',
+            fontWeight: 'bold',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '6px'
+          }}
+        >
+          📁 방 목록 / 메뉴 {leftSidebarOpen ? '▼' : '▲'}
+        </button>
+
+        <div style={{ width: '1px', height: '60%', background: '#495057' }} />
+
+        <button 
+          onClick={() => { setRightSidebarOpen(!rightSidebarOpen); setLeftSidebarOpen(false); }}
+          style={{
+            flex: 1,
+            height: '100%',
+            background: rightSidebarOpen ? '#495057' : 'transparent',
+            color: '#fff',
+            border: 'none',
+            fontSize: '14px',
+            fontWeight: 'bold',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '6px'
+          }}
+        >
+          💬 상세 / 댓글 {rightSidebarOpen ? '▼' : '▲'}
+        </button>
       </div>
 
     </div>

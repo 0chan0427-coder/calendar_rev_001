@@ -72,6 +72,10 @@ export default function CalendarApp() {
   const [editEventStartDate, setEditEventStartDate] = useState('');
   const [editEventEndDate, setEditEventEndDate] = useState('');
   const [editEventColor, setEditEventColor] = useState('#339af0');
+
+  // 방 관리(이름 변경 및 순서) 관련 상태
+  const [editingRoomId, setEditingRoomId] = useState(null);
+  const [editRoomNameText, setEditRoomNameText] = useState('');
   
   // 폼 입력 상태
   const [newRoomName, setNewRoomName] = useState('');

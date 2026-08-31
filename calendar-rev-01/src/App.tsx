@@ -139,7 +139,6 @@ export default function CalendarApp() {
         setTargetRoomIdForAdd(roomId);
       }
     }
-    if (window.innerWidth <= 768) setLeftSidebarOpen(false);
   };
 
   const getRoomOrderIndex = (roomId: string) => {
@@ -216,34 +215,25 @@ export default function CalendarApp() {
   }
 
   return (
-    <div style={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden', fontFamily: 'sans-serif', position: 'relative' }}>
+    <div style={{ display: 'flex', width: '100vw', height: '100vh', overflow: 'hidden', fontFamily: 'sans-serif', position: 'relative', boxSizing: 'border-box' }}>
       
-      {/* 모바일 백드롭 */}
-      {(leftSidebarOpen || rightSidebarOpen) && (
-        <div 
-          onClick={() => { setLeftSidebarOpen(false); setRightSidebarOpen(false); }}
-          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 20 }}
-        />
-      )}
-
-      {/* 1. 좌측 바 */}
-      <div style={{ 
-        position: 'relative',
-        zIndex: 30,
+      {/* 1. 좌측 사이드바 컨테이너 (너비 애니메이션 적용) */}
+      <div style={{
+        width: leftSidebarOpen ? '260px' : '0px',
+        minWidth: leftSidebarOpen ? '260px' : '0px',
         height: '100vh',
-        width: leftSidebarOpen ? '260px' : '0px', 
-        transition: 'width 0.3s', 
-        background: '#f8f9fa', 
-        borderRight: '1px solid #ddd', 
-        overflowY: 'auto', 
-        overflowX: 'hidden',
-        display: 'flex', 
+        background: '#f8f9fa',
+        borderRight: leftSidebarOpen ? '1px solid #ddd' : 'none',
+        overflow: 'hidden',
+        transition: 'width 0.3s ease, min-width 0.3s ease',
+        display: 'flex',
         flexDirection: 'column',
         boxSizing: 'border-box',
-        flexShrink: 0
+        flexShrink: 0,
+        zIndex: 10
       }}>
-        <div style={{ padding: '20px', width: '260px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', height: '100%', paddingBottom: '70px' }}>
-          
+        {/* 실제 내부 콘텐츠를 감싸는 고정 너비 박스 (내용물 찌그러짐 방지) */}
+        <div style={{ width: '260px', height: '100vh', display: 'flex', flexDirection: 'column', boxSizing: 'border-box', padding: '20px', paddingBottom: '75px', overflowY: 'auto' }}>
           <div style={{ flex: 1 }}>
             <div style={{ marginBottom: '15px', lineHeight: '1.2', textAlign: 'center' }}>
               <div style={{ fontSize: '15px', fontWeight: 'bold', color: '#555' }}>씩씩이들의</div>
@@ -324,12 +314,11 @@ export default function CalendarApp() {
             <button onClick={() => setRoomModalOpen(true)} style={{ width: '100%', padding: '10px', background: '#f1f3f5', color: '#212529', border: '1px solid #ced4da', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px', textAlign: 'center' }}>방 생성하기 +</button>
             <button onClick={() => setRoomManageModalOpen(true)} style={{ width: '100%', padding: '10px', background: '#343a40', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px', textAlign: 'center' }}>방 관리하기 ⚙️</button>
           </div>
-
         </div>
       </div>
 
-      {/* 2. 중앙 메인: 달력 그리드 뷰 (하단 바 공간 확보를 위해 paddingBottom 추가) */}
-      <div style={{ flex: 1, padding: '20px 20px 70px 20px', overflowY: 'auto', background: '#fff', display: 'flex', flexDirection: 'column', height: '100%', boxSizing: 'border-box', minWidth: 0 }}>
+      {/* 2. 중앙 메인 콘텐츠 뷰 */}
+      <div style={{ flex: 1, height: '100vh', padding: '20px', paddingBottom: '75px', overflowY: 'auto', background: '#fff', display: 'flex', flexDirection: 'column', boxSizing: 'border-box', minWidth: 0 }}>
         {selectedRoomIds.length > 0 ? (
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <h2>
@@ -434,23 +423,23 @@ export default function CalendarApp() {
         )}
       </div>
 
-      {/* 3. 우측 상세 패널 */}
+      {/* 3. 우측 상세 패널 컨테이너 */}
       <div style={{
-        position: 'relative',
-        zIndex: 30,
-        height: '100vh',
         width: rightSidebarOpen ? '320px' : '0px',
-        transition: 'width 0.3s',
+        minWidth: rightSidebarOpen ? '320px' : '0px',
+        height: '100vh',
         background: '#f8f9fa',
         borderLeft: rightSidebarOpen ? '1px solid #ddd' : 'none',
-        overflowY: 'auto',
-        overflowX: 'hidden',
+        overflow: 'hidden',
+        transition: 'width 0.3s ease, min-width 0.3s ease',
         display: 'flex',
         flexDirection: 'column',
         boxSizing: 'border-box',
-        flexShrink: '0'
+        flexShrink: 0,
+        zIndex: 10
       }}>
-        <div style={{ padding: '20px', width: '320px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', height: '100%', paddingBottom: '70px' }}>
+        {/* 실제 내부 콘텐츠를 감싸는 고정 너비 박스 */}
+        <div style={{ width: '320px', height: '100vh', display: 'flex', flexDirection: 'column', boxSizing: 'border-box', padding: '20px', paddingBottom: '75px', overflowY: 'auto' }}>
           <h3 style={{ marginTop: '0', borderBottom: '1px solid #ddd', paddingBottom: '10px' }}>일정 상세 / 댓글</h3>
           
           <div style={{ flex: 1, overflowY: 'auto', marginTop: '10px' }}>
@@ -470,7 +459,7 @@ export default function CalendarApp() {
         </div>
       </div>
 
-      {/* 4. 화면 하단 고정 네비게이션 바 (좌측/우측 바 토글 버튼 포함) */}
+      {/* 4. 화면 하단 고정 네비게이션 바 */}
       <div style={{
         position: 'fixed',
         bottom: 0,
@@ -487,7 +476,7 @@ export default function CalendarApp() {
         boxSizing: 'border-box'
       }}>
         <button 
-          onClick={() => { setLeftSidebarOpen(!leftSidebarOpen); setRightSidebarOpen(false); }}
+          onClick={() => setLeftSidebarOpen(!leftSidebarOpen)}
           style={{
             flex: 1,
             height: '100%',
@@ -509,7 +498,7 @@ export default function CalendarApp() {
         <div style={{ width: '1px', height: '60%', background: '#495057' }} />
 
         <button 
-          onClick={() => { setRightSidebarOpen(!rightSidebarOpen); setLeftSidebarOpen(false); }}
+          onClick={() => setRightSidebarOpen(!rightSidebarOpen)}
           style={{
             flex: 1,
             height: '100%',

@@ -307,6 +307,37 @@ export default function CalendarApp() {
     }
   };
 
+  const updateEvent = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedEvent || !editEventTitle.trim() || !editEventStartDate) {
+      alert('제목과 시작일을 확인해주세요.');
+      return;
+    }
+
+    const { error } = await supabase.from('events').update({
+      title: editEventTitle,
+      event_date: editEventStartDate,
+      end_date: editEventEndDate || editEventStartDate,
+      color: editEventColor
+    }).eq('id', selectedEvent.id);
+
+    if (error) {
+      alert('일정 수정 실패: ' + error.message);
+    } else {
+      alert('일정이 수정되었습니다.');
+      setEventEditModalOpen(false);
+      const updated = {
+        ...selectedEvent,
+        title: editEventTitle,
+        event_date: editEventStartDate,
+        end_date: editEventEndDate || editEventStartDate,
+        color: editEventColor
+      };
+      setSelectedEvent(updated);
+      fetchEvents();
+    }
+  };
+  
   const deleteEvent = async (eventId: string) => {
     if (!confirm('일정을 삭제하시겠습니까?')) return;
     const { error } = await supabase.from('events').delete().eq('id', eventId);

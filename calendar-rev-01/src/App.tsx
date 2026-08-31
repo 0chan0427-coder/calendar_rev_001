@@ -176,6 +176,50 @@ export default function CalendarApp() {
     }
   };
 
+  // 방 이름 변경 함수
+  const updateRoomName = async (roomId) => {
+    if (!editRoomNameText.trim()) {
+      alert('변경할 방 이름을 입력해주세요.');
+      return;
+    }
+
+    const { error } = await supabase
+      .from('rooms')
+      .update({ name: editRoomNameText.trim() })
+      .eq('id', roomId);
+
+    if (error) {
+      alert('방 이름 변경에 실패했습니다: ' + error.message);
+      return;
+    }
+
+    setRooms(rooms.map(r => r.id === roomId ? { ...r, name: editRoomNameText.trim() } : r));
+    setEditingRoomId(null);
+    setEditRoomNameText('');
+  };
+
+  // 방 순서 변경 함수
+  const moveRoomOrder = async (index, direction) => {
+    const newRooms = [...rooms];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+
+    if (targetIndex < 0 || targetIndex >= newRooms.length) return;
+
+    const temp = newRooms[index];
+    newRooms[index] = newRooms[targetIndex];
+    newRooms[targetIndex] = temp;
+
+    const updates = newRooms.map((room, idx) => {
+      return supabase
+        .from('rooms')
+        .update({ sort_order: idx })
+        .eq('id', room.id);
+    });
+
+    await Promise.all(updates);
+    setRooms([...newRooms]);
+  };
+  
   const fetchEvents = async () => {
     const { data, error } = await supabase.from('events').select('*');
     if (!error && data) setEvents(data);

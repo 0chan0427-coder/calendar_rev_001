@@ -1034,7 +1034,7 @@ export default function CalendarApp() {
       )}
 
       {/* 일정 수정 모달 */}
-{eventEditModalOpen && (
+{eventEditModalOpen && 
   <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
     <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', width: '350px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
       <h3 style={{ margin: '0 0 16px 0', fontSize: '18px' }}>일정 수정</h3>
@@ -1084,4 +1084,4 @@ export default function CalendarApp() {
       </form>
     </div>
   </div>
-)}
+}

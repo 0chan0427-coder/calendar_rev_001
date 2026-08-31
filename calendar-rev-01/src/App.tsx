@@ -898,7 +898,7 @@ export default function CalendarApp() {
               {/* 우측: 색상별 항목 지정 및 선택 영역 */}
               <div style={{ flex: 1, minWidth: '300px', display: 'flex', flexDirection: 'column', gap: '6px', background: '#f8f9fa', padding: '12px', borderRadius: '8px', border: '1px solid #ddd' }}>
                 <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#333', marginBottom: '2px' }}>
-                  🎨 색상별 항목 지정 (선택한 색상: <span style={{ color: newEventColor, fontWeight: 'bold' }}>{newEventColor === (currentUser?.color || customPickerColor) ? (currentUser?.name || '내 이름') : ((colorLabels && colorLabels[newEventColor]) || '고유 색상')}</span>)
+                  🎨 색상별 항목 지정 (선택한 색상: <span style={{ color: newEventColor, fontWeight: 'bold' }}>{newEventColor}</span>)
                 </label>
                 <div style={{ fontSize: '11px', color: '#666', marginBottom: '6px' }}>
                   지정된 색상 항목은 고정되어 있으며, 본인 색상은 닉네임으로 자동 표시됩니다.
@@ -910,24 +910,24 @@ export default function CalendarApp() {
                   {/* 💡 맨 위쪽: 로그인한 유저 본인 이름과 고유 색상 자동 적용 칸 */}
                   <div 
                     onClick={() => {
-                      const userColor = currentUser?.color || '#339af0';
-                      setCustomPickerColor(userColor);
-                      setNewEventColor(userColor);
+                      const userColor = (typeof currentUser !== 'undefined' && currentUser?.color) ? currentUser.color : '#339af0';
+                      if (typeof setCustomPickerColor === 'function') setCustomPickerColor(userColor);
+                      if (typeof setNewEventColor === 'function') setNewEventColor(userColor);
                     }}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
                       gap: '10px',
                       padding: '6px 8px',
-                      background: newEventColor === (currentUser?.color || customPickerColor) ? '#e7f5ff' : '#fff',
-                      border: newEventColor === (currentUser?.color || customPickerColor) ? '2px solid #339af0' : '1px solid #e2e8f0',
+                      background: '#fff',
+                      border: '1px solid #e2e8f0',
                       borderRadius: '6px',
                       cursor: 'pointer'
                     }}
                   >
-                    <div style={{ width: '22px', height: '22px', backgroundColor: currentUser?.color || customPickerColor, borderRadius: '4px', flexShrink: 0, border: '1px solid rgba(0,0,0,0.1)' }} />
+                    <div style={{ width: '22px', height: '22px', backgroundColor: (typeof currentUser !== 'undefined' && currentUser?.color) ? currentUser.color : '#339af0', borderRadius: '4px', flexShrink: 0, border: '1px solid rgba(0,0,0,0.1)' }} />
                     <span style={{ flex: 1, fontSize: '12px', fontWeight: 'bold', color: '#333' }}>
-                      {currentUser?.name || '내 이름'} (본인)
+                      {(typeof currentUser !== 'undefined' && currentUser?.name) ? currentUser.name : '내 이름'} (본인)
                     </span>
                   </div>
 
@@ -935,7 +935,9 @@ export default function CalendarApp() {
                   {Array.isArray(PRESET_COLORS) && PRESET_COLORS.map(colorCode => (
                     <div 
                       key={colorCode}
-                      onClick={() => setNewEventColor(colorCode)}
+                      onClick={() => {
+                        if (typeof setNewEventColor === 'function') setNewEventColor(colorCode);
+                      }}
                       style={{
                         display: 'flex',
                         alignItems: 'center',
@@ -949,7 +951,7 @@ export default function CalendarApp() {
                     >
                       <div style={{ width: '22px', height: '22px', backgroundColor: colorCode, borderRadius: '4px', flexShrink: 0, border: '1px solid rgba(0,0,0,0.1)' }} />
                       <span style={{ flex: 1, fontSize: '12px', color: '#333', fontWeight: '500' }}>
-                        {(colorLabels && colorLabels[colorCode]) || '지정 항목'}
+                        {(colorLabels && colorLabels[colorCode]) ? colorLabels[colorCode] : '지정 항목'}
                       </span>
                     </div>
                   ))}

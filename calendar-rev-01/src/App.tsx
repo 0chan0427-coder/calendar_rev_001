@@ -181,7 +181,8 @@ export default function CalendarApp() {
       }));
       setEvents(formatted);
     }
-
+};
+  
   const fetchProfilesMap = async () => {
     const { data, error } = await supabase.from('profiles').select('*');
     if (!error && data) {

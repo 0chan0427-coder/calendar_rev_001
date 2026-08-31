@@ -737,67 +737,80 @@ export default function CalendarApp() {
           
           <div style={{ flex: 1, overflowY: 'auto', marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
             {selectedEvent ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <div style={{ background: '#fff', padding: '12px', borderRadius: '6px', border: '1px solid #ddd' }}>
-                  <p style={{ margin: '0 0 6px 0' }}><strong>제목:</strong> {selectedEvent.title}</p>
-                  <p style={{ margin: '0 0 6px 0' }}><strong>기간:</strong> {selectedEvent.event_date} {selectedEvent.end_date ? `~ ${selectedEvent.end_date}` : ''}</p>
-                  <p style={{ margin: '0 0 10px 0', fontSize: '13px', color: '#666' }}>작성자: {profilesMap[selectedEvent.user_id]?.name || '알 수 없음'}</p>
-                  {(selectedEvent.user_id === session?.user?.id || profile?.role === 'admin') && (
-        <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
-          <button
-            onClick={() => {
-  setEditEventTitle(selectedEvent.title);
-  setEditEventStartDate(selectedEvent.event_date);
-  setEditEventEndDate(selectedEvent.end_date || '');
-  setEditEventColor((selectedEvent.color || '#339af0').trim());
-  setEventEditModalOpen(true);
-}}
-            style={{ padding: '4px 8px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
-          >
-            일정 수정
-          </button>
-          
-          <button 
-            onClick={() => deleteEvent(selectedEvent.id)} 
-            style={{ padding: '4px 8px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
-          >
-            일정 삭제
-          </button>
-        </div>
-      )}
-               
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <h4>댓글</h4>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '200px', overflowY: 'auto' }}>
-                    {comments.length === 0 ? (
-                      <p style={{ fontSize: '13px', color: '#888' }}>작성된 댓글이 없습니다.</p>
-                    ) : (
-                      comments.map(c => (
-                        <div key={c.id} style={{ background: '#fff', padding: '8px', borderRadius: '4px', border: '1px solid #eee', fontSize: '13px' }}>
-                          <div style={{ fontWeight: 'bold', fontSize: '11px', color: '#555', marginBottom: '2px' }}>
-                            {profilesMap[c.user_id]?.name || '익명'}
-                          </div>
-                          <div>{c.content}</div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-
-                  <form onSubmit={addComment} style={{ display: 'flex', gap: '6px', marginTop: '5px' }}>
-                    <input type="text" placeholder="댓글을 입력하세요..." value={newCommentText} onChange={e => setNewCommentText(e.target.value)} style={{ flex: 1, padding: '8px', borderRadius: '4px', border: '1px solid #ccc', fontSize: '13px' }} />
-                    <button type="submit" style={{ padding: '8px 12px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>등록</button>
-                  </form>
+        <div style={{ flex: 1, overflowY: 'auto', marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ background: '#fff', padding: '12px', borderRadius: '6px', border: '1px solid #ddd' }}>
+              <p style={{ margin: '0 0 6px 0' }}><strong>제목:</strong> {selectedEvent.title}</p>
+              <p style={{ margin: '0 0 6px 0' }}><strong>기간:</strong> {selectedEvent.start_date} {selectedEvent.end_date ? `~ ${selectedEvent.end_date}` : ''}</p>
+              <p style={{ margin: '0 0 10px 0', fontSize: '13px', color: '#666' }}>작성자: {profilesMap[selectedEvent.user_id]?.name || '익명'}</p>
+              
+              {(selectedEvent.user_id === session?.user?.id || profile?.role === 'admin') && (
+                <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
+                  <button
+                    onClick={() => {
+                      setEditEventTitle(selectedEvent.title);
+                      setEditEventStartDate(selectedEvent.start_date);
+                      setEditEventEndDate(selectedEvent.end_date || '');
+                      setEditEventColor((selectedEvent.color || '#339af0').trim());
+                      setEventEditModalOpen(true);
+                    }}
+                    style={{ padding: '4px 8px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
+                  >
+                    일정 수정
+                  </button>
+                  <button
+                    onClick={() => deleteEvent(selectedEvent.id)}
+                    style={{ padding: '4px 8px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
+                  >
+                    일정 삭제
+                  </button>
                 </div>
+              )}
+            </div>
+
+            {/* 댓글 영역 */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <h4 style={{ margin: 0 }}>댓글</h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '200px', overflowY: 'auto' }}>
+                {comments.length === 0 ? (
+                  <p style={{ fontSize: '13px', color: '#888' }}>작성된 댓글이 없습니다.</p>
+                ) : (
+                  comments.map(c => (
+                    <div key={c.id} style={{ background: '#fff', padding: '8px', borderRadius: '4px', border: '1px solid #eee', fontSize: '13px' }}>
+                      <div style={{ fontWeight: 'bold', fontSize: '11px', color: '#555', marginBottom: '2px' }}>
+                        {profilesMap[c.user_id]?.name || '익명'}
+                      </div>
+                      <div>{c.content}</div>
+                    </div>
+                  ))
+                )}
               </div>
-            ) : (
-              <div>
-                <p style={{ color: '#666', fontSize: '13px' }}>
-                  달력에서 일정을 클릭하여 상세 내용을 확인하고 댓글을 남겨보세요.
-                </p>
-              </div>
-            )}
+
+              <form onSubmit={addComment} style={{ display: 'flex', gap: '6px', marginTop: '5px' }}>
+                <input
+                  type="text"
+                  placeholder="댓글을 입력하세요..."
+                  value={newCommentText}
+                  onChange={e => setNewCommentText(e.target.value)}
+                  style={{ flex: 1, padding: '8px', borderRadius: '6px', border: '1px solid #ccc', fontSize: '13px' }}
+                />
+                <button
+                  type="submit"
+                  style={{ padding: '8px 12px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '14px' }}
+                >
+                  등록
+                </button>
+              </form>
+            </div>
           </div>
         </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100%', color: '#666', fontSize: '13px', textAlign: 'center', padding: '20px' }}>
+          <p style={{ color: '#666', fontSize: '13px' }}>
+            달력에서 일정을 클릭하여 상세 내용을 확인하고 댓글을 남겨보세요.
+          </p>
+        </div>
+      )}
 
       {/* 4. 화면 하단 고정 네비게이션 바 */}
       <div style={{

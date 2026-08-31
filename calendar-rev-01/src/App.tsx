@@ -1082,11 +1082,10 @@ export default function CalendarApp() {
                 {/* 색상 선택 영역 리스트 */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', maxHeight: '250px', overflowY: 'auto', paddingRight: '4px' }}>
                   
-                  {/* 💡 맨 위쪽: 로그인한 유저 본인 이름과 고유 색상 자동 적용 칸 (profile 상태 연동) */}
+                  {/* 로그인한 유저 본인 이름과 고유 색상 자동 적용 칸 */}
                   <div 
                     onClick={() => {
                       const userColor = profile?.color || '#339af0';
-                      setCustomPickerColor(userColor);
                       setNewEventColor(userColor);
                     }}
                     style={{
@@ -1106,7 +1105,7 @@ export default function CalendarApp() {
                     </span>
                   </div>
 
-                  {/* 15가지 지정 색상 리스트 (수정 불가하도록 텍스트로 고정) */}
+                  {/* 15가지 지정 색상 리스트 */}
                   {Array.isArray(PRESET_COLORS) && PRESET_COLORS.map(colorCode => (
                     <div 
                       key={colorCode}

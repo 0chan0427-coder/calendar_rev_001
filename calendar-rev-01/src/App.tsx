@@ -913,8 +913,7 @@ export default function CalendarApp() {
           {/* ... 방 관리하기 모달 내용 ... */}
         </div>
       )}
-
-      {/* 일정 등록 모달 */}
+{/* 일정 등록 모달 */}
       {eventAddModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
           <form onSubmit={createEvent} style={{ background: '#fff', padding: '24px', borderRadius: '10px', width: '680px', maxWidth: '95vw', display: 'flex', flexDirection: 'column', gap: '15px', boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
@@ -965,7 +964,6 @@ export default function CalendarApp() {
                   <div 
                     onClick={() => {
                       const userColor = profile?.color || '#339af0';
-                      setCustomPickerColor(userColor);
                       setNewEventColor(userColor);
                     }}
                     style={{
@@ -1022,9 +1020,9 @@ export default function CalendarApp() {
         </div>
       )}
 
-      {/* 일정 수정 모달 (독립된 최상위 모달로 분리) */}
+      {/* 일정 수정 모달 (독립된 최상위 모달) */}
       {eventEditModalOpen && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
           <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', width: '350px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
             <h3 style={{ margin: '0 0 16px 0', fontSize: '18px' }}>일정 수정</h3>
             <form onSubmit={updateEvent} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -1043,7 +1041,7 @@ export default function CalendarApp() {
                 <input 
                   type="date" 
                   value={editEventStartDate} 
-                  onChange={e => setEditEventStartDate(e.type ? e.target.value : e.target.value)} 
+                  onChange={e => setEditEventStartDate(e.target.value)} 
                   required 
                   style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }} 
                 />
@@ -1072,73 +1070,6 @@ export default function CalendarApp() {
               </div>
             </form>
           </div>
-        </div>
-      )}
-
-    </div>
-  );
-}
-     
-                {/* 색상 선택 영역 리스트 */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', maxHeight: '250px', overflowY: 'auto', paddingRight: '4px' }}>
-                  
-                  {/* 로그인한 유저 본인 이름과 고유 색상 자동 적용 칸 */}
-                  <div 
-                    onClick={() => {
-                      const userColor = profile?.color || '#339af0';
-                      setNewEventColor(userColor);
-                    }}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '10px',
-                      padding: '6px 8px',
-                      background: newEventColor === (profile?.color || '#339af0') ? '#e7f5ff' : '#fff',
-                      border: newEventColor === (profile?.color || '#339af0') ? '2px solid #339af0' : '1px solid #e2e8f0',
-                      borderRadius: '6px',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <div style={{ width: '22px', height: '22px', backgroundColor: profile?.color || '#339af0', borderRadius: '4px', flexShrink: 0, border: '1px solid rgba(0,0,0,0.1)' }} />
-                    <span style={{ flex: 1, fontSize: '12px', fontWeight: 'bold', color: '#333' }}>
-                      {profile?.name || '내 이름'} (본인)
-                    </span>
-                  </div>
-
-                  {/* 15가지 지정 색상 리스트 */}
-                  {Array.isArray(PRESET_COLORS) && PRESET_COLORS.map(colorCode => (
-                    <div 
-                      key={colorCode}
-                      onClick={() => {
-                        setNewEventColor(colorCode);
-                      }}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '10px',
-                        padding: '6px 8px',
-                        background: newEventColor === colorCode ? '#e7f5ff' : '#fff',
-                        border: newEventColor === colorCode ? '2px solid #339af0' : '1px solid #e2e8f0',
-                        borderRadius: '6px',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      <div style={{ width: '22px', height: '22px', backgroundColor: colorCode, borderRadius: '4px', flexShrink: 0, border: '1px solid rgba(0,0,0,0.1)' }} />
-                      <span style={{ flex: 1, fontSize: '12px', color: '#333', fontWeight: '500' }}>
-                        {(colorLabels && colorLabels[colorCode]) ? colorLabels[colorCode] : '지정 항목'}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-            </div>
-
-            <div style={{ display: 'flex', gap: '8px', marginTop: '5px' }}>
-              <button type="submit" style={{ flex: 1, padding: '12px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px' }}>등록</button>
-              <button type="button" onClick={() => setEventAddModalOpen(false)} style={{ flex: 1, padding: '12px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '14px' }}>취소</button>
-            </div>
-          </form>
         </div>
       )}
 

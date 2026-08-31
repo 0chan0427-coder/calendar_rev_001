@@ -898,7 +898,7 @@ export default function CalendarApp() {
               {/* 우측: 색상별 항목 지정 및 선택 영역 */}
               <div style={{ flex: 1, minWidth: '300px', display: 'flex', flexDirection: 'column', gap: '6px', background: '#f8f9fa', padding: '12px', borderRadius: '8px', border: '1px solid #ddd' }}>
                 <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#333', marginBottom: '2px' }}>
-                  🎨 색상별 항목 지정 (선택한 색상: <span style={{ color: newEventColor, fontWeight: 'bold' }}>{newEventColor === (currentUser?.color || customPickerColor) ? (currentUser?.name || '내 이름') : (colorLabels[newEventColor] || '고유 색상')}</span>)
+                  🎨 색상별 항목 지정 (선택한 색상: <span style={{ color: newEventColor, fontWeight: 'bold' }}>{newEventColor === (currentUser?.color || customPickerColor) ? (currentUser?.name || '내 이름') : ((colorLabels && colorLabels[newEventColor]) || '고유 색상')}</span>)
                 </label>
                 <div style={{ fontSize: '11px', color: '#666', marginBottom: '6px' }}>
                   지정된 색상 항목은 고정되어 있으며, 본인 색상은 닉네임으로 자동 표시됩니다.
@@ -932,7 +932,7 @@ export default function CalendarApp() {
                   </div>
 
                   {/* 15가지 지정 색상 리스트 (수정 불가하도록 텍스트로 고정) */}
-                  {PRESET_COLORS.map(colorCode => (
+                  {Array.isArray(PRESET_COLORS) && PRESET_COLORS.map(colorCode => (
                     <div 
                       key={colorCode}
                       onClick={() => setNewEventColor(colorCode)}
@@ -949,7 +949,7 @@ export default function CalendarApp() {
                     >
                       <div style={{ width: '22px', height: '22px', backgroundColor: colorCode, borderRadius: '4px', flexShrink: 0, border: '1px solid rgba(0,0,0,0.1)' }} />
                       <span style={{ flex: 1, fontSize: '12px', color: '#333', fontWeight: '500' }}>
-                        {colorLabels[colorCode] || '지정 항목'}
+                        {(colorLabels && colorLabels[colorCode]) || '지정 항목'}
                       </span>
                     </div>
                   ))}

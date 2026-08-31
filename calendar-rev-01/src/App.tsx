@@ -5,17 +5,30 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
-// 15가지 구분되는 추천 색상 팔레트와 기본 항목 이름 매핑
+// 15가지 고정 색상 팔레트
 const PRESET_COLORS = [
   '#ff6b6b', '#fa5252', '#ff922b', '#fab005', '#fcc419',
   '#82c91e', '#40c057', '#12b886', '#22b8cf', '#15aabf',
   '#339af0', '#4c6ef5', '#7950f2', '#be4bdb', '#f06595'
 ];
 
+// 💡 15가지 색상에 대응하는 기본 이름 (원하시는 값으로 자유롭게 수정하세요)
 const DEFAULT_COLOR_LABELS: Record<string, string> = {
-  '#ff6b6b': '항목 1', '#fa5252': '항목 2', '#ff922b': '항목 3', '#fab005': '항목 4', '#fcc419': '항목 5',
-  '#82c91e': '항목 6', '#40c057': '항목 7', '#12b886': '항목 8', '#22b8cf': '항목 9', '#15aabf': '항목 10',
-  '#339af0': '항목 11', '#4c6ef5': '항목 12', '#7950f2': '항목 13', '#be4bdb': '항목 14', '#f06595': '항목 15'
+  '#ff6b6b': '술 모집',
+  '#fa5252': '술 약속',
+  '#ff922b': '피파 모집',
+  '#fab005': '롤 모집',
+  '#fcc419': '배그 모집',
+  '#82c91e': '로아 모집',
+  '#40c057': '기타게임 모집',
+  '#12b886': '여행 일정',
+  '#22b8cf': '캠핑 모집',
+  '#15aabf': '기타 활동 모집',
+  '#339af0': '쉬는날 공유(작성자 이름 필수)',
+  '#4c6ef5': '여름휴가 일정(작성자 이름 필수)',
+  '#7950f2': '겨울휴가 일정(작성자 이름 필수)',
+  '#be4bdb': '번개',
+  '#f06595': '정기모임 일정'
 };
 
 export default function CalendarApp() {
@@ -24,7 +37,6 @@ export default function CalendarApp() {
   const [password, setPassword] = useState('');
   const [signupName, setSignupName] = useState('');
   const [signupColor, setSignupColor] = useState('#339af0');
-  const [autoLogin, setAutoLogin] = useState(false);
   const [session, setSession] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -35,9 +47,12 @@ export default function CalendarApp() {
   const [selectedRoomIds, setSelectedRoomIds] = useState<string[]>([]);
   const [targetRoomIdForAdd, setTargetRoomIdForAdd] = useState<string | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
-  const [selectedDateForAdd, setSelectedDateForAdd] = useState<string | null>(null);
 
-  // 날짜 더블클릭 시 뜨는 일자별 관리 모달 상태
+  // 모달 상태들
+  const [adminModalOpen, setAdminModalOpen] = useState(false);
+  const [roomModalOpen, setRoomModalOpen] = useState(false);
+  const [roomManageModalOpen, setRoomManageModalOpen] = useState(false);
+  const [eventAddModalOpen, setEventAddModalOpen] = useState(false);
   const [dateDetailModalOpen, setDateDetailModalOpen] = useState(false);
   const [clickedDateEvents, setClickedDateEvents] = useState<any[]>([]);
   const [clickedDateStr, setClickedDateStr] = useState('');
@@ -56,16 +71,34 @@ export default function CalendarApp() {
   const [newEventTitle, setNewEventTitle] = useState('');
   const [newEventStartDate, setNewEventStartDate] = useState('');
   const [newEventEndDate, setNewEventEndDate] = useState('');
-  const [newEventColor, setNewEventColor] = useState(PRESET_COLORS[0]);
   
-  // 색상별 항목 이름 커스텀 상태 (원하시는 이름으로 수정해서 사용 가능합니다)
-  const [colorLabels, setColorLabels] = useState<Record<string, string>>(DEFAULT_COLOR_LABELS);
+  // 일정 등록 시 선택된 색상 (기본값 또는 커스텀 헥스코드)
+  const [newEventColor, setNewEventColor] = useState(PRESET_COLORS[0]);
+  // 맨 위에 위치한 고유 색상 피커의 색상 값
+  const [customPickerColor, setCustomPickerColor] = useState('#ff0000');
+  // 맨 위에 위치한 고유 색상의 항목 이름
+  const [customColorLabel, setCustomColorLabel] = useState('');
 
-  // 모달 상태
-  const [adminModalOpen, setAdminModalOpen] = useState(false);
-  const [roomModalOpen, setRoomModalOpen] = useState(false);
-  const [roomManageModalOpen, setRoomManageModalOpen] = useState(false);
-  const [eventAddModalOpen, setEventAddModalOpen] = useState(false);
+  // 색상별 항목 이름 상태 (localStorage 연동)
+  const [colorLabels, setColorLabels] = useState<Record<string, string>>(() => {
+    try {
+      const saved = localStorage.getItem('calendar_color_labels');
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    return DEFAULT_COLOR_LABELS;
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('calendar_color_labels', JSON.stringify(colorLabels));
+    } catch (e) {
+      console.error(e);
+    }
+  }, [colorLabels]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -238,14 +271,22 @@ export default function CalendarApp() {
       alert('방, 제목, 시작일을 모두 확인해주세요.');
       return;
     }
+
+    // 만약 현재 선택된 색상이 커스텀 색상 피커의 색상 코드라면, 입력한 커스텀 이름을 colorLabels에 저장
+    let finalColor = newEventColor;
+    if (newEventColor === customPickerColor && customColorLabel.trim()) {
+      setColorLabels(prev => ({ ...prev, [customPickerColor]: customColorLabel.trim() }));
+    }
+
     const { error } = await supabase.from('events').insert([{
       room_id: targetRoomIdForAdd,
       user_id: session.user.id,
       title: newEventTitle,
       event_date: newEventStartDate,
       end_date: newEventEndDate || newEventStartDate,
-      color: newEventColor
+      color: finalColor
     }]);
+
     if (error) {
       alert('일정 등록 실패: ' + error.message);
     } else {
@@ -253,6 +294,7 @@ export default function CalendarApp() {
       setNewEventStartDate('');
       setNewEventEndDate('');
       setNewEventColor(PRESET_COLORS[0]);
+      setCustomColorLabel('');
       setEventAddModalOpen(false);
       fetchEvents();
     }
@@ -340,13 +382,6 @@ export default function CalendarApp() {
                 <input type="color" value={signupColor} onChange={e => setSignupColor(e.target.value)} style={{ width: '40px', height: '35px', border: 'none', cursor: 'pointer', background: 'none' }} />
               </div>
             </>
-          )}
-
-          {!isSignUp && (
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', cursor: 'pointer' }}>
-              <input type="checkbox" checked={autoLogin} onChange={e => setAutoLogin(e.target.checked)} />
-              자동 로그인 유지
-            </label>
           )}
 
           <button type="submit" style={{ padding: '12px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
@@ -525,11 +560,11 @@ export default function CalendarApp() {
                       e.stopPropagation();
                       setClickedDateStr(formattedDate);
                       setClickedDateEvents(dayEvents);
-                      setSelectedDateForAdd(formattedDate);
                       if (selectedRoomIds.length > 0) setTargetRoomIdForAdd(selectedRoomIds[0]);
                       setNewEventStartDate(formattedDate);
                       setNewEventEndDate(formattedDate);
                       setNewEventColor(PRESET_COLORS[0]);
+                      setCustomColorLabel('');
                       setDateDetailModalOpen(true);
                     }}
                     style={{ 
@@ -831,7 +866,6 @@ export default function CalendarApp() {
           <form onSubmit={createEvent} style={{ background: '#fff', padding: '24px', borderRadius: '10px', width: '680px', maxWidth: '95vw', display: 'flex', flexDirection: 'column', gap: '15px', boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
             <h3 style={{ margin: 0 }}>일정 등록</h3>
             
-            {/* 가로 2단 분할 레이아웃 (왼쪽: 기본 입력 / 오른쪽: 15가지 색상 및 항목명 지정) */}
             <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
               
               {/* 좌측: 기본 일정 정보 입력 */}
@@ -851,7 +885,7 @@ export default function CalendarApp() {
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <label style={{ fontSize: '12px', fontWeight: 'bold' }}>시작일</label>
+                  <label style={{ fontSize: '12px', fontWeight: 'bold' >>}>시작일</label>
                   <input type="date" value={newEventStartDate} onChange={e => setNewEventStartDate(e.target.value)} required style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} />
                 </div>
 
@@ -864,14 +898,54 @@ export default function CalendarApp() {
               {/* 우측: 색상별 항목 지정 및 선택 영역 */}
               <div style={{ flex: 1, minWidth: '300px', display: 'flex', flexDirection: 'column', gap: '6px', background: '#f8f9fa', padding: '12px', borderRadius: '8px', border: '1px solid #ddd' }}>
                 <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#333', marginBottom: '2px' }}>
-                  🎨 색상별 항목 지정 (선택한 색상: <span style={{ color: newEventColor, fontWeight: 'bold' }}>{colorLabels[newEventColor]}</span>)
+                  🎨 색상별 항목 지정 (선택한 색상: <span style={{ color: newEventColor, fontWeight: 'bold' }}>{colorLabels[newEventColor] || customColorLabel || '고유 색상'}</span>)
                 </label>
                 <div style={{ fontSize: '11px', color: '#666', marginBottom: '6px' }}>
-                  아래에서 색상을 고르고, 오른쪽 칸에 원하는 항목명을 직접 적어보세요.
+                  수정한 항목 이름은 자동으로 저장되어 다음에도 그대로 유지됩니다.
                 </div>
 
-                {/* 15가지 색상 + 항목 이름 입력 리스트 */}
+                {/* 색상 선택 영역 리스트 (맨 위: 고유 색상 직접 지정 칸 + 아래: 15가지 지정 색상) */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', maxHeight: '250px', overflowY: 'auto', paddingRight: '4px' }}>
+                  
+                  {/* 💡 맨 위쪽: 고유 색상 직접 작성 칸 */}
+                  <div 
+                    onClick={() => setNewEventColor(customPickerColor)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      padding: '4px 6px',
+                      background: newEventColor === customPickerColor ? '#e7f5ff' : '#fff',
+                      border: newEventColor === customPickerColor ? '2px solid #339af0' : '1px solid #e2e8f0',
+                      borderRadius: '6px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <input 
+                      type="color" 
+                      value={customPickerColor} 
+                      onChange={(e) => {
+                        const newColor = e.target.value;
+                        setCustomPickerColor(newColor);
+                        setNewEventColor(newColor);
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                      style={{ width: '22px', height: '22px', border: 'none', cursor: 'pointer', background: 'none', padding: 0, flexShrink: 0 }} 
+                    />
+                    <input 
+                      type="text" 
+                      value={customColorLabel}
+                      onChange={(e) => setCustomColorLabel(e.target.value)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setNewEventColor(customPickerColor);
+                      }}
+                      placeholder="고유 색상 항목 이름 입력"
+                      style={{ flex: 1, padding: '4px 6px', fontSize: '12px', borderRadius: '4px', border: '1px solid #ccc', background: '#fff' }}
+                    />
+                  </div>
+
+                  {/* 15가지 지정 색상 리스트 */}
                   {PRESET_COLORS.map(colorCode => (
                     <div 
                       key={colorCode}

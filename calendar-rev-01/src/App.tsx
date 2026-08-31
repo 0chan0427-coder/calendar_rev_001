@@ -434,12 +434,40 @@ export default function CalendarApp() {
             
             <div style={{ background: '#fff', padding: '12px', borderRadius: '6px', border: '1px solid #ddd', margin: '10px 0' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: profile?.color || '#339af0', flexShrink: 0 }} />
-                <span style={{ fontSize: '14px', fontWeight: 'bold', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {profile?.name}
-                </span>
+                <div 
+                  title="클릭하여 프로필 색상 변경"
+                  style={{ position: 'relative', width: '20px', height: '20px', borderRadius: '50%', background: profile?.color || '#339af0', flexShrink: 0, cursor: 'pointer', border: '1px solid rgba(0,0,0,0.2)' }}
+                >
+                  <input 
+                    type="color" 
+                    value={profile?.color || '#339af0'} 
+                    onChange={async (e) => {
+                      const newColor = e.target.value;
+                      const { error } = await supabase
+                        .from('profiles')
+                        .update({ color: newColor })
+                        .eq('id', session.user.id);
+                      
+                      if (!error) {
+                        fetchProfile(session.user.id);
+                        fetchProfilesMap();
+                      } else {
+                        alert('색상 변경 실패: ' + error.message);
+                      }
+                    }}
+                    style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' }}
+                  />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', flex: 1 }}>
+                  <span style={{ fontSize: '14px', fontWeight: 'bold', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {profile?.name}
+                  </span>
+                  <span style={{ fontSize: '10px', color: '#888' }}>
+                    색상: {profile?.color || '#339af0'}
+                  </span>
+                </div>
               </div>
-              <div style={{ fontSize: '11px', color: '#666', marginTop: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <div style={{ fontSize: '11px', color: '#666', marginTop: '6px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {profile?.email}
               </div>
             </div>

@@ -620,31 +620,32 @@ export default function CalendarApp() {
 
                         return (
                           <div 
-                            key={ev.id} 
-                            onClick={(e) => { 
-                              e.stopPropagation(); 
-                              setSelectedEvent(ev); 
-                              setRightSidebarOpen(true); 
-                            }}
-                            style={{ 
-                              background: eventColor, 
-                              color: '#fff', 
-                              padding: '3px 6px', 
-                              fontSize: '11px', 
-                              cursor: 'pointer',
-                              whiteSpace: 'nowrap',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              marginLeft: isStart ? '4px' : '0px',
-                              marginRight: isEnd ? '4px' : '0px',
-                              borderTopLeftRadius: isStart ? '4px' : '0px',
-                              borderBottomLeftRadius: isStart ? '4px' : '0px',
-                              borderTopRightRadius: isEnd ? '4px' : '0px',
-                              borderBottomRightRadius: isEnd ? '4px' : '0px',
-                            }}
-                          >
-                            {isStart || formattedDate.endsWith('-01') ? ev.title : '\u00A0'}
-                          </div>
+                        key={ev.id} 
+                        onClick={(e) => { 
+                          e.stopPropagation(); 
+                          setSelectedEvent(ev); 
+                          setRightSidebarOpen(true); 
+                        }}
+                        style={{ 
+                          background: eventColor, 
+                          color: '#fff', 
+                          padding: '3px 6px', 
+                          fontSize: '11px', 
+                          fontWeight: 'bold',
+                          cursor: 'pointer',
+                          wordBreak: 'keep-all',
+                          marginLeft: isStart ? '4px' : '-2px',
+                          marginRight: isEnd ? '4px' : '-2px',
+                          borderTopLeftRadius: isStart ? '4px' : '0px',
+                          borderBottomLeftRadius: isStart ? '4px' : '0px',
+                          borderTopRightRadius: isEnd ? '4px' : '0px',
+                          borderBottomRightRadius: isEnd ? '4px' : '0px',
+                          zIndex: 2,
+                          position: 'relative'
+                        }}
+                      >
+                        {isStart || formattedDate.endsWith('-01') || new Date(formattedDate).getDay() === 0 ? ev.title : '\u00A0'}
+                      </div>
                         );
                       })}
                     </div>

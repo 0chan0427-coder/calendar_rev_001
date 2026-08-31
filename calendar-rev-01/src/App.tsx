@@ -980,22 +980,89 @@ export default function CalendarApp() {
       )}
 
       {roomManageModalOpen && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
-          <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '400px', maxHeight: '80vh', overflowY: 'auto' }}>
-            <h3>방 관리하기</h3>
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
+          <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '450px', maxHeight: '80vh', overflowY: 'auto' }}>
+            <h3 style={{ margin: '0 0 10px 0' }}>방 관리하기</h3>
+            <p style={{ color: '#666', fontSize: '13px', marginBottom: '15px' }}>방 이름을 변경하거나 순서를 조정할 수 있습니다.</p>
+            
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', margin: '15px 0' }}>
-              {rooms.map(room => (
-                <div key={room.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', background: '#f8f9fa', borderRadius: '6px', border: '1px solid #ddd' }}>
-                  <span style={{ fontWeight: 'bold', fontSize: '14px' }}>{room.name}</span>
-                  <button onClick={() => deleteRoom(room.id)} style={{ padding: '6px 10px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}>방 삭제</button>
+              {rooms.map((room, index) => (
+                <div key={room.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', background: '#f8f9fa', borderRadius: '6px', border: '1px solid #ddd', gap: '8px' }}>
+                  
+                  {/* 좌측: 방 이름 표시 또는 수정 중일 때 input 창 */}
+                  <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
+                    {editingRoomId === room.id ? (
+                      <div style={{ display: 'flex', gap: '4px', width: '100%' }}>
+                        <input 
+                          type="text" 
+                          value={editRoomNameText} 
+                          onChange={e => setEditRoomNameText(e.target.value)}
+                          style={{ flex: 1, padding: '4px 8px', borderRadius: '4px', border: '1px solid #ccc', fontSize: '13px' }}
+                        />
+                        <button 
+                          onClick={() => updateRoomName(room.id)}
+                          style={{ padding: '4px 8px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
+                        >
+                          저장
+                        </button>
+                        <button 
+                          onClick={() => setEditingRoomId(null)}
+                          style={{ padding: '4px 8px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
+                        >
+                          취소
+                        </button>
+                      </div>
+                    ) : (
+                      <span style={{ fontWeight: 'bold', fontSize: '14px', color: '#333' }}>{room.name}</span>
+                    )}
+                  </div>
+
+                  {/* 우측: 조작 버튼 그룹 (순서 변경, 수정, 삭제) */}
+                  <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                    {editingRoomId !== room.id && (
+                      <>
+                        <button 
+                          onClick={() => moveRoomOrder(index, 'up')} 
+                          disabled={index === 0}
+                          style={{ padding: '4px 6px', background: index === 0 ? '#e9ecef' : '#6c757d', color: index === 0 ? '#adb5bd' : '#fff', border: 'none', borderRadius: '4px', cursor: index === 0 ? 'not-allowed' : 'pointer', fontSize: '11px' }}
+                        >
+                          ▲
+                        </button>
+                        <button 
+                          onClick={() => moveRoomOrder(index, 'down')} 
+                          disabled={index === rooms.length - 1}
+                          style={{ padding: '4px 6px', background: index === rooms.length - 1 ? '#e9ecef' : '#6c757d', color: index === rooms.length - 1 ? '#adb5bd' : '#fff', border: 'none', borderRadius: '4px', cursor: index === rooms.length - 1 ? 'not-allowed' : 'pointer', fontSize: '11px' }}
+                        >
+                          ▼
+                        </button>
+                        <button 
+                          onClick={() => {
+                            setEditingRoomId(room.id);
+                            setEditRoomNameText(room.name);
+                          }} 
+                          style={{ padding: '5px 8px', background: '#ffc107', color: '#000', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}
+                        >
+                          수정
+                        </button>
+                      </>
+                    )}
+                    <button 
+                      onClick={() => deleteRoom(room.id)} 
+                      style={{ padding: '5px 8px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
+                    >
+                      삭제
+                    </button>
+                  </div>
+
                 </div>
               ))}
             </div>
+
             <button onClick={() => setRoomManageModalOpen(false)} style={{ width: '100%', padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>닫기</button>
           </div>
         </div>
       )}
-
+      
       {/* 일정 수정 모달 */}
 {eventEditModalOpen && (
   <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>

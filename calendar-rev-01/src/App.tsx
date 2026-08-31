@@ -215,9 +215,9 @@ export default function CalendarApp() {
   }
 
   return (
-    <div style={{ display: 'flex', width: '100vw', height: '100vh', overflow: 'hidden', fontFamily: 'sans-serif', position: 'relative', boxSizing: 'border-box' }}>
+    <div style={{ display: 'flex', width: '100%', height: '100vh', overflow: 'hidden', fontFamily: 'sans-serif', boxSizing: 'border-box', background: '#fff' }}>
       
-      {/* 1. 좌측 사이드바 컨테이너 (너비 애니메이션 적용) */}
+      {/* 1. 좌측 사이드바 컨테이너 */}
       <div style={{
         width: leftSidebarOpen ? '260px' : '0px',
         minWidth: leftSidebarOpen ? '260px' : '0px',
@@ -232,7 +232,6 @@ export default function CalendarApp() {
         flexShrink: 0,
         zIndex: 10
       }}>
-        {/* 실제 내부 콘텐츠를 감싸는 고정 너비 박스 (내용물 찌그러짐 방지) */}
         <div style={{ width: '260px', height: '100vh', display: 'flex', flexDirection: 'column', boxSizing: 'border-box', padding: '20px', paddingBottom: '75px', overflowY: 'auto' }}>
           <div style={{ flex: 1 }}>
             <div style={{ marginBottom: '15px', lineHeight: '1.2', textAlign: 'center' }}>
@@ -240,7 +239,6 @@ export default function CalendarApp() {
               <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#007bff' }}>공유캘린더</div>
             </div>
             
-            {/* 프로필 카드 */}
             <div style={{ background: '#fff', padding: '12px', borderRadius: '6px', border: '1px solid #ddd', margin: '10px 0' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: profile?.color || '#339af0', flexShrink: 0 }} />
@@ -253,7 +251,6 @@ export default function CalendarApp() {
               </div>
             </div>
 
-            {/* 친구 초대 링크 복사 */}
             <div style={{ margin: '10px 0 15px 0', padding: '10px 12px', background: '#fff', borderRadius: '6px', border: '1px solid #ddd', display: 'flex', flexDirection: 'column', gap: '6px' }}>
               <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#333' }}>친구와 일정 함께 쓰기</span>
               <button 
@@ -273,7 +270,6 @@ export default function CalendarApp() {
               </button>
             </div>
 
-            {/* 로그아웃 */}
             <button onClick={handleLogout} style={{ width: '100%', margin: '5px 0 10px 0', padding: '6px 12px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>로그아웃</button>
             
             {profile?.role === 'admin' && (
@@ -285,7 +281,6 @@ export default function CalendarApp() {
               </button>
             )}
 
-            {/* 방 목록 */}
             <div style={{ marginTop: '15px' }}>
               <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#555', marginBottom: '4px' }}>방 목록 (다중 선택 가능)</div>
               <div style={{ fontSize: '11px', color: '#888', marginBottom: '8px' }}>선택한 순서대로 캘린더에 겹쳐 표시됩니다.</div>
@@ -309,7 +304,6 @@ export default function CalendarApp() {
             </div>
           </div>
 
-          {/* 하단 방 관리 */}
           <div style={{ paddingTop: '15px', borderTop: '1px solid #eee', display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <button onClick={() => setRoomModalOpen(true)} style={{ width: '100%', padding: '10px', background: '#f1f3f5', color: '#212529', border: '1px solid #ced4da', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px', textAlign: 'center' }}>방 생성하기 +</button>
             <button onClick={() => setRoomManageModalOpen(true)} style={{ width: '100%', padding: '10px', background: '#343a40', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px', textAlign: 'center' }}>방 관리하기 ⚙️</button>
@@ -334,7 +328,6 @@ export default function CalendarApp() {
               <button onClick={nextMonth} style={{ padding: '6px 12px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>다음 달 &gt;</button>
             </div>
 
-            {/* 달력 그리드 컨테이너 */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '1px', background: '#ddd', border: '1px solid #ddd', flex: 1, minHeight: '500px' }}>
               {['일', '월', '화', '수', '목', '금', '토'].map((day, idx) => (
                 <div key={idx} style={{ background: '#f1f3f5', textAlign: 'center', fontWeight: 'bold', padding: '8px 0', fontSize: '13px' }}>
@@ -342,7 +335,6 @@ export default function CalendarApp() {
                 </div>
               ))}
 
-              {/* 이전 달 남은 날짜 채우기 */}
               {(() => {
                 const prevMonthLastDate = new Date(year, month, 0).getDate();
                 return Array.from({ length: firstDayOfMonth }).map((_, idx) => {
@@ -355,7 +347,6 @@ export default function CalendarApp() {
                 });
               })()}
 
-              {/* 이번 달 날짜 렌더링 */}
               {Array.from({ length: lastDateOfMonth }).map((_, idx) => {
                 const dayNum = idx + 1;
                 const formattedDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
@@ -401,7 +392,6 @@ export default function CalendarApp() {
                 );
               })}
 
-              {/* 다음 달 빈 칸 채우기 */}
               {(() => {
                 const totalCellsSoFar = firstDayOfMonth + lastDateOfMonth;
                 const totalGridCells = totalCellsSoFar <= 35 ? 35 : 42;
@@ -438,7 +428,6 @@ export default function CalendarApp() {
         flexShrink: 0,
         zIndex: 10
       }}>
-        {/* 실제 내부 콘텐츠를 감싸는 고정 너비 박스 */}
         <div style={{ width: '320px', height: '100vh', display: 'flex', flexDirection: 'column', boxSizing: 'border-box', padding: '20px', paddingBottom: '75px', overflowY: 'auto' }}>
           <h3 style={{ marginTop: '0', borderBottom: '1px solid #ddd', paddingBottom: '10px' }}>일정 상세 / 댓글</h3>
           
@@ -464,7 +453,7 @@ export default function CalendarApp() {
         position: 'fixed',
         bottom: 0,
         left: 0,
-        width: '100vw',
+        width: '100%',
         height: '55px',
         background: '#343a40',
         borderTop: '1px solid #495057',

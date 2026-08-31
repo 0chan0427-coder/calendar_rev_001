@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
-// 본인의 Supabase 프로젝트 URL과 Anon Key를 입력해주세요
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 export const supabase = createClient(supabaseUrl, supabaseKey);
@@ -79,7 +78,7 @@ export default function CalendarApp() {
           return;
         }
 
-        const { data, error } = await supabase.auth.signUp({
+        const { error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -96,7 +95,7 @@ export default function CalendarApp() {
         setIsSignUp(false);
 
       } else {
-        const { data, error } = await supabase.auth.signInWithPassword({
+        const { error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
@@ -215,7 +214,7 @@ export default function CalendarApp() {
   }
 
   return (
-    <div style={{ display: 'flex', width: '100%', height: '100vh', overflow: 'hidden', fontFamily: 'sans-serif', boxSizing: 'border-box', background: '#fff' }}>
+    <div style={{ display: 'flex', width: '100vw', height: '100vh', overflow: 'hidden', fontFamily: 'sans-serif', position: 'fixed', top: 0, left: 0, boxSizing: 'border-box', background: '#fff' }}>
       
       {/* 1. 좌측 사이드바 컨테이너 */}
       <div style={{
@@ -453,7 +452,7 @@ export default function CalendarApp() {
         position: 'fixed',
         bottom: 0,
         left: 0,
-        width: '100%',
+        width: '100vw',
         height: '55px',
         background: '#343a40',
         borderTop: '1px solid #495057',
@@ -506,6 +505,37 @@ export default function CalendarApp() {
           💬 상세 / 댓글 {rightSidebarOpen ? '▼' : '▲'}
         </button>
       </div>
+
+      {/* 5. 모달 창들 (멤버 관리, 방 생성, 방 관리) */}
+      {adminModalOpen && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
+          <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '400px', maxHeight: '80vh', overflowY: 'auto' }}>
+            <h3>멤버 관리</h3>
+            <p style={{ color: '#666', fontSize: '14px' }}>멤버 승인 및 권한 관리 창입니다.</p>
+            <button onClick={() => setAdminModalOpen(false)} style={{ marginTop: '15px', padding: '8px 16px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>닫기</button>
+          </div>
+        </div>
+      )}
+
+      {roomModalOpen && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
+          <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '400px', maxHeight: '80vh', overflowY: 'auto' }}>
+            <h3>방 생성하기</h3>
+            <p style={{ color: '#666', fontSize: '14px' }}>새로운 캘린더 방을 생성하는 창입니다.</p>
+            <button onClick={() => setRoomModalOpen(false)} style={{ marginTop: '15px', padding: '8px 16px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>닫기</button>
+          </div>
+        </div>
+      )}
+
+      {roomManageModalOpen && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
+          <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '400px', maxHeight: '80vh', overflowY: 'auto' }}>
+            <h3>방 관리하기</h3>
+            <p style={{ color: '#666', fontSize: '14px' }}>생성된 방을 수정하거나 삭제하는 창입니다.</p>
+            <button onClick={() => setRoomManageModalOpen(false)} style={{ marginTop: '15px', padding: '8px 16px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>닫기</button>
+          </div>
+        </div>
+      )}
 
     </div>
   );

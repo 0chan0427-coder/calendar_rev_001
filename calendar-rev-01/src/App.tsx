@@ -5,12 +5,18 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
-// 15가지 구분되는 추천 색상 팔레트
+// 15가지 구분되는 추천 색상 팔레트와 기본 항목 이름 매핑
 const PRESET_COLORS = [
   '#ff6b6b', '#fa5252', '#ff922b', '#fab005', '#fcc419',
   '#82c91e', '#40c057', '#12b886', '#22b8cf', '#15aabf',
   '#339af0', '#4c6ef5', '#7950f2', '#be4bdb', '#f06595'
 ];
+
+const DEFAULT_COLOR_LABELS: Record<string, string> = {
+  '#ff6b6b': '항목 1', '#fa5252': '항목 2', '#ff922b': '항목 3', '#fab005': '항목 4', '#fcc419': '항목 5',
+  '#82c91e': '항목 6', '#40c057': '항목 7', '#12b886': '항목 8', '#22b8cf': '항목 9', '#15aabf': '항목 10',
+  '#339af0': '항목 11', '#4c6ef5': '항목 12', '#7950f2': '항목 13', '#be4bdb': '항목 14', '#f06595': '항목 15'
+};
 
 export default function CalendarApp() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -50,7 +56,10 @@ export default function CalendarApp() {
   const [newEventTitle, setNewEventTitle] = useState('');
   const [newEventStartDate, setNewEventStartDate] = useState('');
   const [newEventEndDate, setNewEventEndDate] = useState('');
-  const [newEventColor, setNewEventColor] = useState(PRESET_COLORS[0]); // 일정별 지정 색상
+  const [newEventColor, setNewEventColor] = useState(PRESET_COLORS[0]);
+  
+  // 색상별 항목 이름 커스텀 상태 (원하시는 이름으로 수정해서 사용 가능합니다)
+  const [colorLabels, setColorLabels] = useState<Record<string, string>>(DEFAULT_COLOR_LABELS);
 
   // 모달 상태
   const [adminModalOpen, setAdminModalOpen] = useState(false);
@@ -235,7 +244,7 @@ export default function CalendarApp() {
       title: newEventTitle,
       event_date: newEventStartDate,
       end_date: newEventEndDate || newEventStartDate,
-      color: newEventColor // 선택한 색상 저장
+      color: newEventColor
     }]);
     if (error) {
       alert('일정 등록 실패: ' + error.message);
@@ -539,7 +548,6 @@ export default function CalendarApp() {
                     <div style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '4px', color: '#333', padding: '0 5px' }}>{dayNum}</div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', overflowY: 'auto' }}>
                       {dayEvents.map(ev => {
-                        // 일정이 지정한 고유 색상이 있으면 사용하고, 없으면 작성자의 프로필 색상을 디폴트로 사용
                         const eventColor = ev.color || profilesMap[ev.user_id]?.color || '#339af0';
                         const start = ev.event_date;
                         const end = ev.end_date || ev.event_date;
@@ -820,53 +828,87 @@ export default function CalendarApp() {
 
       {eventAddModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
-          <form onSubmit={createEvent} style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '380px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <h3>일정 등록</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <label style={{ fontSize: '12px', fontWeight: 'bold' }}>대상 방</label>
-              <select value={targetRoomIdForAdd || ''} onChange={e => setTargetRoomIdForAdd(e.target.value)} style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }}>
-                {rooms.map(room => (
-                  <option key={room.id} value={room.id}>{room.name}</option>
-                ))}
-              </select>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <label style={{ fontSize: '12px', fontWeight: 'bold' }}>일정 제목</label>
-              <input type="text" placeholder="일정 제목 입력" value={newEventTitle} onChange={e => setNewEventTitle(e.target.value)} required style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} />
-            </div>
+          <form onSubmit={createEvent} style={{ background: '#fff', padding: '24px', borderRadius: '10px', width: '680px', maxWidth: '95vw', display: 'flex', flexDirection: 'column', gap: '15px', boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
+            <h3 style={{ margin: 0 }}>일정 등록</h3>
             
-            {/* 15가지 프리셋 색상 선택 영역 */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <label style={{ fontSize: '12px', fontWeight: 'bold' }}>일정 색상 선택</label>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '6px' }}>
-                {PRESET_COLORS.map(colorCode => (
-                  <div
-                    key={colorCode}
-                    onClick={() => setNewEventColor(colorCode)}
-                    style={{
-                      height: '28px',
-                      backgroundColor: colorCode,
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      border: newEventColor === colorCode ? '3px solid #000' : '1px solid #ddd',
-                      boxSizing: 'border-box'
-                    }}
-                  />
-                ))}
+            {/* 가로 2단 분할 레이아웃 (왼쪽: 기본 입력 / 오른쪽: 15가지 색상 및 항목명 지정) */}
+            <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+              
+              {/* 좌측: 기본 일정 정보 입력 */}
+              <div style={{ flex: 1, minWidth: '280px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <label style={{ fontSize: '12px', fontWeight: 'bold' }}>대상 방</label>
+                  <select value={targetRoomIdForAdd || ''} onChange={e => setTargetRoomIdForAdd(e.target.value)} style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }}>
+                    {rooms.map(room => (
+                      <option key={room.id} value={room.id}>{room.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <label style={{ fontSize: '12px', fontWeight: 'bold' }}>일정 제목</label>
+                  <input type="text" placeholder="일정 제목 입력" value={newEventTitle} onChange={e => setNewEventTitle(e.target.value)} required style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} />
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <label style={{ fontSize: '12px', fontWeight: 'bold' }}>시작일</label>
+                  <input type="date" value={newEventStartDate} onChange={e => setNewEventStartDate(e.target.value)} required style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} />
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <label style={{ fontSize: '12px', fontWeight: 'bold' }}>종료일 (선택)</label>
+                  <input type="date" value={newEventEndDate} onChange={e => setNewEventEndDate(e.target.value)} style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} />
+                </div>
               </div>
+
+              {/* 우측: 색상별 항목 지정 및 선택 영역 */}
+              <div style={{ flex: 1, minWidth: '300px', display: 'flex', flexDirection: 'column', gap: '6px', background: '#f8f9fa', padding: '12px', borderRadius: '8px', border: '1px solid #ddd' }}>
+                <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#333', marginBottom: '2px' }}>
+                  🎨 색상별 항목 지정 (선택한 색상: <span style={{ color: newEventColor, fontWeight: 'bold' }}>{colorLabels[newEventColor]}</span>)
+                </label>
+                <div style={{ fontSize: '11px', color: '#666', marginBottom: '6px' }}>
+                  아래에서 색상을 고르고, 오른쪽 칸에 원하는 항목명을 직접 적어보세요.
+                </div>
+
+                {/* 15가지 색상 + 항목 이름 입력 리스트 */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', maxHeight: '250px', overflowY: 'auto', paddingRight: '4px' }}>
+                  {PRESET_COLORS.map(colorCode => (
+                    <div 
+                      key={colorCode}
+                      onClick={() => setNewEventColor(colorCode)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        padding: '4px 6px',
+                        background: newEventColor === colorCode ? '#e7f5ff' : '#fff',
+                        border: newEventColor === colorCode ? '2px solid #339af0' : '1px solid #e2e8f0',
+                        borderRadius: '6px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <div style={{ width: '22px', height: '22px', backgroundColor: colorCode, borderRadius: '4px', flexShrink: 0, border: '1px solid rgba(0,0,0,0.1)' }} />
+                      <input 
+                        type="text" 
+                        value={colorLabels[colorCode] || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setColorLabels(prev => ({ ...prev, [colorCode]: val }));
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                        placeholder="항목 이름 입력"
+                        style={{ flex: 1, padding: '4px 6px', fontSize: '12px', borderRadius: '4px', border: '1px solid #ccc', background: '#fff' }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <label style={{ fontSize: '12px', fontWeight: 'bold' }}>시작일</label>
-              <input type="date" value={newEventStartDate} onChange={e => setNewEventStartDate(e.target.value)} required style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} />
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', logo: 'gap: 4px' }}>
-              <label style={{ fontSize: '12px', fontWeight: 'bold' }}>종료일 (선택)</label>
-              <input type="date" value={newEventEndDate} onChange={e => setNewEventEndDate(e.target.value)} style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} />
-            </div>
-            <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
-              <button type="submit" style={{ flex: 1, padding: '10px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>등록</button>
-              <button type="button" onClick={() => setEventAddModalOpen(false)} style={{ flex: 1, padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>취소</button>
+            <div style={{ display: 'flex', gap: '8px', marginTop: '5px' }}>
+              <button type="submit" style={{ flex: 1, padding: '12px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px' }}>등록</button>
+              <button type="button" onClick={() => setEventAddModalOpen(false)} style={{ flex: 1, padding: '12px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '14px' }}>취소</button>
             </div>
           </form>
         </div>

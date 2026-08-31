@@ -82,6 +82,10 @@ export default function CalendarApp() {
   const [newEventTitle, setNewEventTitle] = useState('');
   const [newEventStartDate, setNewEventStartDate] = useState('');
   const [newEventEndDate, setNewEventEndDate] = useState('');
+
+  // 모바일 스와이프 감지용 상태
+  const [touchStartX, setTouchStartX] = useState(0);
+  const [touchEndX, setTouchEndX] = useState(0);
   
   // 일정 등록 시 선택된 색상 (기본값 또는 커스텀 헥스코드)
   const [newEventColor, setNewEventColor] = useState(PRESET_COLORS[0]);

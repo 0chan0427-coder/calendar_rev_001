@@ -174,8 +174,13 @@ export default function CalendarApp() {
 
   const fetchEvents = async () => {
     const { data, error } = await supabase.from('events').select('*');
-    if (!error && data) setEvents(data);
-  };
+    if (!error && data) {
+      const formatted = data.map(ev => ({
+        ...ev,
+        color: ev.color ? ev.color.trim() : '#339af0'
+      }));
+      setEvents(formatted);
+    }
 
   const fetchProfilesMap = async () => {
     const { data, error } = await supabase.from('profiles').select('*');

@@ -741,12 +741,12 @@ export default function CalendarApp() {
         <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
           <button
             onClick={() => {
-              setEditEventTitle(selectedEvent.title);
-              setEditEventStartDate(selectedEvent.event_date);
-              setEditEventEndDate(selectedEvent.end_date || '');
-              setEditEventColor(selectedEvent.color || '#339af0');
-              setEventEditModalOpen(true);
-            }}
+  setEditEventTitle(selectedEvent.title);
+  setEditEventStartDate(selectedEvent.event_date);
+  setEditEventEndDate(selectedEvent.end_date || '');
+  setEditEventColor((selectedEvent.color || '#339af0').trim());
+  setEventEditModalOpen(true);
+}}
             style={{ padding: '4px 8px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
           >
             일정 수정

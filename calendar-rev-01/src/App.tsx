@@ -898,54 +898,40 @@ export default function CalendarApp() {
               {/* 우측: 색상별 항목 지정 및 선택 영역 */}
               <div style={{ flex: 1, minWidth: '300px', display: 'flex', flexDirection: 'column', gap: '6px', background: '#f8f9fa', padding: '12px', borderRadius: '8px', border: '1px solid #ddd' }}>
                 <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#333', marginBottom: '2px' }}>
-                  🎨 색상별 항목 지정 (선택한 색상: <span style={{ color: newEventColor, fontWeight: 'bold' }}>{colorLabels[newEventColor] || customColorLabel || '고유 색상'}</span>)
+                  🎨 색상별 항목 지정 (선택한 색상: <span style={{ color: newEventColor, fontWeight: 'bold' }}>{newEventColor === (currentUser?.color || customPickerColor) ? (currentUser?.name || '내 이름') : (colorLabels[newEventColor] || '고유 색상')}</span>)
                 </label>
                 <div style={{ fontSize: '11px', color: '#666', marginBottom: '6px' }}>
-                  수정한 항목 이름은 자동으로 저장되어 다음에도 그대로 유지됩니다.
+                  지정된 색상 항목은 고정되어 있으며, 본인 색상은 닉네임으로 자동 표시됩니다.
                 </div>
 
-                {/* 색상 선택 영역 리스트 (맨 위: 고유 색상 직접 지정 칸 + 아래: 15가지 지정 색상) */}
+                {/* 색상 선택 영역 리스트 */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', maxHeight: '250px', overflowY: 'auto', paddingRight: '4px' }}>
                   
-                  {/* 💡 맨 위쪽: 고유 색상 직접 작성 칸 */}
+                  {/* 💡 맨 위쪽: 로그인한 유저 본인 이름과 고유 색상 자동 적용 칸 */}
                   <div 
-                    onClick={() => setNewEventColor(customPickerColor)}
+                    onClick={() => {
+                      const userColor = currentUser?.color || '#339af0';
+                      setCustomPickerColor(userColor);
+                      setNewEventColor(userColor);
+                    }}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
                       gap: '10px',
-                      padding: '4px 6px',
-                      background: newEventColor === customPickerColor ? '#e7f5ff' : '#fff',
-                      border: newEventColor === customPickerColor ? '2px solid #339af0' : '1px solid #e2e8f0',
+                      padding: '6px 8px',
+                      background: newEventColor === (currentUser?.color || customPickerColor) ? '#e7f5ff' : '#fff',
+                      border: newEventColor === (currentUser?.color || customPickerColor) ? '2px solid #339af0' : '1px solid #e2e8f0',
                       borderRadius: '6px',
                       cursor: 'pointer'
                     }}
                   >
-                    <input 
-                      type="color" 
-                      value={customPickerColor} 
-                      onChange={(e) => {
-                        const newColor = e.target.value;
-                        setCustomPickerColor(newColor);
-                        setNewEventColor(newColor);
-                      }}
-                      onClick={(e) => e.stopPropagation()}
-                      style={{ width: '22px', height: '22px', border: 'none', cursor: 'pointer', background: 'none', padding: 0, flexShrink: 0 }} 
-                    />
-                    <input 
-                      type="text" 
-                      value={customColorLabel}
-                      onChange={(e) => setCustomColorLabel(e.target.value)}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setNewEventColor(customPickerColor);
-                      }}
-                      placeholder="고유 색상 항목 이름 입력"
-                      style={{ flex: 1, padding: '4px 6px', fontSize: '12px', borderRadius: '4px', border: '1px solid #ccc', background: '#fff' }}
-                    />
+                    <div style={{ width: '22px', height: '22px', backgroundColor: currentUser?.color || customPickerColor, borderRadius: '4px', flexShrink: 0, border: '1px solid rgba(0,0,0,0.1)' }} />
+                    <span style={{ flex: 1, fontSize: '12px', fontWeight: 'bold', color: '#333' }}>
+                      {currentUser?.name || '내 이름'} (본인)
+                    </span>
                   </div>
 
-                  {/* 15가지 지정 색상 리스트 */}
+                  {/* 15가지 지정 색상 리스트 (수정 불가하도록 텍스트로 고정) */}
                   {PRESET_COLORS.map(colorCode => (
                     <div 
                       key={colorCode}
@@ -954,7 +940,7 @@ export default function CalendarApp() {
                         display: 'flex',
                         alignItems: 'center',
                         gap: '10px',
-                        padding: '4px 6px',
+                        padding: '6px 8px',
                         background: newEventColor === colorCode ? '#e7f5ff' : '#fff',
                         border: newEventColor === colorCode ? '2px solid #339af0' : '1px solid #e2e8f0',
                         borderRadius: '6px',
@@ -962,17 +948,9 @@ export default function CalendarApp() {
                       }}
                     >
                       <div style={{ width: '22px', height: '22px', backgroundColor: colorCode, borderRadius: '4px', flexShrink: 0, border: '1px solid rgba(0,0,0,0.1)' }} />
-                      <input 
-                        type="text" 
-                        value={colorLabels[colorCode] || ''}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setColorLabels(prev => ({ ...prev, [colorCode]: val }));
-                        }}
-                        onClick={(e) => e.stopPropagation()}
-                        placeholder="항목 이름 입력"
-                        style={{ flex: 1, padding: '4px 6px', fontSize: '12px', borderRadius: '4px', border: '1px solid #ccc', background: '#fff' }}
-                      />
+                      <span style={{ flex: 1, fontSize: '12px', color: '#333', fontWeight: '500' }}>
+                        {colorLabels[colorCode] || '지정 항목'}
+                      </span>
                     </div>
                   ))}
                 </div>

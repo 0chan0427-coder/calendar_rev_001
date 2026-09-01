@@ -511,7 +511,7 @@ const [membersDropdownOpen, setMembersDropdownOpen] = useState(false);
   const month = currentDate.getMonth();
   const firstDayOfMonth = new Date(year, month, 1).getDay();
   const lastDateOfMonth = new Date(year, month + 1, 0).getDate();
-
+const totalWeeks = Math.ceil((firstDayOfMonth + lastDateOfMonth) / 7);
   const prevMonth = () => { setSelectedEvent(null); setCurrentDate(new Date(year, month - 1, 1)); };
   const nextMonth = () => { setSelectedEvent(null); setCurrentDate(new Date(year, month + 1, 1)); };
 

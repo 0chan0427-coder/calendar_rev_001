@@ -737,7 +737,7 @@ const totalWeeks = Math.ceil((firstDayOfMonth + lastDateOfMonth) / 7);
       이름 변경 신청
     </button>
   )}
-</div>>
+</div>
               </div>
               <div style={{ fontSize: '11px', color: '#666', marginTop: '6px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {profile?.email}

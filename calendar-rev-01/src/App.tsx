@@ -763,7 +763,6 @@ const [membersDropdownOpen, setMembersDropdownOpen] = useState(false);
     )}
   </div>
 </div>
-</div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '1px', background: '#ddd', border: '1px solid #ddd', flex: 1, minHeight: 0 }}>
               {['일', '월', '화', '수', '목', '금', '토'].map((day, idx) => (

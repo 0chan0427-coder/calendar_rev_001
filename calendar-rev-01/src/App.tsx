@@ -1152,33 +1152,85 @@ const totalWeeks = Math.ceil((firstDayOfMonth + lastDateOfMonth) / 7);
       )}
 
       {/* 6. 기존 모달들 */}
-      {adminModalOpen && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
-          <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '450px', maxHeight: '80vh', overflowY: 'auto' }}>
-            <h3>멤버 관리</h3>
-            <p style={{ color: '#666', fontSize: '13px', marginBottom: '15px' }}>가입 대기 중인 회원들을 승인할 수 있습니다.</p>
-            
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {pendingProfiles.length === 0 ? (
-                <p style={{ fontSize: '14px', color: '#888' }}>대기 중인 멤버가 없습니다.</p>
-              ) : (
-                pendingProfiles.map(p => (
-                  <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', background: '#f8f9fa', borderRadius: '6px', border: '1px solid #ddd' }}>
-                    <div>
-                      <div style={{ fontWeight: 'bold', fontSize: '14px' }}>{p.name}</div>
-                      <div style={{ fontSize: '12px', color: '#666' }}>{p.email}</div>
-                    </div>
-                    <button onClick={() => approveUser(p.id)} style={{ padding: '6px 12px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>승인</button>
-                  </div>
-                ))
-              )}
+{adminModalOpen && (
+  <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 তব }}>
+    <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '450px', maxHeight: '80vh', overflowY: 'auto' }}>
+      <h3>멤버 관리</h3>
+      <p style={{ color: '#666', fontSize: '13px', marginBottom: '15px' }}>가입 대기 중인 회원 및 이름 변경 요청을 관리할 수 있습니다.</p>
+
+      {/* 1. 가입 대기 회원 섹션 */}
+      <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#333', marginBottom: '8px' }}>📌 가입 대기 목록</div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
+        {pendingProfiles.length === 0 ? (
+          <p style={{ fontSize: '13px', color: '#888' }}>대기 중인 멤버가 없습니다.</p>
+        ) : (
+          pendingProfiles.map(p => (
+            <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', background: '#f8f9fa', borderRadius: '6px', border: '1px solid #ddd' }}>
+              <div>
+                <div style={{ fontWeight: 'bold', fontSize: '14px' }}>{p.name}</div>
+                <div style={{ fontSize: '12px', color: '#666' }}>{p.email}</div>
+              </div>
+              <button onClick={() => approveUser(p.id)} style={{ padding: '6px 12px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>승인</button>
             </div>
+          ))
+        )}
+      </div>
+
+      {/* 2. 이름 변경 요청 섹션 */}
+      <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#333', marginBottom: '8px' }}>✏️ 이름 변경 요청 목록</div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        {allProfiles.filter(p => p.name_status === 'pending').length === 0 ? (
+          <p style={{ fontSize: '13px', color: '#888' }}>이름 변경 요청이 없습니다.</p>
+        ) : (
+          allProfiles.filter(p => p.name_status === 'pending').map(p => (
+            <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', background: '#fff9db', borderRadius: '6px', border: '1px solid #ffe066' }}>
+              <div>
+                <div style={{ fontSize: '13px' }}>기존: <b>{p.name}</b></div>
+                <div style={{ fontSize: '13px', color: '#d9534f', marginTop: '2px' }}>변경 요청: <b>{p.requested_name}</b></div>
+              </div>
+              <div style={{ display: 'flex', gap: '4px' }}>
+                <button onClick={() => approveNameChange(p.id, p.requested_name)} style={{ padding: '6px 10px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}>승인</button>
+                <button onClick={() => rejectNameChange(p.id)} style={{ padding: '6px 10px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}>거절</button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      <div style={{ textAlign: 'right', marginTop: '20px' }}>
+        <button onClick={() => setAdminModalOpen(false)} style={{ padding: '6px 12px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>닫기</button>
+      </div>
+    </div>
+  </div>
+)}
 
             <button onClick={() => setAdminModalOpen(false)} style={{ marginTop: '20px', width: '100%', padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>닫기</button>
           </div>
         </div>
       )}
 
+      {nameChangeModalOpen && (
+  <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+    <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '300px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
+      <h3 style={{ margin: '0 0 15px 0', fontSize: '16px' }}>이름 변경 신청</h3>
+      <form onSubmit={requestNameChange} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <input 
+          type="text" 
+          value={newNameRequestText} 
+          onChange={e => setNewNameRequestText(e.target.value)} 
+          placeholder="변경할 이름 입력" 
+          required 
+          style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+        />
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '6px', marginTop: '10px' }}>
+          <button type="button" onClick={() => setNameChangeModalOpen(false)} style={{ padding: '6px 12px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>취소</button>
+          <button type="submit" style={{ padding: '6px 12px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>신청</button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
+      
       {roomModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
           <form onSubmit={createRoom} style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '350px', display: 'flex', flexDirection: 'column', gap: '12px' }}>

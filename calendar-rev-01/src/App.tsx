@@ -731,40 +731,41 @@ const [membersDropdownOpen, setMembersDropdownOpen] = useState(false);
               </h2>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '10px 0' }}>
-  <button onClick={prevMonth} style={{ padding: '6px 12px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>&lt; 이전 달</button>
-  
-  <h3>{year}년 {month + 1}월</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', margin: '10px 0' }}>
+  {/* 첫 번째 줄: < 이전 달, 2026년 X월, 다음 달 > */}
+  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <button onClick={prevMonth} style={{ padding: '6px 12px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>&lt; 이전 달</button>
+    <h3 style={{ margin: 0, fontSize: '16px' }}>{year}년 {month + 1}월</h3>
+    <button onClick={nextMonth} style={{ padding: '6px 12px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>다음 달 &gt;</button>
+  </div>
 
-  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px', position: 'relative' }}>
-    <div style={{ position: 'relative' }}>
-      <button 
-        onClick={(e) => {
-          e.stopPropagation();
-          setMembersDropdownOpen(!membersDropdownOpen);
-        }}
-        style={{ padding: '4px 10px', fontSize: '12px', background: '#f1f3f5', border: '1px solid #ced4da', borderRadius: '4px', cursor: 'pointer' }}
-      >
-        사용 중인 맴버 보기 ▾
-      </button>
+  {/* 두 번째 줄: 사용 중인 맴버 보기 버튼 (우측 정렬) */}
+  <div style={{ display: 'flex', justifyContent: 'flex-end', position: 'relative' }}>
+    <button 
+      onClick={(e) => {
+        e.stopPropagation();
+        setMembersDropdownOpen(!membersDropdownOpen);
+      }}
+      style={{ padding: '4px 10px', fontSize: '12px', background: '#f1f3f5', color: '#333', border: '1px solid #ced4da', borderRadius: '4px', cursor: 'pointer' }}
+    >
+      사용 중인 맴버 보기 ▾
+    </button>
 
-      {membersDropdownOpen && (
-        <div style={{ position: 'absolute', right: 0, top: '28px', width: '180px', background: 'white', border: '1px solid #ced4da', borderRadius: '6px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', zIndex: 100, padding: '8px' }}>
-          {Object.values(profilesMap).map((m: any) => (
-            <div key={m.id} style={{ display: 'flex', alignItems: 'center', padding: '6px 8px', gap: '8px' }}>
-              <div style={{ width: '4px', height: '16px', backgroundColor: m.color || '#339af0', borderRadius: '2px', flexShrink: 0 }}></div>
-              <span style={{ fontSize: '13px', fontWeight: 500, color: '#333', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.name}</span>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-
-    <button onClick={nextMonth} style={{ padding: '6px 12px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>다음 달 &gt;</button>
+    {membersDropdownOpen && (
+      <div style={{ position: 'absolute', right: 0, top: '28px', width: '180px', background: 'white', border: '1px solid #ced4da', borderRadius: '6px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', zIndex: 100, padding: '8px' }}>
+        {profilesMap && Object.values(profilesMap).map((m: any) => (
+          <div key={m.id} style={{ display: 'flex', alignItems: 'center', padding: '6px 8px', gap: '8px' }}>
+            <div style={{ width: '4px', height: '16px', backgroundColor: m.color || '#339af0', borderRadius: '2px', flexShrink: 0 }}></div>
+            <span style={{ fontSize: '13px', fontWeight: 500, color: '#333', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.name}</span>
+          </div>
+        ))}
+      </div>
+    )}
   </div>
 </div>
+</div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '1px', background: '#ddd', border: '1px solid #ddd', flex: 1, minHeight: '500px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '1px', background: '#ddd', border: '1px solid #ddd', flex: 1, minHeight: 0 }}>
               {['일', '월', '화', '수', '목', '금', '토'].map((day, idx) => (
                 <div key={idx} style={{ background: '#f1f3f5', textAlign: 'center', fontWeight: 'bold', padding: '8px 0', fontSize: '13px' }}>
                   {day}
@@ -776,7 +777,7 @@ const [membersDropdownOpen, setMembersDropdownOpen] = useState(false);
                 return Array.from({ length: firstDayOfMonth }).map((_, idx) => {
                   const dayNum = prevMonthLastDate - firstDayOfMonth + idx + 1;
                   return (
-                    <div key={`prev-${idx}`} style={{ background: '#f8f9fa', minHeight: '100px', padding: '6px' }}>
+                    <div key={`prev-${idx}`} style={{ background: '#f8f9fa', minHeight: '0', padding: '6px' }}>
                       <span style={{ fontSize: '12px', color: '#adb5bd', fontWeight: 'bold' }}>{dayNum}</span>
                     </div>
                   );
@@ -812,7 +813,7 @@ const [membersDropdownOpen, setMembersDropdownOpen] = useState(false);
                     }}
                     style={{ 
                       background: '#fff', 
-                      minHeight: '100px', 
+                      minHeight: '0', 
                       padding: '5px 0', 
                       overflowY: 'auto', 
                       border: '1px solid #eee', 

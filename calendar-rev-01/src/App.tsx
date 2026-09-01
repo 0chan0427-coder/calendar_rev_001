@@ -712,13 +712,32 @@ const totalWeeks = Math.ceil((firstDayOfMonth + lastDateOfMonth) / 7);
                   />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', flex: 1 }}>
-                  <span style={{ fontSize: '14px', fontWeight: 'bold', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {profile?.name}
-                  </span>
-                  <span style={{ fontSize: '10px', color: '#888' }}>
-                    색상: {profile?.color || '#339af0'}
-                  </span>
-                </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+    <span style={{ fontSize: '14px', fontWeight: 'bold', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+      {profile?.name}
+    </span>
+    {profile?.name_status === 'pending' && (
+      <span style={{ fontSize: '10px', background: '#ffc107', color: '#000', padding: '2px 4px', borderRadius: '4px', fontWeight: 'bold' }}>
+        변경 대기중
+      </span>
+    )}
+  </div>
+  <span style={{ fontSize: '10px', color: '#888' }}>
+    색상: {profile?.color || '#339af0'}
+  </span>
+  
+  {profile?.name_status !== 'pending' && (
+    <button 
+      onClick={() => {
+        setNewNameRequestText(profile?.name || '');
+        setNameChangeModalOpen(true);
+      }}
+      style={{ marginTop: '4px', background: 'none', border: '1px solid #ccc', borderRadius: '4px', fontSize: '11px', padding: '2px 4px', cursor: 'pointer', alignSelf: 'flex-start', color: '#555' }}
+    >
+      이름 변경 신청
+    </button>
+  )}
+</div>>
               </div>
               <div style={{ fontSize: '11px', color: '#666', marginTop: '6px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {profile?.email}

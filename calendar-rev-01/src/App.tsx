@@ -1153,7 +1153,7 @@ const totalWeeks = Math.ceil((firstDayOfMonth + lastDateOfMonth) / 7);
 
       {/* 6. 기존 모달들 */}
 {adminModalOpen && (
-  <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 তব }}>
+  <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
     <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '450px', maxHeight: '80vh', overflowY: 'auto' }}>
       <h3>멤버 관리</h3>
       <p style={{ color: '#666', fontSize: '13px', marginBottom: '15px' }}>가입 대기 중인 회원 및 이름 변경 요청을 관리할 수 있습니다.</p>
@@ -1196,6 +1196,13 @@ const totalWeeks = Math.ceil((firstDayOfMonth + lastDateOfMonth) / 7);
           ))
         )}
       </div>
+
+      <div style={{ textAlign: 'right', marginTop: '20px' }}>
+        <button onClick={() => setAdminModalOpen(false)} style={{ padding: '6px 12px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>닫기</button>
+      </div>
+    </div>
+  </div>
+)}
 
       <div style={{ textAlign: 'right', marginTop: '20px' }}>
         <button onClick={() => setAdminModalOpen(false)} style={{ padding: '6px 12px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>닫기</button>

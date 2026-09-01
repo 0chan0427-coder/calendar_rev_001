@@ -119,6 +119,10 @@ const [membersDropdownOpen, setMembersDropdownOpen] = useState(false);
   const [newEventStartDate, setNewEventStartDate] = useState('');
   const [newEventEndDate, setNewEventEndDate] = useState('');
 
+  // 이름 변경 신청 관련 상태
+const [nameChangeModalOpen, setNameChangeModalOpen] = useState(false);
+const [newNameRequestText, setNewNameRequestText] = useState('');
+  
   // 모바일 스와이프 감지용 상태
   const [touchStartX, setTouchStartX] = useState(0);
   const [touchEndX, setTouchEndX] = useState(0);
@@ -212,6 +216,31 @@ const [membersDropdownOpen, setMembersDropdownOpen] = useState(false);
     }
   };
 
+  const requestNameChange = async (e: React.FormEvent) => {
+  e.preventDefault();
+  if (!newNameRequestText.trim()) {
+    alert('변경할 이름을 입력해주세요.');
+    return;
+  }
+
+  const { error } = await supabase
+    .from('profiles')
+    .update({ 
+      requested_name: newNameRequestText.trim(),
+      name_status: 'pending' 
+    })
+    .eq('id', session.user.id);
+
+  if (error) {
+    alert('이름 변경 신청 실패: ' + error.message);
+  } else {
+    alert('관리자에게 이름 변경 신청이 접수되었습니다. 승인을 기다려주세요.');
+    setNewNameRequestText('');
+    setNameChangeModalOpen(false);
+    fetchProfile(session.user.id);
+  }
+};
+  
  const handleTouchEnd = () => {
     if (!touchStartX || !touchEndX) return;
     
@@ -336,6 +365,42 @@ const [membersDropdownOpen, setMembersDropdownOpen] = useState(false);
     if (!error && data) setComments(data);
   };
 
+  const approveNameChange = async (userId: string, requestedName: string) => {
+  const { error } = await supabase
+    .from('profiles')
+    .update({ 
+      name: requestedName,
+      requested_name: null,
+      name_status: 'approved' 
+    })
+    .eq('id', userId);
+
+  if (error) {
+    alert('승인 실패: ' + error.message);
+  } else {
+    alert('이름 변경이 승인되었습니다.');
+    fetchAllProfiles(); // 관리자 화면 리프레시
+    fetchProfilesMap();
+  }
+};
+
+const rejectNameChange = async (userId: string) => {
+  const { error } = await supabase
+    .from('profiles')
+    .update({ 
+      requested_name: null,
+      name_status: 'approved' 
+    })
+    .eq('id', userId);
+
+  if (error) {
+    alert('거절 처리 실패: ' + error.message);
+  } else {
+    alert('이름 변경 요청이 거절(취소)되었습니다.');
+    fetchAllProfiles();
+  }
+};
+  
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);

@@ -1212,45 +1212,7 @@ const totalWeeks = Math.ceil((firstDayOfMonth + lastDateOfMonth) / 7);
   </div>
 )}
 
-      {/* 2. 이름 변경 요청 섹션 */}
-      <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#333', marginBottom: '8px' }}>✏️ 이름 변경 요청 목록</div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-        {allProfiles.filter(p => p.name_status === 'pending').length === 0 ? (
-          <p style={{ fontSize: '13px', color: '#888' }}>이름 변경 요청이 없습니다.</p>
-        ) : (
-          allProfiles.filter(p => p.name_status === 'pending').map(p => (
-            <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', background: '#fff9db', borderRadius: '6px', border: '1px solid #ffe066' }}>
-              <div>
-                <div style={{ fontSize: '13px' }}>기존: <b>{p.name}</b></div>
-                <div style={{ fontSize: '13px', color: '#d9534f', marginTop: '2px' }}>변경 요청: <b>{p.requested_name}</b></div>
-              </div>
-              <div style={{ display: 'flex', gap: '4px' }}>
-                <button onClick={() => approveNameChange(p.id, p.requested_name)} style={{ padding: '6px 10px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}>승인</button>
-                <button onClick={() => rejectNameChange(p.id)} style={{ padding: '6px 10px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}>거절</button>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
-
-      <div style={{ textAlign: 'right', marginTop: '20px' }}>
-        <button onClick={() => setAdminModalOpen(false)} style={{ padding: '6px 12px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>닫기</button>
-      </div>
-    </div>
-  </div>
-)}
-
-      <div style={{ textAlign: 'right', marginTop: '20px' }}>
-        <button onClick={() => setAdminModalOpen(false)} style={{ padding: '6px 12px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>닫기</button>
-      </div>
-    </div>
-  </div>
-)}
-
-            <button onClick={() => setAdminModalOpen(false)} style={{ marginTop: '20px', width: '100%', padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>닫기</button>
-         
-        </div>
-      )}
+      
 
       {nameChangeModalOpen && (
   <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>

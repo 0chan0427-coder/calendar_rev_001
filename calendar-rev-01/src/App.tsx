@@ -1197,20 +1197,7 @@ const totalWeeks = Math.ceil((firstDayOfMonth + lastDateOfMonth) / 7);
         )}
       </div>
 
-      <div style={{ textAlign: 'right' }}>
-        <button onClick={() => setAdminModalOpen(false)} style={{ padding: '6px 12px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>닫기</button>
-      </div>
-    </div>
-  </div>
-)}
-
       
-      <div style={{ textAlign: 'right', marginTop: '20px' }}>
-        <button onClick={() => setAdminModalOpen(false)} style={{ padding: '6px 12px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>닫기</button>
-      </div>
-    </div>
-  </div>
-)}
 
       
 

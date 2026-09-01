@@ -100,7 +100,8 @@ export default function CalendarApp() {
   const [allProfiles, setAllProfiles] = useState<any[]>([]);
   const [comments, setComments] = useState<any[]>([]);
   const [newCommentText, setNewCommentText] = useState('');
-
+const [membersDropdownOpen, setMembersDropdownOpen] = useState(false);
+  
   // 일정 수정 관련 상태
   const [eventEditModalOpen, setEventEditModalOpen] = useState(false);
   const [editEventTitle, setEditEventTitle] = useState('');

@@ -738,7 +738,7 @@ const totalWeeks = Math.ceil((firstDayOfMonth + lastDateOfMonth) / 7);
     </button>
   )}
 </div>
-              </div>
+              
               <div style={{ fontSize: '11px', color: '#666', marginTop: '6px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {profile?.email}
               </div>

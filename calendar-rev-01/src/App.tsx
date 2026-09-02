@@ -67,7 +67,7 @@ export default function CalendarApp() {
   
   const [currentDate, setCurrentDate] = useState(new Date());
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
-  const [rightSidebarOpen, setRightSidebarOpen] = useState(false); // 💡 우측바 상태 복원
+  const [rightSidebarOpen, setRightSidebarOpen] = useState(false);
   const [selectedRoomIds, setSelectedRoomIds] = useState<string[]>([]);
   const [targetRoomIdForAdd, setTargetRoomIdForAdd] = useState<string | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
@@ -86,11 +86,9 @@ export default function CalendarApp() {
   const [roomManageModalOpen, setRoomManageModalOpen] = useState(false);
   const [eventAddModalOpen, setEventAddModalOpen] = useState(false);
   
-  // 💡 달력 그리드 클릭 시 우측바에 띄우기 위한 상태
   const [rightSidebarDateStr, setRightSidebarDateStr] = useState('');
   const [rightSidebarEvents, setRightSidebarEvents] = useState<any[]>([]);
 
-  // 일정 상세 정보 + 댓글 모달 상태
   const [eventDetailModalOpen, setEventDetailModalOpen] = useState(false);
 
   const [rooms, setRooms] = useState<any[]>([]);
@@ -98,6 +96,10 @@ export default function CalendarApp() {
   const [profilesMap, setProfilesMap] = useState<Record<string, any>>({});
   const [pendingProfiles, setPendingProfiles] = useState<any[]>([]);
   const [allProfiles, setAllProfiles] = useState<any[]>([]);
+  
+  // 💡 관리자 모달에서 각 멤버별 수정 중인 색상을 임시 저장하기 위한 상태
+  const [adminEditedColors, setAdminEditedColors] = useState<Record<string, string>>({});
+
   const [comments, setComments] = useState<any[]>([]);
   const [newCommentText, setNewCommentText] = useState('');
   const [membersDropdownOpen, setMembersDropdownOpen] = useState(false);
@@ -195,7 +197,6 @@ export default function CalendarApp() {
     }
   }, [selectedEvent]);
 
-  // 이벤트가 변경될 때 우측바가 열려있다면 우측바 목록도 실시간 반영
   useEffect(() => {
     if (rightSidebarOpen && rightSidebarDateStr) {
       const updatedEvents = events.filter(ev => {
@@ -346,7 +347,34 @@ export default function CalendarApp() {
 
   const fetchAllProfiles = async () => {
     const { data, error } = await supabase.from('profiles').select('*');
-    if (!error && data) setAllProfiles(data);
+    if (!error && data) {
+      setAllProfiles(data);
+      // 관리자 모달용 색상 임시 상태 초기화
+      const colorsMap: Record<string, string> = {};
+      data.forEach(p => {
+        colorsMap[p.id] = p.color || '#339af0';
+      });
+      setAdminEditedColors(colorsMap);
+    }
+  };
+
+  // 💡 관리자가 특정 멤버의 색상을 변경하여 저장하는 함수
+  const adminUpdateUserColor = async (userId: string) => {
+    const newColor = adminEditedColors[userId];
+    if (!newColor) return;
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({ color: newColor })
+      .eq('id', userId);
+
+    if (error) {
+      alert('멤버 색상 변경 실패: ' + error.message);
+    } else {
+      alert('멤버의 프로필 색상이 변경되었습니다.');
+      fetchAllProfiles();
+      fetchProfilesMap();
+    }
   };
 
   const fetchComments = async (eventId: string) => {
@@ -873,7 +901,6 @@ export default function CalendarApp() {
                     key={`day-${dayNum}`} 
                     onClick={(e) => {
                       e.stopPropagation();
-                      // 💡 달력 그리드 칸 전체(일정 포함)를 누르면 우측바에 해당 날짜의 일정 목록이 나오도록 설정
                       setRightSidebarDateStr(formattedDate);
                       setRightSidebarEvents(dayEvents);
                       setRightSidebarOpen(true);
@@ -905,7 +932,6 @@ export default function CalendarApp() {
                         return (
                           <div 
                             key={ev.id} 
-                            // 💡 일정 아이템 개별의 onClick은 삭제되어, 누르면 부모(날짜 칸)의 이벤트가 발생해 우측바만 열립니다.
                             style={{ 
                               background: eventColor, 
                               color: '#fff', 
@@ -957,7 +983,7 @@ export default function CalendarApp() {
         )}
       </div>
 
-      {/* 3. 우측 사이드바 컨테이너 (달력 그리드 클릭 시 해당 날짜의 일정 목록 표시) */}
+      {/* 3. 우측 사이드바 컨테이너 */}
       <div style={{
         width: rightSidebarOpen ? '320px' : '0px',
         minWidth: rightSidebarOpen ? '320px' : '0px',
@@ -1007,7 +1033,7 @@ export default function CalendarApp() {
                     key={ev.id}
                     onClick={() => {
                       setSelectedEvent(ev);
-                      setEventDetailModalOpen(true); // 💡 우측바의 일정을 눌렀을 때만 상세/댓글 모달 팝업
+                      setEventDetailModalOpen(true);
                     }}
                     style={{ padding: '12px', background: '#fff', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: '4px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
                   >
@@ -1058,7 +1084,7 @@ export default function CalendarApp() {
 
       {/* ================= 모달 모음 ================= */}
 
-      {/* 5. 💡 일정 상세 정보 및 댓글 모달 (우측바 목록에서 일정을 눌렀을 때만 팝업) */}
+      {/* 5. 일정 상세 정보 및 댓글 모달 */}
       {eventDetailModalOpen && selectedEvent && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100 }}>
           <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', width: '450px', maxHeight: '85vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '15px', boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
@@ -1162,13 +1188,42 @@ export default function CalendarApp() {
         </div>
       )}
 
-      {/* 6. 멤버 관리 (관리자) 모달 */}
+      {/* 6. 멤버 관리 (관리자) 모달 - 💡 기존 멤버 색상 변경 기능 포함 */}
       {adminModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
-          <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '450px', maxHeight: '80vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+          <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '480px', maxHeight: '85vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '15px' }}>
             <div>
               <h3 style={{ margin: '0 0 5px 0' }}>멤버 관리</h3>
-              <p style={{ color: '#666', fontSize: '13px', margin: 0 }}>가입 대기 중인 회원 및 이름 변경 요청을 관리할 수 있습니다.</p>
+              <p style={{ color: '#666', fontSize: '13px', margin: 0 }}>가입 대기 회원 승인, 이름 변경 요청 및 전체 멤버 프로필 색상을 관리할 수 있습니다.</p>
+            </div>
+
+            {/* 💡 전체 멤버 색상 관리 섹션 추가 */}
+            <div>
+              <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#333', marginBottom: '8px' }}>🎨 전체 멤버 프로필 색상 관리</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '200px', overflowY: 'auto', border: '1px solid #eee', padding: '8px', borderRadius: '6px' }}>
+                {allProfiles.filter(p => p.status === 'approved').map(p => (
+                  <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 8px', background: '#f8f9fa', borderRadius: '4px', border: '1px solid #e9ecef' }}>
+                    <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#333' }}>{p.name} ({p.email})</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <input 
+                        type="color" 
+                        value={adminEditedColors[p.id] || p.color || '#339af0'} 
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setAdminEditedColors(prev => ({ ...prev, [p.id]: val }));
+                        }}
+                        style={{ width: '30px', height: '26px', border: 'none', cursor: 'pointer', background: 'none' }}
+                      />
+                      <button 
+                        onClick={() => adminUpdateUserColor(p.id)}
+                        style={{ padding: '4px 8px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '11px', fontWeight: 'bold' }}
+                      >
+                        저장
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div>

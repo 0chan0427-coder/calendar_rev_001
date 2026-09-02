@@ -91,17 +91,23 @@ export default function CalendarApp() {
   const [selectedOptionIds, setSelectedOptionIds] = useState<string[]>([]);
   const [voteStatusModalOpen, setVoteStatusModalOpen] = useState(false);
 
-  // 정산 관련 상태 (수정됨)
+  // 정산 관련 상태 (영수증 및 수정 기능 추가)
   const [settlements, setSettlements] = useState<any[]>([]);
   const [settlementModalOpen, setSettlementModalOpen] = useState(false);
   const [newSettlementTitle, setNewSettlementTitle] = useState('');
-  const [settlementRows, setSettlementRows] = useState<{ desc: string; amount: string }[]>([
-    { desc: '', amount: '' }
-  ]);
+  const [newSettlementTotalAmount, setNewSettlementTotalAmount] = useState('');
   const [targetRoomIdForSettlement, setTargetRoomIdForSettlement] = useState<string | null>(null);
+  const [newSettlementFile, setNewSettlementFile] = useState<File | null>(null);
+  
   const [selectedSettlement, setSelectedSettlement] = useState<any>(null);
   const [settlementItemsList, setSettlementItemsList] = useState<any[]>([]);
   const [settlementDetailModalOpen, setSettlementDetailModalOpen] = useState(false);
+  
+  // 정산 수정 모달 상태
+  const [settlementEditModalOpen, setSettlementEditModalOpen] = useState(false);
+  const [editSettlementTitle, setEditSettlementTitle] = useState('');
+  const [editSettlementTotalAmount, setEditSettlementTotalAmount] = useState('');
+  const [editSettlementFile, setEditSettlementFile] = useState<File | null>(null);
 
   const [selectedRoomIds, setSelectedRoomIds] = useState<string[]>([]);
   const [targetRoomIdForAdd, setTargetRoomIdForAdd] = useState<string | null>(null);
@@ -331,59 +337,128 @@ export default function CalendarApp() {
     }
   };
 
-  // 총 합계 계산 함수
-  const calculateTotalAmount = () => {
-    return settlementRows.reduce((sum, row) => {
-      const amt = parseFloat(row.amount);
-      return sum + (isNaN(amt) ? 0 : amt);
-    }, 0);
+  // 영수증 이미지 업로드 헬퍼 함수
+  const uploadReceiptImage = async (file: File) => {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Date.now()}_${Math.random().toString(36.substring(2, 9))}.${fileExt}`;
+    const filePath = `${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('receipts') // Supabase Storage에 'receipts' 버킷이 생성되어 있어야 합니다.
+      .upload(filePath, file);
+
+    if (uploadError) {
+      throw new Error('영수증 이미지 업로드 실패: ' + uploadError.message);
+    }
+
+    const { data: publicURLData } = supabase.storage
+      .from('receipts')
+      .getPublicUrl(filePath);
+
+    return publicURLData.publicUrl;
   };
 
   const createSettlement = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newSettlementTitle.trim() || !targetRoomIdForSettlement) {
-      alert('제목을 입력해주세요.');
+    if (!newSettlementTitle.trim() || !newSettlementTotalAmount || !targetRoomIdForSettlement) {
+      alert('방, 제목, 총 금액을 모두 입력해주세요.');
       return;
     }
-    const totalAmount = calculateTotalAmount();
-    if (totalAmount <= 0) {
+    const amountNum = parseFloat(newSettlementTotalAmount);
+    if (isNaN(amountNum) || amountNum <= 0) {
       alert('유효한 금액을 입력해주세요.');
       return;
     }
 
-    const { data: settlementData, error: settlementError } = await supabase
-      .from('settlements')
-      .insert([{
-        room_id: targetRoomIdForSettlement,
-        user_id: session.user.id,
-        title: newSettlementTitle.trim(),
-        total_amount: totalAmount
-      }])
-      .select()
-      .single();
+    try {
+      let receiptUrl = null;
+      if (newSettlementFile) {
+        receiptUrl = await uploadReceiptImage(newSettlementFile);
+      }
 
-    if (settlementError || !settlementData) {
-      alert('정산 생성 실패: ' + (settlementError?.message || '알 수 없는 오류'));
+      const { data: settlementData, error: settlementError } = await supabase
+        .from('settlements')
+        .insert([{
+          room_id: targetRoomIdForSettlement,
+          user_id: session.user.id,
+          title: newSettlementTitle.trim(),
+          total_amount: amountNum,
+          receipt_url: receiptUrl
+        }])
+        .select()
+        .single();
+
+      if (settlementError || !settlementData) {
+        throw new Error(settlementError?.message || '알 수 없는 오류');
+      }
+
+      const allProfileIds = Object.keys(profilesMap);
+      if (allProfileIds.length > 0) {
+        const share = parseFloat((amountNum / allProfileIds.length).toFixed(2));
+        const itemsToInsert = allProfileIds.map(uid => ({
+          settlement_id: settlementData.id,
+          user_id: uid,
+          amount: share,
+          is_paid: uid === session.user.id
+        }));
+        await supabase.from('settlement_items').insert(itemsToInsert);
+      }
+
+      alert('정산이 생성되었습니다!');
+      setNewSettlementTitle('');
+      setNewSettlementTotalAmount('');
+      setNewSettlementFile(null);
+      setSettlementModalOpen(false);
+      fetchSettlements();
+    } catch (err: any) {
+      alert('정산 생성 실패: ' + err.message);
+    }
+  };
+
+  const updateSettlement = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedSettlement || !editSettlementTitle.trim() || !editSettlementTotalAmount) {
+      alert('제목과 총 금액을 입력해주세요.');
+      return;
+    }
+    const amountNum = parseFloat(editSettlementTotalAmount);
+    if (isNaN(amountNum) || amountNum <= 0) {
+      alert('유효한 금액을 입력해주세요.');
       return;
     }
 
-    const allProfileIds = Object.keys(profilesMap);
-    if (allProfileIds.length > 0) {
-      const share = parseFloat((totalAmount / allProfileIds.length).toFixed(2));
-      const itemsToInsert = allProfileIds.map(uid => ({
-        settlement_id: settlementData.id,
-        user_id: uid,
-        amount: share,
-        is_paid: uid === session.user.id
-      }));
-      await supabase.from('settlement_items').insert(itemsToInsert);
-    }
+    try {
+      let receiptUrl = selectedSettlement.receipt_url;
+      if (editSettlementFile) {
+        receiptUrl = await uploadReceiptImage(editSettlementFile);
+      }
 
-    alert('정산이 생성되었습니다!');
-    setNewSettlementTitle('');
-    setSettlementRows([{ desc: '', amount: '' }]);
-    setSettlementModalOpen(false);
-    fetchSettlements();
+      const { error } = await supabase
+        .from('settlements')
+        .update({
+          title: editSettlementTitle.trim(),
+          total_amount: amountNum,
+          receipt_url: receiptUrl
+        })
+        .eq('id', selectedSettlement.id);
+
+      if (error) throw error;
+
+      alert('정산 내역이 수정되었습니다.');
+      setSettlementEditModalOpen(false);
+      setEditSettlementFile(null);
+      
+      const updated = {
+        ...selectedSettlement,
+        title: editSettlementTitle.trim(),
+        total_amount: amountNum,
+        receipt_url: receiptUrl
+      };
+      setSelectedSettlement(updated);
+      fetchSettlements();
+    } catch (err: any) {
+      alert('정산 수정 실패: ' + err.message);
+    }
   };
 
   const toggleItemPaid = async (itemId: string, currentPaid: boolean) => {
@@ -1130,10 +1205,7 @@ export default function CalendarApp() {
                   </div>
 
                   <div 
-                    onClick={() => {
-                      setCurrentViewMode('settlement');
-                      fetchSettlements();
-                    }}
+                    onClick={() => setCurrentViewMode('settlement')}
                     style={{ 
                       padding: '10px 12px', 
                       background: currentViewMode === 'settlement' ? '#228be6' : '#fff', 
@@ -1363,7 +1435,7 @@ export default function CalendarApp() {
             <div style={{ padding: '10px 0', borderBottom: '1px solid #eee', marginBottom: '15px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div>
                 <h2 style={{ margin: 0, fontSize: '18px', color: '#222' }}>💰 지출 및 정산 관리</h2>
-                <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#666' }}>전체 정산 내역을 확인하고 송금 상태를 관리할 수 있습니다.</p>
+                <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#666' }}>선택된 방의 지출 내역을 확인하고 송금 상태를 관리할 수 있습니다.</p>
               </div>
               <button 
                 onClick={() => setSettlementModalOpen(true)}
@@ -1375,9 +1447,10 @@ export default function CalendarApp() {
 
             <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px', paddingBottom: '20px' }}>
               {settlements.length === 0 ? (
-                <div style={{ textAlign: 'center', color: '#888', marginTop: '40px' }}>등록된 정산 내역이 없습니다. 우측 상단의 '정산 등록하기'를 눌러 시작해보세요!</div>
+                <div style={{ textAlign: 'center', color: '#888', marginTop: '40px' }}>등록된 정산 내역이 없습니다. 좌측 메뉴에서 방을 선택하거나 정산을 등록해보세요!</div>
               ) : (
                 settlements.map((st) => {
+                  const roomInfo = rooms.find(r => r.id === st.room_id);
                   const author = profilesMap[st.user_id]?.name || '알 수 없음';
                   return (
                     <div 
@@ -1399,7 +1472,10 @@ export default function CalendarApp() {
                       }}
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#888' }}>{new Date(st.created_at).toLocaleDateString()}</span>
+                        <span style={{ fontSize: '11px', fontWeight: 'bold', padding: '3px 8px', borderRadius: '4px', background: '#e6fcf5', color: '#0ca678' }}>
+                          방: {roomInfo?.name || '일반'}
+                        </span>
+                        <span style={{ fontSize: '12px', color: '#888' }}>{new Date(st.created_at).toLocaleDateString()}</span>
                       </div>
 
                       <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#333' }}>
@@ -1408,9 +1484,12 @@ export default function CalendarApp() {
 
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
                         <span style={{ fontSize: '13px', color: '#666' }}>등록자: {author}</span>
-                        <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#e03131' }}>
-                          총 {Number(st.total_amount).toLocaleString()}원
-                        </span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          {st.receipt_url && <span style={{ fontSize: '11px', background: '#e7f5ff', color: '#1c7ed6', padding: '2px 6px', borderRadius: '4px' }}>영수증 첨부됨</span>}
+                          <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#e03131' }}>
+                            총 {Number(st.total_amount).toLocaleString()}원
+                          </span>
+                        </div>
                       </div>
                     </div>
                   );
@@ -1683,89 +1762,33 @@ export default function CalendarApp() {
 
       {/* ================= 모달 모음 ================= */}
 
-      {/* 정산 등록 모달 (수정됨) */}
+      {/* 정산 등록 모달 (영수증 이미지 파일 업로드 추가) */}
       {settlementModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100 }}>
-          <form onSubmit={createSettlement} style={{ background: '#fff', padding: '24px', borderRadius: '10px', width: '480px', maxHeight: '90vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px', boxSizing: 'border-box' }}>
+          <form onSubmit={createSettlement} style={{ background: '#fff', padding: '24px', borderRadius: '10px', width: '400px', display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '90vh', overflowY: 'auto' }}>
             <h3 style={{ margin: '0 0 5px 0' }}>새 정산 등록</h3>
-            
-            {/* 제목 */}
             <div>
-              <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>정산 내용 (제목)</label>
-              <input 
-                type="text" 
-                placeholder="예: 부산 여행 첫째 날 저녁" 
-                value={newSettlementTitle} 
-                onChange={e => setNewSettlementTitle(e.target.value)} 
-                required 
-                style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }} 
-              />
-            </div>
-
-            {/* 숨겨진 대상 방 자동 처리용 (첫 번째 방 지정) */}
-            <input type="hidden" value={targetRoomIdForSettlement || ''} />
-
-            {/* 좌우 나눔 내역 및 금액 입력 영역 */}
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                <label style={{ fontSize: '12px', fontWeight: 'bold' }}>지출 세부 내역 및 금액</label>
-                <button 
-                  type="button"
-                  onClick={() => setSettlementRows([...settlementRows, { desc: '', amount: '' }])}
-                  style={{ padding: '4px 8px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}
-                >
-                  + 내역 추가
-                </button>
-              </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '250px', overflowY: 'auto', paddingRight: '2px' }}>
-                {settlementRows.map((row, idx) => (
-                  <div key={idx} style={{ display: 'flex', gap: '6px' }}>
-                    <input 
-                      type="text" 
-                      placeholder="내역 (예: 삼겹살)" 
-                      value={row.desc} 
-                      onChange={e => {
-                        const nextRows = [...settlementRows];
-                        nextRows[idx].desc = e.target.value;
-                        setSettlementRows(nextRows);
-                      }}
-                      style={{ flex: 1, padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }}
-                    />
-                    <input 
-                      type="number" 
-                      placeholder="금액" 
-                      value={row.amount} 
-                      onChange={e => {
-                        const nextRows = [...settlementRows];
-                        nextRows[idx].amount = e.target.value;
-                        setSettlementRows(nextRows);
-                      }}
-                      style={{ width: '110px', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }}
-                    />
-                    {settlementRows.length > 1 && (
-                      <button 
-                        type="button" 
-                        onClick={() => setSettlementRows(settlementRows.filter((_, i) => i !== idx))}
-                        style={{ padding: '0 8px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '12px' }}
-                      >
-                        ✕
-                      </button>
-                    )}
-                  </div>
+              <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>대상 방</label>
+              <select value={targetRoomIdForSettlement || ''} onChange={e => setTargetRoomIdForSettlement(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }}>
+                {rooms.map(room => (
+                  <option key={room.id} value={room.id}>{room.name}</option>
                 ))}
-              </div>
+              </select>
             </div>
-
-            {/* 총 금액 합계 표시 */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8f9fa', padding: '10px 12px', borderRadius: '6px', border: '1px solid #ddd', marginTop: '4px' }}>
-              <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#333' }}>총 금액 합계</span>
-              <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#e03131' }}>
-                {calculateTotalAmount().toLocaleString()}원
-              </span>
+            <div>
+              <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>지출 내역 제목</label>
+              <input type="text" placeholder="예: 부산 여행 첫째 날 저녁 고깃집" value={newSettlementTitle} onChange={e => setNewSettlementTitle(e.target.value)} required style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }} />
             </div>
-
-            <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
+            <div>
+              <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>총 지출 금액 (원)</label>
+              <input type="number" placeholder="예: 60000" value={newSettlementTotalAmount} onChange={e => setNewSettlementTotalAmount(e.target.value)} required style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }} />
+            </div>
+            <div>
+              <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>영수증 이미지 첨부 (선택)</label>
+              <input type="file" accept="image/*" onChange={e => { if (e.target.files) setNewSettlementFile(e.target.files[0]); }} style={{ width: '100%', fontSize: '12px' }} />
+            </div>
+            <p style={{ fontSize: '11px', color: '#666', margin: '4px 0 0 0' }}>* 등록 시 등록된 전체 멤버 수만큼 1/N 균등 분할 항목이 생성됩니다.</p>
+            <div style={{ display: 'flex', gap: '8px', marginTop: '15px' }}>
               <button type="submit" style={{ flex: 1, padding: '10px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>등록하기</button>
               <button type="button" onClick={() => setSettlementModalOpen(false)} style={{ flex: 1, padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>취소</button>
             </div>
@@ -1773,7 +1796,7 @@ export default function CalendarApp() {
         </div>
       )}
 
-      {/* 정산 상세 및 송금 체크 모달 */}
+      {/* 정산 상세 및 수정/삭제 권한 제어 모달 */}
       {settlementDetailModalOpen && selectedSettlement && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100 }}>
           <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', width: '450px', maxHeight: '85vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '15px', boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
@@ -1787,7 +1810,20 @@ export default function CalendarApp() {
               <div style={{ fontSize: '13px', color: '#e03131', fontWeight: 'bold', marginTop: '4px' }}>
                 총 금액: {Number(selectedSettlement.total_amount).toLocaleString()}원
               </div>
+              <div style={{ fontSize: '12px', color: '#666', marginTop: '2px' }}>
+                등록자: {profilesMap[selectedSettlement.user_id]?.name || '알 수 없음'}
+              </div>
             </div>
+
+            {/* 영수증 이미지 미리보기 */}
+            {selectedSettlement.receipt_url && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>첨부된 영수증</span>
+                <a href={selectedSettlement.receipt_url} target="_blank" rel="noopener noreferrer">
+                  <img src={selectedSettlement.receipt_url} alt="영수증" style={{ width: '100%', maxHeight: '180px', objectFit: 'contain', borderRadius: '6px', border: '1px solid #ddd', background: '#f8f9fa' }} />
+                </a>
+              </div>
+            )}
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#555' }}>참여자별 분담금 (체크박스로 송금완료 토글)</span>
@@ -1826,13 +1862,27 @@ export default function CalendarApp() {
               })}
             </div>
 
+            {/* 등록한 사람이거나 관리자인 경우에만 수정/삭제 버튼 노출 */}
             {(selectedSettlement.user_id === session?.user?.id || profile?.role === 'admin') && (
-              <button 
-                onClick={() => deleteSettlement(selectedSettlement.id)}
-                style={{ width: '100%', padding: '8px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px' }}
-              >
-                정산 내역 삭제
-              </button>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button 
+                  onClick={() => {
+                    setEditSettlementTitle(selectedSettlement.title);
+                    setEditSettlementTotalAmount(selectedSettlement.total_amount);
+                    setEditSettlementFile(null);
+                    setSettlementEditModalOpen(true);
+                  }}
+                  style={{ flex: 1, padding: '8px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px' }}
+                >
+                  수정하기
+                </button>
+                <button 
+                  onClick={() => deleteSettlement(selectedSettlement.id)}
+                  style={{ flex: 1, padding: '8px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px' }}
+                >
+                  삭제하기
+                </button>
+              </div>
             )}
 
             <button 
@@ -1842,6 +1892,31 @@ export default function CalendarApp() {
               닫기
             </button>
           </div>
+        </div>
+      )}
+
+      {/* 정산 수정 모달 */}
+      {settlementEditModalOpen && selectedSettlement && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1200 }}>
+          <form onSubmit={updateSettlement} style={{ background: '#fff', padding: '24px', borderRadius: '10px', width: '400px', display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '90vh', overflowY: 'auto' }}>
+            <h3 style={{ margin: '0 0 5px 0' }}>정산 내역 수정</h3>
+            <div>
+              <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>지출 내역 제목</label>
+              <input type="text" value={editSettlementTitle} onChange={e => setEditSettlementTitle(e.target.value)} required style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }} />
+            </div>
+            <div>
+              <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>총 지출 금액 (원)</label>
+              <input type="number" value={editSettlementTotalAmount} onChange={e => setEditSettlementTotalAmount(e.target.value)} required style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }} />
+            </div>
+            <div>
+              <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>영수증 이미지 변경 (선택)</label>
+              <input type="file" accept="image/*" onChange={e => { if (e.target.files) setEditSettlementFile(e.target.files[0]); }} style={{ width: '100%', fontSize: '12px' }} />
+            </div>
+            <div style={{ display: 'flex', gap: '8px', marginTop: '15px' }}>
+              <button type="submit" style={{ flex: 1, padding: '10px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>저장하기</button>
+              <button type="button" onClick={() => setSettlementEditModalOpen(false)} style={{ flex: 1, padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>취소</button>
+            </div>
+          </form>
         </div>
       )}
 
@@ -1912,12 +1987,12 @@ export default function CalendarApp() {
               <button 
                 type="button" 
                 onClick={() => setNewVoteOptions([...newVoteOptions, ''])}
-                style={{ marginTop: '8px', padding: '6px 10px', background: '#f1f3f5', color: '#333', border: '1px solid #ced4da', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}
+                style={{ marginTop: '8px', width: '100%', padding: '6px', background: '#f1f3f5', border: '1px dashed #ccc', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}
               >
                 + 항목 추가
               </button>
             </div>
-            <div style={{ display: 'flex', gap: '8px', marginTop: '15px' }}>
+            <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
               <button type="submit" style={{ flex: 1, padding: '10px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>생성하기</button>
               <button type="button" onClick={() => setVoteModalOpen(false)} style={{ flex: 1, padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>취소</button>
             </div>
@@ -1928,93 +2003,54 @@ export default function CalendarApp() {
       {/* 투표 상세 및 참여 모달 */}
       {voteDetailModalOpen && selectedVote && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100 }}>
-          <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', width: '480px', maxHeight: '85vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '15px', boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
+          <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', width: '480px', maxHeight: '85vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '15px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
-              <div style={{ display: 'flex', gap: '6px' }}>
-                <span style={{ fontSize: '11px', fontWeight: 'bold', padding: '3px 8px', borderRadius: '4px', background: selectedVote.status === 'active' ? '#e7f5ff' : '#f1f3f5', color: selectedVote.status === 'active' ? '#1c7ed6' : '#495057' }}>
-                  {selectedVote.status === 'active' ? '🟢 진행 중' : '⚪ 마감됨'}
+              <div>
+                <span style={{ fontSize: '11px', fontWeight: 'bold', color: selectedVote.status === 'active' ? '#1c7ed6' : '#495057', background: selectedVote.status === 'active' ? '#e7f5ff' : '#f1f3f5', padding: '2px 6px', borderRadius: '4px' }}>
+                  {selectedVote.status === 'active' ? '진행 중' : '마감됨'}
                 </span>
-                <span style={{ fontSize: '11px', fontWeight: 'bold', padding: '3px 8px', borderRadius: '4px', background: '#f8f9fa', color: '#495057', border: '1px solid #ddd' }}>
-                  {selectedVote.is_multiple ? '중복선택 가능' : '단일선택'}
-                </span>
-                <span style={{ fontSize: '11px', fontWeight: 'bold', padding: '3px 8px', borderRadius: '4px', background: '#f8f9fa', color: '#495057', border: '1px solid #ddd' }}>
-                  {selectedVote.is_anonymous ? '익명 투표' : '실명 투표'}
-                </span>
+                <h3 style={{ margin: '6px 0 0 0', fontSize: '18px', color: '#222' }}>{selectedVote.title}</h3>
               </div>
               <button onClick={() => setVoteDetailModalOpen(false)} style={{ background: 'none', border: 'none', fontSize: '18px', cursor: 'pointer', fontWeight: 'bold', color: '#666' }}>✕</button>
             </div>
 
-            <div>
-              <h3 style={{ margin: '0 0 4px 0', fontSize: '18px', color: '#222' }}>{selectedVote.title}</h3>
-              <div style={{ fontSize: '12px', color: '#888' }}>마감일: {selectedVote.end_date || '기한 없음'}</div>
-            </div>
-
-            {!selectedVote.is_anonymous && (
-              <button 
-                onClick={() => setVoteStatusModalOpen(true)}
-                style={{ width: '100%', padding: '8px', background: '#e7f5ff', color: '#007bff', border: '1px solid #b2f2bb', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px' }}
-              >
-                👥 누가 누구에게 투표했는지 보기 (투표 현황)
-              </button>
-            )}
-
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#555' }}>투표 항목 및 현황</span>
+              <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#555' }}>투표 항목 {selectedVote.is_multiple ? '(중복 선택 가능)' : '(단일 선택)'}</span>
               {voteOptionsList.map(opt => {
-                const matchedRecords = voteRecordsList.filter(r => r.option_id === opt.id);
-                const count = matchedRecords.length;
-                const totalCount = voteRecordsList.length;
-                const percent = totalCount > 0 ? Math.round((count / totalCount) * 100) : 0;
-                const isSelectedByMe = selectedOptionIds.includes(opt.id);
-                const voterNames = matchedRecords.map(r => profilesMap[r.user_id]?.name || '알 수 없음').join(', ');
+                const count = voteRecordsList.filter(r => r.option_id === opt.id).length;
+                const totalVotes = voteRecordsList.length > 0 ? new Set(voteRecordsList.map(r => r.user_id)).size : 0;
+                const isSelected = selectedOptionIds.includes(opt.id);
 
                 return (
                   <div 
                     key={opt.id}
                     onClick={() => {
-                      if (selectedVote.status === 'active') {
-                        if (selectedVote.is_multiple) {
-                          if (selectedOptionIds.includes(opt.id)) {
-                            setSelectedOptionIds(selectedOptionIds.filter(id => id !== opt.id));
-                          } else {
-                            setSelectedOptionIds([...selectedOptionIds, opt.id]);
-                          }
+                      if (selectedVote.status !== 'active') return;
+                      if (selectedVote.is_multiple) {
+                        if (isSelected) {
+                          setSelectedOptionIds(selectedOptionIds.filter(id => id !== opt.id));
                         } else {
-                          setSelectedOptionIds([opt.id]);
+                          setSelectedOptionIds([...selectedOptionIds, opt.id]);
                         }
+                      } else {
+                        setSelectedOptionIds([opt.id]);
                       }
                     }}
                     style={{ 
                       padding: '12px', 
+                      background: isSelected ? '#e7f5ff' : '#f8f9fa', 
+                      border: isSelected ? '1px solid #74c0fc' : '1px solid #ddd', 
                       borderRadius: '8px', 
-                      border: isSelectedByMe ? '2px solid #007bff' : '1px solid #ddd',
-                      background: isSelectedByMe ? '#e7f5ff' : '#f8f9fa',
                       cursor: selectedVote.status === 'active' ? 'pointer' : 'default',
-                      position: 'relative',
-                      overflow: 'hidden'
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '4px'
                     }}
                   >
-                    <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: `${percent}%`, background: 'rgba(0, 123, 255, 0.08)', zIndex: 1 }} />
-                    <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', zIndex: 2, fontSize: '14px', alignItems: 'center' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <input 
-                          type={selectedVote.is_multiple ? "checkbox" : "radio"} 
-                          checked={isSelectedByMe} 
-                          onChange={() => {}} 
-                          style={{ cursor: 'pointer' }}
-                        />
-                        <span style={{ fontWeight: isSelectedByMe ? 'bold' : 'normal', color: '#333' }}>
-                          {opt.content}
-                        </span>
-                      </div>
-                      <span style={{ fontWeight: 'bold', color: '#007bff' }}>{count}표</span>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#333' }}>{opt.content}</span>
+                      <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#007bff' }}>{count}표</span>
                     </div>
-
-                    {!selectedVote.is_anonymous && count > 0 && (
-                      <div style={{ marginTop: '6px', fontSize: '11px', color: '#555', position: 'relative', zIndex: 2, paddingLeft: '22px' }}>
-                        투표자: <b>{voterNames}</b>
-                      </div>
-                    )}
                   </div>
                 );
               })}
@@ -2025,27 +2061,29 @@ export default function CalendarApp() {
                 onClick={castVote}
                 style={{ width: '100%', padding: '10px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
               >
-                투표하기 / 변경하기
+                투표하기 반영
               </button>
             )}
 
-            {(selectedVote.user_id === session?.user?.id || profile?.role === 'admin') && (
-              <div style={{ display: 'flex', gap: '8px', marginTop: '5px' }}>
-                <button 
-                  onClick={() => toggleVoteStatus(selectedVote.id, selectedVote.status)}
-                  style={{ flex: 1, padding: '8px', background: '#ffc107', color: '#000', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px' }}
-                >
-                  {selectedVote.status === 'active' ? '투표 마감하기' : '투표 재개하기'}
-                </button>
-                <button 
-                  onClick={() => deleteVote(selectedVote.id)}
-                  style={{ flex: 1, padding: '8px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px' }}
-                >
-                  투표 삭제
-                </button>
-              </div>
-            )}
-
+            <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
+              {(selectedVote.user_id === session?.user?.id || profile?.role === 'admin') && (
+                <>
+                  <button 
+                    onClick={() => toggleVoteStatus(selectedVote.id, selectedVote.status)}
+                    style={{ flex: 1, padding: '8px', background: '#ffc107', color: '#000', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px' }}
+                  >
+                    {selectedVote.status === 'active' ? '투표 마감하기' : '투표 재시작'}
+                  </button>
+                  <button 
+                    onClick={() => deleteVote(selectedVote.id)}
+                    style={{ flex: 1, padding: '8px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px' }}
+                  >
+                    투표 삭제
+                  </button>
+                </>
+              )}
+            </div>
+            
             <button 
               onClick={() => setVoteDetailModalOpen(false)} 
               style={{ width: '100%', padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
@@ -2056,179 +2094,85 @@ export default function CalendarApp() {
         </div>
       )}
 
-      {/* 투표 현황 상세 보기 모달 */}
-      {voteStatusModalOpen && selectedVote && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1200 }}>
-          <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', width: '420px', maxHeight: '80vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <h3 style={{ margin: '0 0 5px 0', fontSize: '16px' }}>👥 전체 투표 현황 (실명)</h3>
-            <p style={{ fontSize: '12px', color: '#666', margin: 0 }}>각 유저가 어떤 항목에 투표했는지 확인할 수 있습니다.</p>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '10px' }}>
-              {(() => {
-                const userVotedMap: Record<string, string[]> = {};
-                voteRecordsList.forEach(r => {
-                  if (!userVotedMap[r.user_id]) userVotedMap[r.user_id] = [];
-                  const opt = voteOptionsList.find(o => o.id === r.option_id);
-                  if (opt) userVotedMap[r.user_id].push(opt.content);
-                });
-
-                const userIds = Object.keys(userVotedMap);
-                if (userIds.length === 0) {
-                  return <div style={{ textAlign: 'center', color: '#888', padding: '20px' }}>아직 투표한 참여자가 없습니다.</div>;
-                }
-
-                return userIds.map(uid => {
-                  const userName = profilesMap[uid]?.name || '알 수 없음';
-                  const choices = userVotedMap[uid].join(', ');
-                  return (
-                    <div key={uid} style={{ padding: '10px', background: '#f8f9fa', borderRadius: '6px', border: '1px solid #ddd', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontWeight: 'bold', fontSize: '13px', color: '#333' }}>{userName}</span>
-                      <span style={{ fontSize: '13px', color: '#007bff' }}>{choices}</span>
-                    </div>
-                  );
-                });
-              })()}
-            </div>
-
-            <button 
-              onClick={() => setVoteStatusModalOpen(false)} 
-              style={{ width: '100%', padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', marginTop: '10px' }}
-            >
-              닫기
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* 일정 상세 정보 및 댓글 모달 */}
-      {eventDetailModalOpen && selectedEvent && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100 }}>
-          <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', width: '450px', maxHeight: '85vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '15px', boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
-              <h3 style={{ margin: 0, fontSize: '18px', color: '#222' }}>{selectedEvent.title}</h3>
-              <button onClick={() => setEventDetailModalOpen(false)} style={{ background: 'none', border: 'none', fontSize: '18px', cursor: 'pointer', fontWeight: 'bold', color: '#666' }}>✕</button>
-            </div>
-
-            <div style={{ fontSize: '13px', color: '#666', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <div>📅 일정: {selectedEvent.event_date} {selectedEvent.end_date && selectedEvent.end_date !== selectedEvent.event_date ? `~ ${selectedEvent.end_date}` : ''}</div>
-              <div>👤 작성자: {profilesMap[selectedEvent.user_id]?.name || '익명'}</div>
-              {selectedEvent.content && <div style={{ marginTop: '8px', padding: '10px', background: '#f8f9fa', borderRadius: '6px', border: '1px solid #eee', color: '#333' }}>{selectedEvent.content}</div>}
-            </div>
-
-            {/* 댓글 영역 */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', borderTop: '1px solid #eee', paddingTop: '12px' }}>
-              <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#555' }}>댓글 ({comments.length})</span>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '150px', overflowY: 'auto' }}>
-                {comments.length === 0 ? (
-                  <div style={{ fontSize: '12px', color: '#888', textAlign: 'center', padding: '10px' }}>첫 댓글을 남겨보세요!</div>
-                ) : (
-                  comments.map(c => (
-                    <div key={c.id} style={{ background: '#f8f9fa', padding: '8px 10px', borderRadius: '6px', border: '1px solid #eee', display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#888' }}>
-                        <span style={{ fontWeight: 'bold', color: '#333' }}>{profilesMap[c.user_id]?.name || '익명'}</span>
-                        <span>{new Date(c.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                      </div>
-                      <div style={{ fontSize: '13px', color: '#333', wordBreak: 'break-all' }}>{c.content}</div>
-                    </div>
-                  ))
-                )}
-              </div>
-
-              <form onSubmit={addComment} style={{ display: 'flex', gap: '6px', marginTop: '4px' }}>
-                <input 
-                  type="text" 
-                  placeholder="댓글을 입력하세요..." 
-                  value={newCommentText} 
-                  onChange={e => setNewCommentText(e.target.value)} 
-                  style={{ flex: 1, padding: '8px', borderRadius: '6px', border: '1px solid #ccc', fontSize: '13px' }} 
-                />
-                <button type="submit" style={{ padding: '8px 14px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px' }}>등록</button>
-              </form>
-            </div>
-
-            <div style={{ display: 'flex', gap: '8px', marginTop: '5px' }}>
-              {(selectedEvent.user_id === session?.user?.id || profile?.role === 'admin') && (
-                <>
-                  <button 
-                    onClick={() => {
-                      setEditEventTitle(selectedEvent.title);
-                      setEditEventContent(selectedEvent.content || '');
-                      setEditEventStartDate(selectedEvent.event_date);
-                      setEditEventEndDate(selectedEvent.end_date || selectedEvent.event_date);
-                      setEditEventColor(selectedEvent.color || profilesMap[selectedEvent.user_id]?.color || '#339af0');
-                      setEventDetailModalOpen(false);
-                      setEventEditModalOpen(true);
-                    }}
-                    style={{ flex: 1, padding: '8px', background: '#ffc107', color: '#000', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px' }}
-                  >
-                    일정 수정
-                  </button>
-                  <button 
-                    onClick={() => deleteEvent(selectedEvent.id)}
-                    style={{ flex: 1, padding: '8px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px' }}
-                  >
-                    삭제
-                  </button>
-                </>
-              )}
-            </div>
-
-            <button 
-              onClick={() => setEventDetailModalOpen(false)} 
-              style={{ width: '100%', padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
-            >
-              닫기
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* 일정 수정 모달 */}
-      {eventEditModalOpen && selectedEvent && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1200 }}>
-          <form onSubmit={updateEvent} style={{ background: '#fff', padding: '24px', borderRadius: '10px', width: '400px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <h3 style={{ margin: '0 0 5px 0' }}>일정 수정하기</h3>
-            <div>
-              <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>제목</label>
-              <input type="text" value={editEventTitle} onChange={e => setEditEventTitle(e.target.value)} required style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }} />
-            </div>
-            <div>
-              <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>내용 (선택)</label>
-              <textarea value={editEventContent} onChange={e => setEditEventContent(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', height: '60px', boxSizing: 'border-box' }} />
-            </div>
+      {/* 방 생성 모달 */}
+      {roomModalOpen && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
+          <form onSubmit={createRoom} style={{ background: '#fff', padding: '24px', borderRadius: '10px', width: '350px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <h3 style={{ margin: '0 0 5px 0' }}>새 캘린더 방 생성</h3>
+            <input type="text" placeholder="방 이름 (예: 친구들 모임)" value={newRoomName} onChange={e => setNewRoomName(e.target.value)} required style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} />
             <div style={{ display: 'flex', gap: '8px' }}>
-              <div style={{ flex: 1 }}>
-                <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>시작일</label>
-                <input type="date" value={editEventStartDate} onChange={e => setEditEventStartDate(e.target.value)} required style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }} />
-              </div>
-              <div style={{ flex: 1 }}>
-                <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>종료일</label>
-                <input type="date" value={editEventEndDate} onChange={e => setEditEventEndDate(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }} />
-              </div>
-            </div>
-            <div>
-              <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>색상 선택</label>
-              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                {PRESET_COLORS.map(color => (
-                  <div 
-                    key={color} 
-                    onClick={() => setEditEventColor(color)}
-                    style={{ width: '24px', height: '24px', borderRadius: '50%', background: color, cursor: 'pointer', border: editEventColor === color ? '3px solid #000' : '1px solid #ddd' }}
-                  />
-                ))}
-              </div>
-            </div>
-            <div style={{ display: 'flex', gap: '8px', marginTop: '15px' }}>
-              <button type="submit" style={{ flex: 1, padding: '10px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>수정완료</button>
-              <button type="button" onClick={() => setEventEditModalOpen(false)} style={{ flex: 1, padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>취소</button>
+              <button type="submit" style={{ flex: 1, padding: '10px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>생성</button>
+              <button type="button" onClick={() => setRoomModalOpen(false)} style={{ flex: 1, padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>취소</button>
             </div>
           </form>
         </div>
       )}
 
+      {/* 방 관리 모달 */}
+      {roomManageModalOpen && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
+          <div style={{ background: '#fff', padding: '24px', borderRadius: '10px', width: '400px', maxHeight: '80vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
+              <h3 style={{ margin: 0, fontSize: '18px' }}>⚙️ 방 관리 (이름 변경 및 순서)</h3>
+              <button onClick={() => setRoomManageModalOpen(false)} style={{ background: 'none', border: 'none', fontSize: '16px', cursor: 'pointer', fontWeight: 'bold' }}>✕</button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {rooms.map((room, index) => (
+                <div key={room.id} style={{ display: 'flex', flexDirection: 'column', gap: '6px', padding: '10px', background: '#f8f9fa', borderRadius: '6px', border: '1px solid #ddd' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    {editingRoomId === room.id ? (
+                      <input 
+                        type="text" 
+                        value={editRoomNameText} 
+                        onChange={e => setEditRoomNameText(e.target.value)} 
+                        style={{ flex: 1, padding: '6px', borderRadius: '4px', border: '1px solid #ccc', marginRight: '6px' }}
+                      />
+                    ) : (
+                      <span style={{ fontWeight: 'bold', fontSize: '14px' }}>{room.name}</span>
+                    )}
+
+                    <div style={{ display: 'flex', gap: '4px' }}>
+                      {editingRoomId === room.id ? (
+                        <>
+                          <button onClick={() => updateRoomName(room.id)} style={{ padding: '4px 8px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '12px', cursor: 'pointer' }}>저장</button>
+                          <button onClick={() => setEditingRoomId(null)} style={{ padding: '4px 8px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '12px', cursor: 'pointer' }}>취소</button>
+                        </>
+                      ) : (
+                        <button onClick={() => { setEditingRoomId(room.id); setEditRoomNameText(room.name); }} style={{ padding: '4px 8px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '12px', cursor: 'pointer' }}>이름 수정</button>
+                      )}
+                      <button onClick={() => deleteRoom(room.id)} style={{ padding: '4px 8px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '12px', cursor: 'pointer' }}>삭제</button>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '6px', marginTop: '4px' }}>
+                    <button 
+                      onClick={() => moveRoomOrder(index, 'up')} 
+                      disabled={index === 0}
+                      style={{ flex: 1, padding: '4px', background: index === 0 ? '#e9ecef' : '#ced4da', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: index === 0 ? 'default' : 'pointer' }}
+                    >
+                      ▲ 위로
+                    </button>
+                    <button 
+                      onClick={() => moveRoomOrder(index, 'down')} 
+                      disabled={index === rooms.length - 1}
+                      style={{ flex: 1, padding: '4px', background: index === rooms.length - 1 ? '#e9ecef' : '#ced4da', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: index === rooms.length - 1 ? 'default' : 'pointer' }}
+                    >
+                      ▼ 아래로
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button onClick={() => setRoomManageModalOpen(false)} style={{ width: '100%', padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>닫기</button>
+          </div>
+        </div>
+      )}
+
       {/* 일정 추가 모달 */}
       {eventAddModalOpen && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100 }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
           <form onSubmit={createEvent} style={{ background: '#fff', padding: '24px', borderRadius: '10px', width: '400px', maxHeight: '90vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <h3 style={{ margin: '0 0 5px 0' }}>새 일정 등록</h3>
             <div>
@@ -2241,11 +2185,11 @@ export default function CalendarApp() {
             </div>
             <div>
               <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>제목</label>
-              <input type="text" placeholder="예: 바베큐 파티" value={newEventTitle} onChange={e => setNewEventTitle(e.target.value)} required style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }} />
+              <input type="text" placeholder="일정 제목" value={newEventTitle} onChange={e => setNewEventTitle(e.target.value)} required style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }} />
             </div>
             <div>
               <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>내용 (선택)</label>
-              <textarea placeholder="상세 내용..." value={newEventContent} onChange={e => setNewEventContent(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', height: '60px', boxSizing: 'border-box' }} />
+              <textarea placeholder="상세 내용" value={newEventContent} onChange={e => setNewEventContent(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box', height: '60px' }} />
             </div>
             <div style={{ display: 'flex', gap: '8px' }}>
               <div style={{ flex: 1 }}>
@@ -2253,132 +2197,214 @@ export default function CalendarApp() {
                 <input type="date" value={newEventStartDate} onChange={e => setNewEventStartDate(e.target.value)} required style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }} />
               </div>
               <div style={{ flex: 1 }}>
-                <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>종료일 (선택)</label>
+                <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>종료일 (연박)</label>
                 <input type="date" value={newEventEndDate} onChange={e => setNewEventEndDate(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }} />
               </div>
             </div>
+
             <div>
-              <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>일정 색상 선택</label>
-              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '8px' }}>
-                {PRESET_COLORS.map(color => {
-                  const label = colorLabels[color] || DEFAULT_COLOR_LABELS[color];
-                  return (
-                    <div 
-                      key={color} 
-                      onClick={() => setNewEventColor(color)}
-                      title={label}
-                      style={{ width: '24px', height: '24px', borderRadius: '50%', background: color, cursor: 'pointer', border: newEventColor === color ? '3px solid #000' : '1px solid #ddd' }}
-                    />
-                  );
-                })}
+              <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>색상 선택</label>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '8px' }}>
+                {PRESET_COLORS.map(color => (
+                  <div 
+                    key={color} 
+                    onClick={() => setNewEventColor(color)}
+                    style={{ 
+                      width: '26px', 
+                      height: '26px', 
+                      borderRadius: '50%', 
+                      background: color, 
+                      cursor: 'pointer', 
+                      border: newEventColor === color ? '3px solid #333' : '1px solid #ddd' 
+                    }}
+                  />
+                ))}
               </div>
-              <div style={{ fontSize: '12px', color: '#555', background: '#f8f9fa', padding: '6px 8px', borderRadius: '4px', border: '1px solid #eee' }}>
-                선택된 색상 용도: <b>{colorLabels[newEventColor] || DEFAULT_COLOR_LABELS[newEventColor] || '일반 일정'}</b>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
+                <input 
+                  type="color" 
+                  value={customPickerColor} 
+                  onChange={e => {
+                    setCustomPickerColor(e.target.value);
+                    setNewEventColor(e.target.value);
+                  }} 
+                  style={{ width: '32px', height: '32px', border: 'none', cursor: 'pointer', background: 'none' }}
+                />
+                <input 
+                  type="text" 
+                  placeholder="커스텀 색상 라벨 이름 (예: 특별 일정)" 
+                  value={customColorLabel} 
+                  onChange={e => setCustomColorLabel(e.target.value)} 
+                  style={{ flex: 1, padding: '6px', borderRadius: '6px', border: '1px solid #ccc', fontSize: '12px' }}
+                />
               </div>
+
+              {newEventColor && colorLabels[newEventColor] && (
+                <div style={{ fontSize: '11px', color: '#007bff', marginTop: '4px', fontWeight: 'bold' }}>
+                  선택된 카테고리: {colorLabels[newEventColor]}
+                </div>
+              )}
             </div>
-            <div style={{ display: 'flex', gap: '8px', marginTop: '15px' }}>
-              <button type="submit" style={{ flex: 1, padding: '10px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>등록하기</button>
+
+            <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
+              <button type="submit" style={{ flex: 1, padding: '10px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>등록</button>
               <button type="button" onClick={() => setEventAddModalOpen(false)} style={{ flex: 1, padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>취소</button>
             </div>
           </form>
         </div>
       )}
 
-      {/* 방 생성 모달 */}
-      {roomModalOpen && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100 }}>
-          <form onSubmit={createRoom} style={{ background: '#fff', padding: '24px', borderRadius: '10px', width: '350px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <h3 style={{ margin: '0 0 5px 0' }}>새 캘린더 방 생성</h3>
-            <input type="text" placeholder="방 이름 (예: 제주도 여행)" value={newRoomName} onChange={e => setNewRoomName(e.target.value)} required style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }} />
+      {/* 일정 상세 모달 */}
+      {eventDetailModalOpen && selectedEvent && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
+          <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', width: '450px', maxHeight: '85vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
+              <h3 style={{ margin: 0, fontSize: '18px' }}>{selectedEvent.title}</h3>
+              <button onClick={() => setEventDetailModalOpen(false)} style={{ background: 'none', border: 'none', fontSize: '16px', cursor: 'pointer', fontWeight: 'bold' }}>✕</button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13px', color: '#555' }}>
+              <div>방: {rooms.find(r => r.id === selectedEvent.room_id)?.name || '알 수 없음'}</div>
+              <div>작성자: {profilesMap[selectedEvent.user_id]?.name || '익명'}</div>
+              <div>기간: {selectedEvent.event_date} {selectedEvent.end_date && selectedEvent.end_date !== selectedEvent.event_date ? `~ ${selectedEvent.end_date}` : ''}</div>
+              {selectedEvent.content && <div style={{ background: '#f8f9fa', padding: '10px', borderRadius: '6px', marginTop: '6px', whiteSpace: 'pre-wrap' }}>{selectedEvent.content}</div>}
+            </div>
+
+            <div style={{ borderTop: '1px solid #eee', paddingTop: '10px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <span style={{ fontSize: '13px', fontWeight: 'bold' }}>댓글</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '120px', overflowY: 'auto' }}>
+                {comments.length === 0 ? (
+                  <span style={{ fontSize: '12px', color: '#888' }}>작성된 댓글이 없습니다.</span>
+                ) : (
+                  comments.map(c => (
+                    <div key={c.id} style={{ background: '#f8f9fa', padding: '6px 10px', borderRadius: '6px', fontSize: '12px', display: 'flex', justifyContent: 'space-between' }}>
+                      <span><b>{profilesMap[c.user_id]?.name || '익명'}:</b> {c.content}</span>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              <form onSubmit={addComment} style={{ display: 'flex', gap: '6px', marginTop: '4px' }}>
+                <input type="text" placeholder="댓글을 입력하세요..." value={newCommentText} onChange={e => setNewCommentText(e.target.value)} style={{ flex: 1, padding: '6px', borderRadius: '4px', border: '1px solid #ccc', fontSize: '12px' }} />
+                <button type="submit" style={{ padding: '6px 12px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '12px', cursor: 'pointer' }}>등록</button>
+              </form>
+            </div>
+
             <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
-              <button type="submit" style={{ flex: 1, padding: '10px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>생성</button>
-              <button type="button" onClick={() => setRoomModalOpen(false)} style={{ flex: 1, padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>취소</button>
+              {(selectedEvent.user_id === session?.user?.id || profile?.role === 'admin') && (
+                <>
+                  <button 
+                    onClick={() => {
+                      setEditEventTitle(selectedEvent.title);
+                      setEditEventContent(selectedEvent.content || '');
+                      setEditEventStartDate(selectedEvent.event_date);
+                      setEditEventEndDate(selectedEvent.end_date || selectedEvent.event_date);
+                      setEditEventColor(selectedEvent.color || PRESET_COLORS[0]);
+                      setEventEditModalOpen(true);
+                    }}
+                    style={{ flex: 1, padding: '8px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px' }}
+                  >
+                    수정하기
+                  </button>
+                  <button 
+                    onClick={() => deleteEvent(selectedEvent.id)}
+                    style={{ flex: 1, padding: '8px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px' }}
+                  >
+                    삭제하기
+                  </button>
+                </>
+              )}
+            </div>
+
+            <button onClick={() => setEventDetailModalOpen(false)} style={{ width: '100%', padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>닫기</button>
+          </div>
+        </div>
+      )}
+
+      {/* 일정 수정 모달 */}
+      {eventEditModalOpen && selectedEvent && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100 }}>
+          <form onSubmit={updateEvent} style={{ background: '#fff', padding: '24px', borderRadius: '10px', width: '400px', maxHeight: '90vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <h3 style={{ margin: '0 0 5px 0' }}>일정 수정</h3>
+            <div>
+              <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>제목</label>
+              <input type="text" value={editEventTitle} onChange={e => setEditEventTitle(e.target.value)} required style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }} />
+            </div>
+            <div>
+              <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>내용</label>
+              <textarea value={editEventContent} onChange={e => setEditEventContent(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box', height: '60px' }} />
+            </div>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <div style={{ flex: 1 }}>
+                <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>시작일</label>
+                <input type="date" value={editEventStartDate} onChange={e => setEditEventStartDate(e.target.value)} required style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }} />
+              </div>
+              <div style={{ flex: 1 }}>
+                <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>종료일</label>
+                <input type="date" value={editEventEndDate} onChange={e => setEditEventEndDate(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }} />
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
+              <button type="submit" style={{ flex: 1, padding: '10px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>저장하기</button>
+              <button type="button" onClick={() => setEventEditModalOpen(false)} style={{ flex: 1, padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>취소</button>
             </div>
           </form>
         </div>
       )}
 
-      {/* 방 관리 모달 */}
-      {roomManageModalOpen && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100 }}>
-          <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', width: '420px', maxHeight: '80vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <h3 style={{ margin: '0 0 5px 0', fontSize: '16px' }}>⚙️ 방 관리 및 순서 변경</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '5px' }}>
-              {rooms.map((room, index) => (
-                <div key={room.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 10px', background: '#f8f9fa', borderRadius: '6px', border: '1px solid #ddd' }}>
-                  {editingRoomId === room.id ? (
-                    <div style={{ display: 'flex', gap: '6px', flex: 1, marginRight: '8px' }}>
-                      <input 
-                        type="text" 
-                        value={editRoomNameText} 
-                        onChange={e => setEditRoomNameText(e.target.value)} 
-                        style={{ flex: 1, padding: '4px 8px', borderRadius: '4px', border: '1px solid #ccc', fontSize: '13px' }} 
-                      />
-                      <button onClick={() => updateRoomName(room.id)} style={{ padding: '4px 8px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '12px', cursor: 'pointer' }}>저장</button>
-                      <button onClick={() => setEditingRoomId(null)} style={{ padding: '4px 8px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '12px', cursor: 'pointer' }}>취소</button>
-                    </div>
-                  ) : (
-                    <span style={{ fontWeight: 'bold', fontSize: '14px', color: '#333', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{room.name}</span>
-                  )}
-
-                  {editingRoomId !== room.id && (
-                    <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                      <button onClick={() => moveRoomOrder(index, 'up')} disabled={index === 0} style={{ padding: '4px 6px', background: '#e9ecef', border: '1px solid #ced4da', borderRadius: '4px', cursor: index === 0 ? 'not-allowed' : 'pointer', fontSize: '11px' }}>▲</button>
-                      <button onClick={() => moveRoomOrder(index, 'down')} disabled={index === rooms.length - 1} style={{ padding: '4px 6px', background: '#e9ecef', border: '1px solid #ced4da', borderRadius: '4px', cursor: index === rooms.length - 1 ? 'not-allowed' : 'pointer', fontSize: '11px' }}>▼</button>
-                      <button onClick={() => { setEditingRoomId(room.id); setEditRoomNameText(room.name); }} style={{ padding: '4px 8px', background: '#ffc107', color: '#000', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>수정</button>
-                      <button onClick={() => deleteRoom(room.id)} style={{ padding: '4px 8px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>삭제</button>
-                    </div>
-                  )}
-                </div>
-              ))}
+      {/* 이름 변경 신청 모달 */}
+      {nameChangeModalOpen && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
+          <form onSubmit={requestNameChange} style={{ background: '#fff', padding: '24px', borderRadius: '10px', width: '350px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <h3 style={{ margin: '0 0 5px 0' }}>이름 변경 신청</h3>
+            <p style={{ fontSize: '12px', color: '#666', margin: 0 }}>관리자 승인 후 닉네임이 변경됩니다.</p>
+            <input type="text" placeholder="변경할 이름" value={newNameRequestText} onChange={e => setNewNameRequestText(e.target.value)} required style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} />
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button type="submit" style={{ flex: 1, padding: '10px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>신청</button>
+              <button type="button" onClick={() => setNameChangeModalOpen(false)} style={{ flex: 1, padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>취소</button>
             </div>
-            <button onClick={() => setRoomManageModalOpen(false)} style={{ width: '100%', padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', marginTop: '10px' }}>닫기</button>
-          </div>
+          </form>
         </div>
       )}
 
       {/* 관리자 멤버 관리 모달 */}
-      {adminModalOpen && profile?.role === 'admin' && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100 }}>
-          <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', width: '500px', maxHeight: '85vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '15px' }}>
-            <h3 style={{ margin: 0, fontSize: '18px' }}>⚙️ 관리자 멤버 및 가입 승인 관리</h3>
+      {adminModalOpen && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
+          <div style={{ background: '#fff', padding: '24px', borderRadius: '10px', width: '500px', maxHeight: '80vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
+              <h3 style={{ margin: 0, fontSize: '18px' }}>⚙️ 멤버 및 가입 승인 관리</h3>
+              <button onClick={() => setAdminModalOpen(false)} style={{ background: 'none', border: 'none', fontSize: '16px', cursor: 'pointer', fontWeight: 'bold' }}>✕</button>
+            </div>
 
-            {/* 가입 대기 목록 */}
             <div>
-              <h4 style={{ fontSize: '14px', margin: '0 0 8px 0', color: '#007bff' }}>가입 대기 중인 멤버 ({pendingProfiles.length})</h4>
+              <h4 style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#dc3545' }}>승인 대기 중인 멤버</h4>
               {pendingProfiles.length === 0 ? (
-                <div style={{ fontSize: '13px', color: '#888', padding: '10px', background: '#f8f9fa', borderRadius: '6px' }}>대기 중인 멤버가 없습니다.</div>
+                <p style={{ fontSize: '13px', color: '#888', margin: 0 }}>대기 중인 멤버가 없습니다.</p>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   {pendingProfiles.map(p => (
-                    <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: '#fff3cd', borderRadius: '6px', border: '1px solid #ffeeba' }}>
-                      <div>
-                        <div style={{ fontWeight: 'bold', fontSize: '13px' }}>{p.name}</div>
-                        <div style={{ fontSize: '11px', color: '#666' }}>{p.email}</div>
-                      </div>
-                      <button onClick={() => approveUser(p.id)} style={{ padding: '6px 12px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '12px' }}>승인하기</button>
+                    <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px', background: '#fff3cd', borderRadius: '6px', border: '1px solid #ffeeba' }}>
+                      <span style={{ fontSize: '13px', fontWeight: 'bold' }}>{p.name} ({p.email})</span>
+                      <button onClick={() => approveUser(p.id)} style={{ padding: '4px 10px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>승인</button>
                     </div>
                   ))}
                 </div>
               )}
             </div>
 
-            {/* 이름 변경 요청 목록 */}
             <div>
-              <h4 style={{ fontSize: '14px', margin: '10px 0 8px 0', color: '#fd7e14' }}>이름 변경 신청 목록</h4>
+              <h4 style={{ margin: '10px 0 8px 0', fontSize: '14px', color: '#007bff' }}>이름 변경 신청 관리</h4>
               {allProfiles.filter(p => p.name_status === 'pending').length === 0 ? (
-                <div style={{ fontSize: '13px', color: '#888', padding: '10px', background: '#f8f9fa', borderRadius: '6px' }}>이름 변경 신청한 멤버가 없습니다.</div>
+                <p style={{ fontSize: '13px', color: '#888', margin: 0 }}>이름 변경을 신청한 멤버가 없습니다.</p>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   {allProfiles.filter(p => p.name_status === 'pending').map(p => (
-                    <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: '#fff8db', borderRadius: '6px', border: '1px solid #ffe066' }}>
-                      <div>
-                        <div style={{ fontSize: '12px', color: '#666' }}>기존: <b>{p.name}</b></div>
-                        <div style={{ fontWeight: 'bold', fontSize: '13px', color: '#d9480f' }}>변경 요청: <b>{p.requested_name}</b></div>
-                      </div>
+                    <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px', background: '#e7f5ff', borderRadius: '6px', border: '1px solid #74c0fc' }}>
+                      <span style={{ fontSize: '13px' }}>현재: <b>{p.name}</b> → 신청: <b style={{ color: '#007bff' }}>{p.requested_name}</b></span>
                       <div style={{ display: 'flex', gap: '4px' }}>
-                        <button onClick={() => approveNameChange(p.id, p.requested_name)} style={{ padding: '6px 10px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px' }}>승인</button>
-                        <button onClick={() => rejectNameChange(p.id)} style={{ padding: '6px 10px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px' }}>거절</button>
+                        <button onClick={() => approveNameChange(p.id, p.requested_name)} style={{ padding: '4px 8px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '11px', fontWeight: 'bold' }}>승인</button>
+                        <button onClick={() => rejectNameChange(p.id)} style={{ padding: '4px 8px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '11px', fontWeight: 'bold' }}>거절</button>
                       </div>
                     </div>
                   ))}
@@ -2386,47 +2412,28 @@ export default function CalendarApp() {
               )}
             </div>
 
-            {/* 전체 멤버 색상 관리 */}
             <div>
-              <h4 style={{ fontSize: '14px', margin: '10px 0 8px 0', color: '#333' }}>전체 멤버 프로필 색상 관리</h4>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '180px', overflowY: 'auto' }}>
+              <h4 style={{ margin: '15px 0 8px 0', fontSize: '14px', color: '#333' }}>전체 가입 멤버 프로필 색상 관리</h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {allProfiles.filter(p => p.status === 'approved').map(p => (
-                  <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 10px', background: '#f8f9fa', borderRadius: '6px', border: '1px solid #ddd' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{ fontWeight: 'bold', fontSize: '13px' }}>{p.name}</span>
-                      <span style={{ fontSize: '11px', color: '#888' }}>({p.email})</span>
-                    </div>
+                  <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px', background: '#f8f9fa', borderRadius: '6px', border: '1px solid #ddd' }}>
+                    <span style={{ fontSize: '13px', fontWeight: 'bold' }}>{p.name} ({p.role === 'admin' ? '관리자' : '일반'})</span>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <input 
                         type="color" 
                         value={adminEditedColors[p.id] || p.color || '#339af0'} 
-                        onChange={e => setAdminEditedColors({ ...adminEditedColors, [p.id]: e.target.value })}
-                        style={{ width: '32px', height: '26px', border: 'none', cursor: 'pointer', background: 'none' }}
+                        onChange={e => setAdminEditedColors({ ...adminEditedColors, [p.id]: e.target.value })} 
+                        style={{ width: '30px', height: '26px', border: 'none', cursor: 'pointer', background: 'none' }}
                       />
-                      <button onClick={() => adminUpdateUserColor(p.id)} style={{ padding: '4px 8px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>변경</button>
+                      <button onClick={() => adminUpdateUserColor(p.id)} style={{ padding: '4px 8px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer' }}>색상 변경</button>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            <button onClick={() => setAdminModalOpen(false)} style={{ width: '100%', padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', marginTop: '5px' }}>닫기</button>
+            <button onClick={() => setAdminModalOpen(false)} style={{ width: '100%', padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>닫기</button>
           </div>
-        </div>
-      )}
-
-      {/* 이름 변경 신청 모달 */}
-      {nameChangeModalOpen && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100 }}>
-          <form onSubmit={requestNameChange} style={{ background: '#fff', padding: '24px', borderRadius: '10px', width: '350px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <h3 style={{ margin: '0 0 5px 0' }}>본인 이름 변경 신청</h3>
-            <p style={{ fontSize: '12px', color: '#666', margin: 0 }}>관리자 승인 후 닉네임이 변경됩니다.</p>
-            <input type="text" placeholder="변경할 이름 입력" value={newNameRequestText} onChange={e => setNewNameRequestText(e.target.value)} required style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }} />
-            <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
-              <button type="submit" style={{ flex: 1, padding: '10px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>신청하기</button>
-              <button type="button" onClick={() => setNameChangeModalOpen(false)} style={{ flex: 1, padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>취소</button>
-            </div>
-          </form>
         </div>
       )}
 

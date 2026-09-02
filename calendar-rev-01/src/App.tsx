@@ -75,19 +75,22 @@ export default function CalendarApp() {
   const [chatInputText, setChatInputText] = useState('');
   const chatScrollRef = useRef<HTMLDivElement>(null);
 
-  // [수정] 예시 데이터를 제거하고 빈 배열로 초기화 후 Supabase 연동
+  // 투표 관련 상태
   const [votes, setVotes] = useState<any[]>([]);
   const [voteModalOpen, setVoteModalOpen] = useState(false);
   const [newVoteTitle, setNewVoteTitle] = useState('');
   const [newVoteEndDate, setNewVoteEndDate] = useState('');
   const [newVoteOptions, setNewVoteOptions] = useState<string[]>(['', '']);
+  const [newVoteIsMultiple, setNewVoteIsMultiple] = useState(false); // 중복 선택 가능 여부
+  const [newVoteIsAnonymous, setNewVoteIsAnonymous] = useState(true);   // 익명 투표 여부 (기본 익명)
   
   // 투표 상세 및 참여를 위한 상태
   const [selectedVote, setSelectedVote] = useState<any>(null);
   const [voteOptionsList, setVoteOptionsList] = useState<any[]>([]);
   const [voteRecordsList, setVoteRecordsList] = useState<any[]>([]);
   const [voteDetailModalOpen, setVoteDetailModalOpen] = useState(false);
-  const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
+  const [selectedOptionIds, setSelectedOptionIds] = useState<string[]>([]); // 다중 선택 대응을 위한 배열
+  const [voteStatusModalOpen, setVoteStatusModalOpen] = useState(false); // 누가 누구에게 투표했는지 보는 현황 모달
 
   const [selectedRoomIds, setSelectedRoomIds] = useState<string[]>([]);
   const [targetRoomIdForAdd, setTargetRoomIdForAdd] = useState<string | null>(null);
@@ -202,7 +205,7 @@ export default function CalendarApp() {
       fetchRooms();
       fetchEvents();
       fetchProfilesMap();
-      fetchVotes(); // 투표 목록 불러오기
+      fetchVotes();
       if (profile.role === 'admin') {
         fetchPendingProfiles();
         fetchAllProfiles();
@@ -297,12 +300,14 @@ export default function CalendarApp() {
       return;
     }
 
-    // 1. 투표 생성
+    // 1. 투표 생성 (is_multiple, is_anonymous 컬럼 포함)
     const { data: voteData, error: voteError } = await supabase.from('votes').insert([{
       title: newVoteTitle.trim(),
       user_id: session.user.id,
       end_date: newVoteEndDate || null,
-      status: 'active'
+      status: 'active',
+      is_multiple: newVoteIsMultiple,
+      is_anonymous: newVoteIsAnonymous
     }]).select().single();
 
     if (voteError || !voteData) {
@@ -324,25 +329,30 @@ export default function CalendarApp() {
       setNewVoteTitle('');
       setNewVoteEndDate('');
       setNewVoteOptions(['', '']);
+      setNewVoteIsMultiple(false);
+      setNewVoteIsAnonymous(true);
       setVoteModalOpen(false);
       fetchVotes();
     }
   };
 
   const castVote = async () => {
-    if (!selectedOptionId) {
-      alert('항목을 선택해주세요.');
+    if (selectedOptionIds.length === 0) {
+      alert('항목을 하나 이상 선택해주세요.');
       return;
     }
 
-    // 기존 투표 기록 삭제 후 재등록 (중복 투표 수정 방지 또는 최초 투표)
+    // 기존 내 투표 기록 전체 삭제 (중복/수정 처리 위함)
     await supabase.from('vote_records').delete().match({ vote_id: selectedVote.id, user_id: session.user.id });
 
-    const { error } = await supabase.from('vote_records').insert([{
+    // 선택한 항목들 일괄 insert
+    const inserts = selectedOptionIds.map(optId => ({
       vote_id: selectedVote.id,
-      option_id: selectedOptionId,
+      option_id: optId,
       user_id: session.user.id
-    }]);
+    }));
+
+    const { error } = await supabase.from('vote_records').insert(inserts);
 
     if (error) {
       alert('투표 참여 실패: ' + error.message);
@@ -1123,7 +1133,7 @@ export default function CalendarApp() {
             </form>
           </div>
         ) : currentViewMode === 'vote' ? (
-          /* [실제 Supabase 연동 투표 화면] */
+          /* [투표 목록 화면] */
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%', maxWidth: '900px', margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
             <div style={{ padding: '10px 0', borderBottom: '1px solid #eee', marginBottom: '15px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div>
@@ -1149,7 +1159,9 @@ export default function CalendarApp() {
                       key={vote.id}
                       onClick={() => {
                         setSelectedVote(vote);
-                        setSelectedOptionId(null);
+                        // 이미 내가 한 투표가 있다면 미리 세팅
+                        const myRecords = voteRecordsList.filter(r => r.vote_id === vote.id && r.user_id === session?.user?.id);
+                        setSelectedOptionIds(myRecords.map(r => r.option_id));
                         setVoteDetailModalOpen(true);
                       }}
                       style={{ 
@@ -1165,16 +1177,24 @@ export default function CalendarApp() {
                       }}
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ 
-                          fontSize: '11px', 
-                          fontWeight: 'bold', 
-                          padding: '3px 8px', 
-                          borderRadius: '4px', 
-                          background: vote.status === 'active' ? '#e7f5ff' : '#f1f3f5',
-                          color: vote.status === 'active' ? '#1c7ed6' : '#495057'
-                        }}>
-                          {vote.status === 'active' ? '🟢 진행 중' : '⚪ 마감됨'}
-                        </span>
+                        <div style={{ display: 'flex', gap: '6px' }}>
+                          <span style={{ 
+                            fontSize: '11px', 
+                            fontWeight: 'bold', 
+                            padding: '3px 8px', 
+                            borderRadius: '4px', 
+                            background: vote.status === 'active' ? '#e7f5ff' : '#f1f3f5',
+                            color: vote.status === 'active' ? '#1c7ed6' : '#495057'
+                          }}>
+                            {vote.status === 'active' ? '🟢 진행 중' : '⚪ 마감됨'}
+                          </span>
+                          <span style={{ fontSize: '11px', fontWeight: 'bold', padding: '3px 8px', borderRadius: '4px', background: '#f8f9fa', color: '#495057', border: '1px solid #ddd' }}>
+                            {vote.is_multiple ? '중복선택 가능' : '단일선택'}
+                          </span>
+                          <span style={{ fontSize: '11px', fontWeight: 'bold', padding: '3px 8px', borderRadius: '4px', background: '#f8f9fa', color: '#495057', border: '1px solid #ddd' }}>
+                            {vote.is_anonymous ? '익명' : '실명확인'}
+                          </span>
+                        </div>
                         <span style={{ fontSize: '12px', color: '#888' }}>마감일: {vote.end_date || '기한 없음'}</span>
                       </div>
 
@@ -1457,11 +1477,35 @@ export default function CalendarApp() {
 
       {/* ================= 모달 모음 ================= */}
 
-      {/* 투표 만들기 모달 */}
+      {/* 투표 만들기 모달 (중복 선택 & 익명 체크박스 추가 완료) */}
       {voteModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100 }}>
           <form onSubmit={createVote} style={{ background: '#fff', padding: '24px', borderRadius: '10px', width: '450px', maxHeight: '90vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <h3 style={{ margin: '0 0 10px 0' }}>새 투표 만들기</h3>
+            <h3 style={{ margin: '0 0 5px 0' }}>새 투표 만들기</h3>
+            
+            {/* 중복 선택 및 익명 투표 체크박스 영역 */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '10px', background: '#f8f9fa', borderRadius: '6px', border: '1px solid #eee' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', cursor: 'pointer', fontWeight: 'bold' }}>
+                <input 
+                  type="checkbox" 
+                  checked={newVoteIsMultiple} 
+                  onChange={e => setNewVoteIsMultiple(e.target.checked)} 
+                  style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                />
+                중복 선택 가능 (여러 항목 투표 허용)
+              </label>
+
+              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', cursor: 'pointer', fontWeight: 'bold' }}>
+                <input 
+                  type="checkbox" 
+                  checked={newVoteIsAnonymous} 
+                  onChange={e => setNewVoteIsAnonymous(e.target.checked)} 
+                  style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                />
+                익명 투표로 만들기 (체크 해제 시 실명 및 투표 현황 확인 가능)
+              </label>
+            </div>
+
             <div>
               <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>투표 제목</label>
               <input type="text" placeholder="예: 다음 주 회식 장소 추천" value={newVoteTitle} onChange={e => setNewVoteTitle(e.target.value)} required style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }} />
@@ -1514,14 +1558,22 @@ export default function CalendarApp() {
         </div>
       )}
 
-      {/* 투표 상세 및 참여 모달 */}
+      {/* 투표 상세 및 참여 모달 (실명일 때 항목별 투표자 표시 및 투표 현황 버튼 추가) */}
       {voteDetailModalOpen && selectedVote && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100 }}>
-          <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', width: '450px', maxHeight: '85vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '15px', boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
+          <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', width: '480px', maxHeight: '85vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '15px', boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
-              <span style={{ fontSize: '11px', fontWeight: 'bold', padding: '3px 8px', borderRadius: '4px', background: selectedVote.status === 'active' ? '#e7f5ff' : '#f1f3f5', color: selectedVote.status === 'active' ? '#1c7ed6' : '#495057' }}>
-                {selectedVote.status === 'active' ? '🟢 진행 중' : '⚪ 마감됨'}
-              </span>
+              <div style={{ display: 'flex', gap: '6px' }}>
+                <span style={{ fontSize: '11px', fontWeight: 'bold', padding: '3px 8px', borderRadius: '4px', background: selectedVote.status === 'active' ? '#e7f5ff' : '#f1f3f5', color: selectedVote.status === 'active' ? '#1c7ed6' : '#495057' }}>
+                  {selectedVote.status === 'active' ? '🟢 진행 중' : '⚪ 마감됨'}
+                </span>
+                <span style={{ fontSize: '11px', fontWeight: 'bold', padding: '3px 8px', borderRadius: '4px', background: '#f8f9fa', color: '#495057', border: '1px solid #ddd' }}>
+                  {selectedVote.is_multiple ? '중복선택 가능' : '단일선택'}
+                </span>
+                <span style={{ fontSize: '11px', fontWeight: 'bold', padding: '3px 8px', borderRadius: '4px', background: '#f8f9fa', color: '#495057', border: '1px solid #ddd' }}>
+                  {selectedVote.is_anonymous ? '익명 투표' : '실명 투표'}
+                </span>
+              </div>
               <button onClick={() => setVoteDetailModalOpen(false)} style={{ background: 'none', border: 'none', fontSize: '18px', cursor: 'pointer', fontWeight: 'bold', color: '#666' }}>✕</button>
             </div>
 
@@ -1530,39 +1582,78 @@ export default function CalendarApp() {
               <div style={{ fontSize: '12px', color: '#888' }}>마감일: {selectedVote.end_date || '기한 없음'}</div>
             </div>
 
+            {/* 비익명인 경우 '투표 현황' 버튼 제공 */}
+            {!selectedVote.is_anonymous && (
+              <button 
+                onClick={() => setVoteStatusModalOpen(true)}
+                style={{ width: '100%', padding: '8px', background: '#e7f5ff', color: '#007bff', border: '1px solid #b2f2bb', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px' }}
+              >
+                👥 누가 누구에게 투표했는지 보기 (투표 현황)
+              </button>
+            )}
+
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#555' }}>투표 항목 및 현황</span>
               {voteOptionsList.map(opt => {
-                const count = voteRecordsList.filter(r => r.option_id === opt.id).length;
-                const totalCount = voteRecordsList.length;
+                const matchedRecords = voteRecordsList.filter(r => r.option_id === opt.id);
+                const count = matchedRecords.length;
+                const totalCount = voteRecordsList.length; // 단순 기록 개수
                 const percent = totalCount > 0 ? Math.round((count / totalCount) * 100) : 0;
-                const isSelectedByMe = voteRecordsList.some(r => r.option_id === opt.id && r.user_id === session?.user?.id);
+                const isSelectedByMe = selectedOptionIds.includes(opt.id);
+
+                // 실명 투표일 경우 이 항목에 투표한 사람들의 이름 추출
+                const voterNames = matchedRecords.map(r => profilesMap[r.user_id]?.name || '알 수 없음').join(', ');
 
                 return (
                   <div 
                     key={opt.id}
                     onClick={() => {
                       if (selectedVote.status === 'active') {
-                        setSelectedOptionId(opt.id);
+                        if (selectedVote.is_multiple) {
+                          // 다중 선택 토글
+                          if (selectedOptionIds.includes(opt.id)) {
+                            setSelectedOptionIds(selectedOptionIds.filter(id => id !== opt.id));
+                          } else {
+                            setSelectedOptionIds([...selectedOptionIds, opt.id]);
+                          }
+                        } else {
+                          // 단일 선택
+                          setSelectedOptionIds([opt.id]);
+                        }
                       }
                     }}
                     style={{ 
-                      padding: '10px 12px', 
+                      padding: '12px', 
                       borderRadius: '8px', 
-                      border: selectedOptionId === opt.id ? '2px solid #007bff' : '1px solid #ddd',
+                      border: isSelectedByMe ? '2px solid #007bff' : '1px solid #ddd',
                       background: isSelectedByMe ? '#e7f5ff' : '#f8f9fa',
                       cursor: selectedVote.status === 'active' ? 'pointer' : 'default',
                       position: 'relative',
                       overflow: 'hidden'
                     }}
                   >
-                    <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: `${percent}%`, background: 'rgba(0, 123, 255, 0.1)', zIndex: 1 }} />
-                    <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', zIndex: 2, fontSize: '14px' }}>
-                      <span style={{ fontWeight: isSelectedByMe ? 'bold' : 'normal' }}>
-                        {opt.content} {isSelectedByMe && '(내 선택)'}
-                      </span>
-                      <span style={{ fontWeight: 'bold', color: '#007bff' }}>{count}표 ({percent}%)</span>
+                    <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: `${percent}%`, background: 'rgba(0, 123, 255, 0.08)', zIndex: 1 }} />
+                    <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', zIndex: 2, fontSize: '14px', alignItems: 'center' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <input 
+                          type={selectedVote.is_multiple ? "checkbox" : "radio"} 
+                          checked={isSelectedByMe} 
+                          onChange={() => {}} // 부모 div에서 관리
+                          style={{ cursor: 'pointer' }}
+                        />
+                        <span style={{ fontWeight: isSelectedByMe ? 'bold' : 'normal', color: '#333' }}>
+                          {opt.content}
+                        </span>
+                      </div>
+                      <span style={{ fontWeight: 'bold', color: '#007bff' }}>{count}표</span>
                     </div>
+
+                    {/* 실명 투표일 때 해당 항목에 투표한 사람 목록 표시 */}
+                    {!selectedVote.is_anonymous && count > 0 && (
+                      <div style={{ marginTop: '6px', fontSize: '11px', color: '#555', position: 'relative', zIndex: 2, paddingLeft: '22px' }}>
+                        투표자: <b>{voterNames}</b>
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -1597,6 +1688,51 @@ export default function CalendarApp() {
             <button 
               onClick={() => setVoteDetailModalOpen(false)} 
               style={{ width: '100%', padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+            >
+              닫기
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 투표 현황 상세 보기 모달 (누가 어느 항목에 투표했는지 리스트업) */}
+      {voteStatusModalOpen && selectedVote && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1200 }}>
+          <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', width: '420px', maxHeight: '80vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <h3 style={{ margin: '0 0 5px 0', fontSize: '16px' }}>👥 전체 투표 현황 (실명)</h3>
+            <p style={{ fontSize: '12px', color: '#666', margin: 0 }}>각 유저가 어떤 항목에 투표했는지 확인할 수 있습니다.</p>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '10px' }}>
+              {(() => {
+                // 유저별로 어떤 항목들을 골랐는지 매핑
+                const userVotedMap: Record<string, string[]> = {};
+                voteRecordsList.forEach(r => {
+                  if (!userVotedMap[r.user_id]) userVotedMap[r.user_id] = [];
+                  const opt = voteOptionsList.find(o => o.id === r.option_id);
+                  if (opt) userVotedMap[r.user_id].push(opt.content);
+                });
+
+                const userIds = Object.keys(userVotedMap);
+                if (userIds.length === 0) {
+                  return <div style={{ textAlign: 'center', color: '#888', padding: '20px' }}>아직 투표한 참여자가 없습니다.</div>;
+                }
+
+                return userIds.map(uid => {
+                  const userName = profilesMap[uid]?.name || '알 수 없음';
+                  const choices = userVotedMap[uid].join(', ');
+                  return (
+                    <div key={uid} style={{ padding: '10px', background: '#f8f9fa', borderRadius: '6px', border: '1px solid #ddd', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontWeight: 'bold', fontSize: '13px', color: '#333' }}>{userName}</span>
+                      <span style={{ fontSize: '13px', color: '#007bff' }}>{choices}</span>
+                    </div>
+                  );
+                });
+              })()}
+            </div>
+
+            <button 
+              onClick={() => setVoteStatusModalOpen(false)} 
+              style={{ width: '100%', padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', marginTop: '10px' }}
             >
               닫기
             </button>

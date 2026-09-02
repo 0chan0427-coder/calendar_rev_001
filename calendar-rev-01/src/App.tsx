@@ -97,7 +97,7 @@ export default function CalendarApp() {
   const [pendingProfiles, setPendingProfiles] = useState<any[]>([]);
   const [allProfiles, setAllProfiles] = useState<any[]>([]);
   
-  // 💡 관리자 모달에서 각 멤버별 수정 중인 색상을 임시 저장하기 위한 상태
+  // 관리자 모달에서 각 멤버별 수정 중인 색상을 임시 저장하기 위한 상태
   const [adminEditedColors, setAdminEditedColors] = useState<Record<string, string>>({});
 
   const [comments, setComments] = useState<any[]>([]);
@@ -349,7 +349,6 @@ export default function CalendarApp() {
     const { data, error } = await supabase.from('profiles').select('*');
     if (!error && data) {
       setAllProfiles(data);
-      // 관리자 모달용 색상 임시 상태 초기화
       const colorsMap: Record<string, string> = {};
       data.forEach(p => {
         colorsMap[p.id] = p.color || '#339af0';
@@ -358,7 +357,7 @@ export default function CalendarApp() {
     }
   };
 
-  // 💡 관리자가 특정 멤버의 색상을 변경하여 저장하는 함수
+  // 관리자가 특정 멤버의 색상을 변경하여 저장하는 함수
   const adminUpdateUserColor = async (userId: string) => {
     const newColor = adminEditedColors[userId];
     if (!newColor) return;
@@ -704,30 +703,10 @@ export default function CalendarApp() {
             
             <div style={{ background: '#fff', padding: '12px', borderRadius: '6px', border: '1px solid #ddd', margin: '10px 0' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                {/* 일반 멤버가 직접 변경하지 못하도록 컬러 input 제거 및 고정 색상 표시 원형 박스로 변경 */}
                 <div 
-                  title="클릭하여 프로필 색상 변경"
-                  style={{ position: 'relative', width: '20px', height: '20px', borderRadius: '50%', background: profile?.color || '#339af0', flexShrink: 0, cursor: 'pointer', border: '1px solid rgba(0,0,0,0.2)' }}
-                >
-                  <input 
-                    type="color" 
-                    value={profile?.color || '#339af0'} 
-                    onChange={async (e) => {
-                      const newColor = e.target.value;
-                      const { error } = await supabase
-                        .from('profiles')
-                        .update({ color: newColor })
-                        .eq('id', session.user.id);
-                      
-                      if (!error) {
-                        fetchProfile(session.user.id);
-                        fetchProfilesMap();
-                      } else {
-                        alert('색상 변경 실패: ' + error.message);
-                      }
-                    }}
-                    style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' }}
-                  />
-                </div>
+                  style={{ width: '20px', height: '20px', borderRadius: '50%', background: profile?.color || '#339af0', flexShrink: 0, border: '1px solid rgba(0,0,0,0.2)' }}
+                />
                 <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <span style={{ fontSize: '14px', fontWeight: 'bold', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -1188,7 +1167,7 @@ export default function CalendarApp() {
         </div>
       )}
 
-      {/* 6. 멤버 관리 (관리자) 모달 - 💡 기존 멤버 색상 변경 기능 포함 */}
+      {/* 6. 멤버 관리 (관리자) 모달 - 전체 멤버 색상 변경 기능 포함 */}
       {adminModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
           <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '480px', maxHeight: '85vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '15px' }}>
@@ -1197,7 +1176,7 @@ export default function CalendarApp() {
               <p style={{ color: '#666', fontSize: '13px', margin: 0 }}>가입 대기 회원 승인, 이름 변경 요청 및 전체 멤버 프로필 색상을 관리할 수 있습니다.</p>
             </div>
 
-            {/* 💡 전체 멤버 색상 관리 섹션 추가 */}
+            {/* 전체 멤버 색상 관리 섹션 */}
             <div>
               <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#333', marginBottom: '8px' }}>🎨 전체 멤버 프로필 색상 관리</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '200px', overflowY: 'auto', border: '1px solid #eee', padding: '8px', borderRadius: '6px' }}>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -68,6 +68,13 @@ export default function CalendarApp() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
   const [rightSidebarOpen, setRightSidebarOpen] = useState(false);
+  
+  // 뷰 모드 추가 ('calendar' 또는 'chat')
+  const [currentViewMode, setCurrentViewMode] = useState<'calendar' | 'chat'>('calendar');
+  const [chatMessages, setChatMessages] = useState<any[]>([]);
+  const [chatInputText, setChatInputText] = useState('');
+  const chatScrollRef = useRef<HTMLDivElement>(null);
+
   const [selectedRoomIds, setSelectedRoomIds] = useState<string[]>([]);
   const [targetRoomIdForAdd, setTargetRoomIdForAdd] = useState<string | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
@@ -97,7 +104,6 @@ export default function CalendarApp() {
   const [pendingProfiles, setPendingProfiles] = useState<any[]>([]);
   const [allProfiles, setAllProfiles] = useState<any[]>([]);
   
-  // 관리자 모달에서 각 멤버별 수정 중인 색상을 임시 저장하기 위한 상태
   const [adminEditedColors, setAdminEditedColors] = useState<Record<string, string>>({});
 
   const [comments, setComments] = useState<any[]>([]);
@@ -189,6 +195,31 @@ export default function CalendarApp() {
     }
   }, [session, profile]);
 
+  // 자유 채팅방 모드일 때 메시지 불러오기 및 실시간 구독 설정
+  useEffect(() => {
+    if (currentViewMode === 'chat') {
+      fetchMessages();
+
+      const channel = supabase
+        .channel('public:messages')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => {
+          setChatMessages((prev) => [...prev, payload.new]);
+        })
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    }
+  }, [currentViewMode]);
+
+  // 채팅 메시지 최하단 스크롤 이동
+  useEffect(() => {
+    if (currentViewMode === 'chat' && chatScrollRef.current) {
+      chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
+    }
+  }, [chatMessages, currentViewMode]);
+
   useEffect(() => {
     if (selectedEvent) {
       fetchComments(selectedEvent.id);
@@ -218,6 +249,34 @@ export default function CalendarApp() {
       setProfile(data);
     } catch (err) {
       console.error('프로필 조회 실패:', err);
+    }
+  };
+
+  const fetchMessages = async () => {
+    const { data, error } = await supabase
+      .from('messages')
+      .select('*')
+      .order('created_at', { ascending: true });
+    if (!error && data) {
+      setChatMessages(data);
+    }
+  };
+
+  const sendChatMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!chatInputText.trim()) return;
+
+    const { error } = await supabase.from('messages').insert([
+      {
+        user_id: session.user.id,
+        content: chatInputText.trim()
+      }
+    ]);
+
+    if (error) {
+      alert('메시지 전송 실패: ' + error.message);
+    } else {
+      setChatInputText('');
     }
   };
 
@@ -261,7 +320,7 @@ export default function CalendarApp() {
       setLeftSidebarOpen(true);
     } else if (!leftSidebarOpen && !rightSidebarOpen && touchStartX > window.innerWidth - edgeLimit && distance < -minSwipeDistance) {
       setRightSidebarOpen(true);
-    } else if (!leftSidebarOpen && !rightSidebarOpen && Math.abs(distance) > minSwipeDistance) {
+    } else if (!leftSidebarOpen && !rightSidebarOpen && currentViewMode === 'calendar' && Math.abs(distance) > minSwipeDistance) {
       if (distance > 0) {
         setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
       } else {
@@ -357,7 +416,6 @@ export default function CalendarApp() {
     }
   };
 
-  // 관리자가 특정 멤버의 색상을 변경하여 저장하는 함수
   const adminUpdateUserColor = async (userId: string) => {
     const newColor = adminEditedColors[userId];
     if (!newColor) return;
@@ -703,7 +761,6 @@ export default function CalendarApp() {
             
             <div style={{ background: '#fff', padding: '12px', borderRadius: '6px', border: '1px solid #ddd', margin: '10px 0' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                {/* 일반 멤버가 직접 변경하지 못하도록 컬러 input 제거 및 고정 색상 표시 원형 박스로 변경 */}
                 <div 
                   style={{ width: '20px', height: '20px', borderRadius: '50%', background: profile?.color || '#339af0', flexShrink: 0, border: '1px solid rgba(0,0,0,0.2)' }}
                 />
@@ -770,15 +827,42 @@ export default function CalendarApp() {
             )}
 
             <div style={{ marginTop: '15px' }}>
-              <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#555', marginBottom: '4px' }}>방 목록 (다중 선택 가능)</div>
-              <div style={{ fontSize: '11px', color: '#888', marginBottom: '8px' }}>선택한 순서대로 캘린더에 겹쳐 표시됩니다.</div>
+              <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#555', marginBottom: '4px' }}>방 목록</div>
+              
+              {/* [자유 채팅방 버튼] 방 목록 맨 위에 배치 */}
+              <div 
+                onClick={() => setCurrentViewMode('chat')}
+                style={{ 
+                  padding: '10px 12px', 
+                  background: currentViewMode === 'chat' ? '#228be6' : '#fff', 
+                  color: currentViewMode === 'chat' ? '#fff' : '#333', 
+                  borderRadius: '6px', 
+                  cursor: 'pointer', 
+                  border: '1px solid #ddd', 
+                  fontSize: '14px', 
+                  fontWeight: currentViewMode === 'chat' ? 'bold' : 'normal', 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  alignItems: 'center',
+                  marginBottom: '8px',
+                  boxShadow: currentViewMode === 'chat' ? '0 2px 4px rgba(0,0,0,0.1)' : 'none'
+                }}
+              >
+                <span>💬 자유 채팅방</span>
+                {currentViewMode === 'chat' && <span style={{ fontSize: '12px', background: 'rgba(255,255,255,0.3)', padding: '2px 6px', borderRadius: '4px' }}>선택됨</span>}
+              </div>
+
+              <div style={{ fontSize: '11px', color: '#888', marginBottom: '8px', marginTop: '10px' }}>캘린더 방 목록 (다중 선택)</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {rooms.map(room => {
-                  const isSelected = selectedRoomIds.includes(room.id);
+                  const isSelected = currentViewMode === 'calendar' && selectedRoomIds.includes(room.id);
                   return (
                     <div 
                       key={room.id} 
-                      onClick={() => toggleRoomSelection(room.id)}
+                      onClick={() => {
+                        setCurrentViewMode('calendar');
+                        toggleRoomSelection(room.id);
+                      }}
                       style={{ 
                         padding: '10px 12px', background: isSelected ? '#007bff' : '#fff', color: isSelected ? '#fff' : '#333', borderRadius: '6px', cursor: 'pointer', border: '1px solid #ddd', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '14px', fontWeight: isSelected ? 'bold' : 'normal', display: 'flex', justifyContent: 'space-between', alignItems: 'center'
                       }}
@@ -799,166 +883,261 @@ export default function CalendarApp() {
         </div>
       </div>
 
-      {/* 2. 중앙 메인 콘텐츠 뷰 */}
-      <div style={{ flex: 1, height: '100vh', padding: '20px', paddingBottom: '75px', overflowY: 'auto', background: '#fff', display: 'flex', flexDirection: 'column', boxSizing: 'border-box', minWidth: 0 }}>
-        {selectedRoomIds.length > 0 ? (
-          <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-              <h2>
-                통합 캘린더 보기 
-                <span style={{ fontSize: '13px', fontWeight: 'normal', color: '#666', marginLeft: '10px' }}>
-                  ({selectedRoomIds.map(id => rooms.find(r => r.id === id)?.name).filter(Boolean).join(', ')})
-                </span>
-              </h2>
+      {/* 2. 중앙 메인 콘텐츠 뷰 (채팅방 모드 또는 캘린더 모드 분기) */}
+      <div style={{ flex: 1, height: '100vh', padding: '20px', paddingBottom: '75px', overflowY: 'hidden', background: currentViewMode === 'chat' ? '#abc1de' : '#fff', display: 'flex', flexDirection: 'column', boxSizing: 'border-box', minWidth: 0 }}>
+        
+        {/* [자유 채팅방 화면] */}
+        {currentViewMode === 'chat' ? (
+          <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', maxWidth: '800px', margin: '0 auto', boxSizing: 'border-box' }}>
+            <div style={{ padding: '10px 0', borderBottom: '1px solid rgba(0,0,0,0.1)', marginBottom: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <h2 style={{ margin: 0, fontSize: '18px', color: '#222' }}>💬 자유 채팅방</h2>
+              <span style={{ fontSize: '12px', color: '#444' }}>실시간 소통 공간</span>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', margin: '10px 0' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <button onClick={prevMonth} style={{ padding: '6px 12px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>&lt; 이전 달</button>
-                <h3 style={{ margin: 0, fontSize: '16px' }}>{year}년 {month + 1}월</h3>
-                <button onClick={nextMonth} style={{ padding: '6px 12px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>다음 달 &gt;</button>
-              </div>
+            {/* 메시지 리스트 영역 */}
+            <div ref={chatScrollRef} style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px', paddingRight: '4px', paddingBottom: '10px' }}>
+              {chatMessages.length === 0 ? (
+                <div style={{ textAlign: 'center', color: '#555', marginTop: '40px', fontSize: '14px' }}>첫 메시지를 남겨보세요!</div>
+              ) : (
+                chatMessages.map((msg, index) => {
+                  const isMyMessage = msg.user_id === session?.user?.id;
+                  const sender = profilesMap[msg.user_id] || { name: '알 수 없음', color: '#339af0' };
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', position: 'relative' }}>
-                <button 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setMembersDropdownOpen(!membersDropdownOpen);
-                  }}
-                  style={{ padding: '4px 10px', fontSize: '12px', background: '#f1f3f5', color: '#333', border: '1px solid #ced4da', borderRadius: '4px', cursor: 'pointer' }}
-                >
-                  사용 중인 맴버 보기 ▾
-                </button>
+                  // 날짜 포맷팅 및 날짜 변경선 계산
+                  const msgDateObj = new Date(msg.created_at);
+                  const dateString = `${msgDateObj.getFullYear()}년 ${msgDateObj.getMonth() + 1}월 ${msgDateObj.getDate()}일 ${['일', '월', '화', '수', '목', '금', '토'][msgDateObj.getDay()]}요일`;
+                  
+                  const prevMsg = index > 0 ? chatMessages[index - 1] : null;
+                  const prevDateString = prevMsg ? `${new Date(prevMsg.created_at).getFullYear()}년 ${new Date(prevMsg.created_at).getMonth() + 1}월 ${new Date(prevMsg.created_at).getDate()}일` : null;
+                  const currentDateStringOnly = `${msgDateObj.getFullYear()}년 ${msgDateObj.getMonth() + 1}월 ${msgDateObj.getDate()}일`;
 
-                {membersDropdownOpen && (
-                  <div style={{ position: 'absolute', right: 0, top: '28px', width: '180px', background: 'white', border: '1px solid #ced4da', borderRadius: '6px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', zIndex: 100, padding: '8px' }}>
-                    {profilesMap && Object.values(profilesMap).map((m: any) => (
-                      <div key={m.id} style={{ display: 'flex', alignItems: 'center', padding: '6px 8px', gap: '8px' }}>
-                        <div style={{ width: '4px', height: '16px', backgroundColor: m.color || '#339af0', borderRadius: '2px', flexShrink: 0 }}></div>
-                        <span style={{ fontSize: '13px', fontWeight: 500, color: '#333', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.name}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-            
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gridTemplateRows: `auto repeat(${totalWeeks}, 1fr)`, gap: '1px', background: '#ddd', border: '1px solid #ddd', flex: 1, minHeight: 0 }}>
-              {['일', '월', '화', '수', '목', '금', '토'].map((day, idx) => (
-                <div key={idx} style={{ background: '#f1f3f5', textAlign: 'center', fontWeight: 'bold', padding: '8px 0', fontSize: '13px' }}>
-                  {day}
-                </div>
-              ))}
+                  const showDateDivider = !prevMsg || prevDateString !== currentDateStringOnly;
 
-              {(() => {
-                const prevMonthLastDate = new Date(year, month, 0).getDate();
-                return Array.from({ length: firstDayOfMonth }).map((_, idx) => {
-                  const dayNum = prevMonthLastDate - firstDayOfMonth + idx + 1;
+                  // 시간 포맷팅 (오전/오후 HH:MM)
+                  let hours = msgDateObj.getHours();
+                  const minutes = String(msgDateObj.getMinutes()).padStart(2, '0');
+                  const ampm = hours >= 12 ? '오후' : '오전';
+                  hours = hours % 12;
+                  hours = hours ? hours : 12;
+                  const timeString = `${ampm} ${hours}:${minutes}`;
+
                   return (
-                    <div key={`prev-${idx}`} style={{ background: '#f8f9fa', minHeight: '0', padding: '6px' }}>
-                      <span style={{ fontSize: '12px', color: '#adb5bd', fontWeight: 'bold' }}>{dayNum}</span>
-                    </div>
-                  );
-                });
-              })()}
+                    <React.Fragment key={msg.id || index}>
+                      {/* 날짜 변경선 */}
+                      {showDateDivider && (
+                        <div style={{ display: 'flex', justifyContent: 'center', margin: '15px 0 10px 0' }}>
+                          <span style={{ background: 'rgba(0,0,0,0.15)', color: '#fff', fontSize: '11px', padding: '4px 12px', borderRadius: '12px', fontWeight: 'bold' }}>
+                            📅 {dateString}
+                          </span>
+                        </div>
+                      )}
 
-              {Array.from({ length: lastDateOfMonth }).map((_, idx) => {
-                const dayNum = idx + 1;
-                const formattedDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
-                
-                const dayEvents = events.filter(ev => {
-                  if (!selectedRoomIds.includes(ev.room_id)) return false;
-                  const start = ev.event_date;
-                  const end = ev.end_date || ev.event_date;
-                  return formattedDate >= start && formattedDate <= end;
-                });
-
-                dayEvents.sort((a, b) => getRoomOrderIndex(a.room_id) - getRoomOrderIndex(b.room_id));
-
-                return (
-                  <div 
-                    key={`day-${dayNum}`} 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setRightSidebarDateStr(formattedDate);
-                      setRightSidebarEvents(dayEvents);
-                      setRightSidebarOpen(true);
-                      if (selectedRoomIds.length > 0) setTargetRoomIdForAdd(selectedRoomIds[0]);
-                    }}
-                    style={{ 
-                      background: '#fff', 
-                      minHeight: '0', 
-                      padding: '5px 0', 
-                      overflowY: 'auto', 
-                      border: '1px solid #eee', 
-                      display: 'flex', 
-                      flexDirection: 'column', 
-                      cursor: 'pointer',
-                      userSelect: 'none',
-                      WebkitUserSelect: 'none'
-                    }}
-                  >
-                    <div style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '4px', color: '#333', padding: '0 5px' }}>{dayNum}</div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', overflowY: 'auto' }}>
-                      {dayEvents.map(ev => {
-                        const eventColor = ev.color || profilesMap[ev.user_id]?.color || '#339af0';
-                        const start = ev.event_date;
-                        const end = ev.end_date || ev.event_date;
-                        
-                        const isStart = formattedDate === start;
-                        const isEnd = formattedDate === end;
-
-                        return (
-                          <div 
-                            key={ev.id} 
-                            style={{ 
-                              background: eventColor, 
-                              color: '#fff', 
-                              padding: '3px 6px', 
-                              fontSize: '11px', 
-                              fontWeight: 'bold',
-                              cursor: 'pointer',
-                              wordBreak: 'keep-all',
-                              marginLeft: isStart ? '4px' : '-2px',
-                              marginRight: isEnd ? '4px' : '-2px',
-                              borderTopLeftRadius: isStart ? '4px' : '0px',
-                              borderBottomLeftRadius: isStart ? '4px' : '0px',
-                              borderTopRightRadius: isEnd ? '4px' : '0px',
-                              borderBottomRightRadius: isEnd ? '4px' : '0px',
-                              zIndex: 2,
-                              position: 'relative',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap'
-                            }}
-                          >
-                            {ev.title}
+                      {/* 카카오톡 스타일 채팅 말풍선 */}
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: isMyMessage ? 'flex-end' : 'flex-start', margin: '2px 0' }}>
+                        {!isMyMessage && (
+                          <div style={{ fontSize: '12px', color: '#333', marginBottom: '2px', marginLeft: '4px', fontWeight: 'bold' }}>
+                            {sender.name}
                           </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                );
-              })}
-
-              {(() => {
-                const totalCellsSoFar = firstDayOfMonth + lastDateOfMonth;
-                const totalGridCells = totalCellsSoFar <= 35 ? 35 : 42;
-                const nextMonthDaysCount = totalGridCells - totalCellsSoFar;
-
-                return Array.from({ length: nextMonthDaysCount }).map((_, idx) => {
-                  const dayNum = idx + 1;
-                  return (
-                    <div key={`next-${idx}`} style={{ background: '#f8f9fa', minHeight: '100px', padding: '6px' }}>
-                      <span style={{ fontSize: '12px', color: '#adb5bd', fontWeight: 'bold' }}>{dayNum}</span>
-                    </div>
+                        )}
+                        <div style={{ display: 'flex', alignItems: 'flex-end', gap: '6px', flexDirection: isMyMessage ? 'row-reverse' : 'row' }}>
+                          <div style={{
+                            background: isMyMessage ? '#fee102' : '#ffffff',
+                            color: '#111',
+                            padding: '8px 12px',
+                            borderRadius: '12px',
+                            maxWidth: '65%',
+                            wordBreak: 'break-all',
+                            fontSize: '14px',
+                            boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
+                            borderTopRightRadius: isMyMessage ? '2px' : '12px',
+                            borderTopLeftRadius: isMyMessage ? '12px' : '2px',
+                          }}>
+                            {msg.content}
+                          </div>
+                          <span style={{ fontSize: '10px', color: '#555', minWidth: '45px', textAlign: isMyMessage ? 'right' : 'left' }}>
+                            {timeString}
+                          </span>
+                        </div>
+                      </div>
+                    </React.Fragment>
                   );
-                });
-              })()}
+                })
+              )}
             </div>
+
+            {/* 채팅 입력창 */}
+            <form onSubmit={sendChatMessage} style={{ display: 'flex', gap: '8px', marginTop: '10px', background: '#fff', padding: '8px', borderRadius: '8px', boxShadow: '0 -1px 4px rgba(0,0,0,0.05)' }}>
+              <input 
+                type="text" 
+                placeholder="메시지를 입력하세요..." 
+                value={chatInputText} 
+                onChange={e => setChatInputText(e.target.value)} 
+                style={{ flex: 1, padding: '10px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '14px', outline: 'none' }} 
+              />
+              <button type="submit" style={{ padding: '10px 18px', background: '#fee102', color: '#3c1e1e', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px' }}>전송</button>
+            </form>
           </div>
         ) : (
-          <h3 style={{ textAlign: 'center', marginTop: '50px', color: '#666' }}>하단 메뉴에서 좌측 바를 열어 캘린더에 표시할 방을 선택해주세요.</h3>
+          /* [기존 캘린더 모드 화면] */
+          selectedRoomIds.length > 0 ? (
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflowY: 'auto' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                <h2>
+                  통합 캘린더 보기 
+                  <span style={{ fontSize: '13px', fontWeight: 'normal', color: '#666', marginLeft: '10px' }}>
+                    ({selectedRoomIds.map(id => rooms.find(r => r.id === id)?.name).filter(Boolean).join(', ')})
+                  </span>
+                </h2>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', margin: '10px 0' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <button onClick={prevMonth} style={{ padding: '6px 12px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>&lt; 이전 달</button>
+                  <h3 style={{ margin: 0, fontSize: '16px' }}>{year}년 {month + 1}월</h3>
+                  <button onClick={nextMonth} style={{ padding: '6px 12px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>다음 달 &gt;</button>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', position: 'relative' }}>
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setMembersDropdownOpen(!membersDropdownOpen);
+                    }}
+                    style={{ padding: '4px 10px', fontSize: '12px', background: '#f1f3f5', color: '#333', border: '1px solid #ced4da', borderRadius: '4px', cursor: 'pointer' }}
+                  >
+                    사용 중인 맴버 보기 ▾
+                  </button>
+
+                  {membersDropdownOpen && (
+                    <div style={{ position: 'absolute', right: 0, top: '28px', width: '180px', background: 'white', border: '1px solid #ced4da', borderRadius: '6px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', zIndex: 100, padding: '8px' }}>
+                      {profilesMap && Object.values(profilesMap).map((m: any) => (
+                        <div key={m.id} style={{ display: 'flex', alignItems: 'center', padding: '6px 8px', gap: '8px' }}>
+                          <div style={{ width: '4px', height: '16px', backgroundColor: m.color || '#339af0', borderRadius: '2px', flexShrink: 0 }}></div>
+                          <span style={{ fontSize: '13px', fontWeight: 500, color: '#333', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gridTemplateRows: `auto repeat(${totalWeeks}, 1fr)`, gap: '1px', background: '#ddd', border: '1px solid #ddd', flex: 1, minHeight: 0 }}>
+                {['일', '월', '화', '수', '목', '금', '토'].map((day, idx) => (
+                  <div key={idx} style={{ background: '#f1f3f5', textAlign: 'center', fontWeight: 'bold', padding: '8px 0', fontSize: '13px' }}>
+                    {day}
+                  </div>
+                ))}
+
+                {(() => {
+                  const prevMonthLastDate = new Date(year, month, 0).getDate();
+                  return Array.from({ length: firstDayOfMonth }).map((_, idx) => {
+                    const dayNum = prevMonthLastDate - firstDayOfMonth + idx + 1;
+                    return (
+                      <div key={`prev-${idx}`} style={{ background: '#f8f9fa', minHeight: '0', padding: '6px' }}>
+                        <span style={{ fontSize: '12px', color: '#adb5bd', fontWeight: 'bold' }}>{dayNum}</span>
+                      </div>
+                    );
+                  });
+                })()}
+
+                {Array.from({ length: lastDateOfMonth }).map((_, idx) => {
+                  const dayNum = idx + 1;
+                  const formattedDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
+                  
+                  const dayEvents = events.filter(ev => {
+                    if (!selectedRoomIds.includes(ev.room_id)) return false;
+                    const start = ev.event_date;
+                    const end = ev.end_date || ev.event_date;
+                    return formattedDate >= start && formattedDate <= end;
+                  });
+
+                  dayEvents.sort((a, b) => getRoomOrderIndex(a.room_id) - getRoomOrderIndex(b.room_id));
+
+                  return (
+                    <div 
+                      key={`day-${dayNum}`} 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setRightSidebarDateStr(formattedDate);
+                        setRightSidebarEvents(dayEvents);
+                        setRightSidebarOpen(true);
+                        if (selectedRoomIds.length > 0) setTargetRoomIdForAdd(selectedRoomIds[0]);
+                      }}
+                      style={{ 
+                        background: '#fff', 
+                        minHeight: '0', 
+                        padding: '5px 0', 
+                        overflowY: 'auto', 
+                        border: '1px solid #eee', 
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        cursor: 'pointer',
+                        userSelect: 'none',
+                        WebkitUserSelect: 'none'
+                      }}
+                    >
+                      <div style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '4px', color: '#333', padding: '0 5px' }}>{dayNum}</div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', overflowY: 'auto' }}>
+                        {dayEvents.map(ev => {
+                          const eventColor = ev.color || profilesMap[ev.user_id]?.color || '#339af0';
+                          const start = ev.event_date;
+                          const end = ev.end_date || ev.event_date;
+                          
+                          const isStart = formattedDate === start;
+                          const isEnd = formattedDate === end;
+
+                          return (
+                            <div 
+                              key={ev.id} 
+                              style={{ 
+                                background: eventColor, 
+                                color: '#fff', 
+                                padding: '3px 6px', 
+                                fontSize: '11px', 
+                                fontWeight: 'bold',
+                                cursor: 'pointer',
+                                wordBreak: 'keep-all',
+                                marginLeft: isStart ? '4px' : '-2px',
+                                marginRight: isEnd ? '4px' : '-2px',
+                                borderTopLeftRadius: isStart ? '4px' : '0px',
+                                borderBottomLeftRadius: isStart ? '4px' : '0px',
+                                borderTopRightRadius: isEnd ? '4px' : '0px',
+                                borderBottomRightRadius: isEnd ? '4px' : '0px',
+                                zIndex: 2,
+                                position: 'relative',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap'
+                              }}
+                            >
+                              {ev.title}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+
+                {(() => {
+                  const totalCellsSoFar = firstDayOfMonth + lastDateOfMonth;
+                  const totalGridCells = totalCellsSoFar <= 35 ? 35 : 42;
+                  const nextMonthDaysCount = totalGridCells - totalCellsSoFar;
+
+                  return Array.from({ length: nextMonthDaysCount }).map((_, idx) => {
+                    const dayNum = idx + 1;
+                    return (
+                      <div key={`next-${idx}`} style={{ background: '#f8f9fa', minHeight: '100px', padding: '6px' }}>
+                        <span style={{ fontSize: '12px', color: '#adb5bd', fontWeight: 'bold' }}>{dayNum}</span>
+                      </div>
+                    );
+                  });
+                })()}
+              </div>
+            </div>
+          ) : (
+            <h3 style={{ textAlign: 'center', marginTop: '50px', color: '#666' }}>하단 메뉴에서 좌측 바를 열어 캘린더에 표시할 방을 선택해주세요.</h3>
+          )
         )}
       </div>
 
@@ -1167,7 +1346,7 @@ export default function CalendarApp() {
         </div>
       )}
 
-      {/* 6. 멤버 관리 (관리자) 모달 - 전체 멤버 색상 변경 기능 포함 */}
+      {/* 6. 멤버 관리 (관리자) 모달 */}
       {adminModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
           <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '480px', maxHeight: '85vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '15px' }}>
@@ -1176,7 +1355,6 @@ export default function CalendarApp() {
               <p style={{ color: '#666', fontSize: '13px', margin: 0 }}>가입 대기 회원 승인, 이름 변경 요청 및 전체 멤버 프로필 색상을 관리할 수 있습니다.</p>
             </div>
 
-            {/* 전체 멤버 색상 관리 섹션 */}
             <div>
               <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#333', marginBottom: '8px' }}>🎨 전체 멤버 프로필 색상 관리</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '200px', overflowY: 'auto', border: '1px solid #eee', padding: '8px', borderRadius: '6px' }}>

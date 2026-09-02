@@ -5,10 +5,10 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 const customStorage = {
-  getItem: (key) => {
+  getItem: (key: string) => {
     return window.localStorage.getItem(key) || window.sessionStorage.getItem(key);
   },
-  setItem: (key, value) => {
+  setItem: (key: string, value: string) => {
     const keepLoggedIn = window.localStorage.getItem('keepLoggedIn') !== 'false';
     if (keepLoggedIn) {
       window.localStorage.setItem(key, value);
@@ -16,7 +16,7 @@ const customStorage = {
       window.sessionStorage.setItem(key, value);
     }
   },
-  removeItem: (key) => {
+  removeItem: (key: string) => {
     window.localStorage.removeItem(key);
     window.sessionStorage.removeItem(key);
   }
@@ -91,7 +91,7 @@ export default function CalendarApp() {
   const [selectedOptionIds, setSelectedOptionIds] = useState<string[]>([]);
   const [voteStatusModalOpen, setVoteStatusModalOpen] = useState(false);
 
-  // 정산 관련 상태 (수정됨)
+  // 정산 관련 상태
   const [settlements, setSettlements] = useState<any[]>([]);
   const [settlementModalOpen, setSettlementModalOpen] = useState(false);
   const [newSettlementTitle, setNewSettlementTitle] = useState('');
@@ -111,7 +111,7 @@ export default function CalendarApp() {
     return localStorage.getItem('keepLoggedIn') !== 'false';
   });
 
-  const handleAutoLoginChange = (e) => {
+  const handleAutoLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAutoLogin(e.target.checked);
     localStorage.setItem('keepLoggedIn', e.target.checked.toString());
   };
@@ -145,7 +145,7 @@ export default function CalendarApp() {
   const [editEventEndDate, setEditEventEndDate] = useState('');
   const [editEventColor, setEditEventColor] = useState('#339af0');
 
-  const [editingRoomId, setEditingRoomId] = useState(null);
+  const [editingRoomId, setEditingRoomId] = useState<string | null>(null);
   const [editRoomNameText, setEditRoomNameText] = useState('');
   
   const [newRoomName, setNewRoomName] = useState('');
@@ -159,11 +159,12 @@ export default function CalendarApp() {
   
   const [touchStartX, setTouchStartX] = useState(0);
   const [touchEndX, setTouchEndX] = useState(0);
-  const handleTouchStart = (e) => {
+
+  const handleTouchStart = (e: React.TouchEvent) => {
     setTouchStartX(e.targetTouches[0].clientX);
   };
 
-  const handleTouchMove = (e) => {
+  const handleTouchMove = (e: React.TouchEvent) => {
     setTouchEndX(e.targetTouches[0].clientX);
   };
   
@@ -331,7 +332,6 @@ export default function CalendarApp() {
     }
   };
 
-  // 총 합계 계산 함수
   const calculateTotalAmount = () => {
     return settlementRows.reduce((sum, row) => {
       const amt = parseFloat(row.amount);
@@ -592,7 +592,7 @@ export default function CalendarApp() {
     }
   };
 
-  const updateRoomName = async (roomId) => {
+  const updateRoomName = async (roomId: string) => {
     if (!editRoomNameText.trim()) {
       alert('변경할 방 이름을 입력해주세요.');
       return;
@@ -613,7 +613,7 @@ export default function CalendarApp() {
     setEditRoomNameText('');
   };
 
-  const moveRoomOrder = async (index, direction) => {
+  const moveRoomOrder = async (index: number, direction: 'up' | 'down') => {
     const newRooms = [...rooms];
     const targetIndex = direction === 'up' ? index - 1 : index + 1;
 
@@ -665,65 +665,11 @@ export default function CalendarApp() {
     }
   };
 
-  const adminUpdateUserColor = async (userId: string) => {
-    const newColor = adminEditedColors[userId];
-    if (!newColor) return;
-
-    const { error } = await supabase
-      .from('profiles')
-      .update({ color: newColor })
-      .eq('id', userId);
-
-    if (error) {
-      alert('멤버 색상 변경 실패: ' + error.message);
-    } else {
-      alert('멤버의 프로필 색상이 변경되었습니다.');
-      fetchAllProfiles();
-      fetchProfilesMap();
-    }
-  };
-
   const fetchComments = async (eventId: string) => {
     const { data, error } = await supabase.from('comments').select('*').eq('event_id', eventId).order('created_at', { ascending: true });
     if (!error && data) setComments(data);
   };
 
-  const approveNameChange = async (userId: string, requestedName: string) => {
-    const { error } = await supabase
-      .from('profiles')
-      .update({ 
-        name: requestedName,
-        requested_name: null,
-        name_status: 'approved' 
-      })
-      .eq('id', userId);
-
-    if (error) {
-      alert('승인 실패: ' + error.message);
-    } else {
-      alert('이름 변경이 승인되었습니다.');
-      fetchAllProfiles();
-      fetchProfilesMap();
-    }
-  };
-
-  const rejectNameChange = async (userId: string) => {
-    const { error } = await supabase
-      .from('profiles')
-      .update({ 
-        requested_name: null,
-        name_status: 'approved' 
-      })
-      .eq('id', userId);
-
-    if (error) {
-      alert('거절 처리 실패: ' + error.message);
-    } else {
-      alert('이름 변경 요청이 거절(취소)되었습니다.');
-      fetchAllProfiles();
-    }
-  };
-  
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -1683,13 +1629,12 @@ export default function CalendarApp() {
 
       {/* ================= 모달 모음 ================= */}
 
-      {/* 정산 등록 모달 (수정됨) */}
+      {/* 정산 등록 모달 */}
       {settlementModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100 }}>
           <form onSubmit={createSettlement} style={{ background: '#fff', padding: '24px', borderRadius: '10px', width: '480px', maxHeight: '90vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px', boxSizing: 'border-box' }}>
             <h3 style={{ margin: '0 0 5px 0' }}>새 정산 등록</h3>
             
-            {/* 제목 */}
             <div>
               <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>정산 내용 (제목)</label>
               <input 
@@ -1702,10 +1647,8 @@ export default function CalendarApp() {
               />
             </div>
 
-            {/* 숨겨진 대상 방 자동 처리용 (첫 번째 방 지정) */}
             <input type="hidden" value={targetRoomIdForSettlement || ''} />
 
-            {/* 좌우 나눔 내역 및 금액 입력 영역 */}
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                 <label style={{ fontSize: '12px', fontWeight: 'bold' }}>지출 세부 내역 및 금액</label>
@@ -1757,7 +1700,6 @@ export default function CalendarApp() {
               </div>
             </div>
 
-            {/* 총 금액 합계 표시 */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8f9fa', padding: '10px 12px', borderRadius: '6px', border: '1px solid #ddd', marginTop: '4px' }}>
               <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#333' }}>총 금액 합계</span>
               <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#e03131' }}>
@@ -2241,11 +2183,11 @@ export default function CalendarApp() {
             </div>
             <div>
               <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>제목</label>
-              <input type="text" placeholder="예: 바베큐 파티" value={newEventTitle} onChange={e => setNewEventTitle(e.target.value)} required style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }} />
+              <input type="text" placeholder="일정 제목" value={newEventTitle} onChange={e => setNewEventTitle(e.target.value)} required style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }} />
             </div>
             <div>
               <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>내용 (선택)</label>
-              <textarea placeholder="상세 내용..." value={newEventContent} onChange={e => setNewEventContent(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', height: '60px', boxSizing: 'border-box' }} />
+              <textarea placeholder="상세 내용" value={newEventContent} onChange={e => setNewEventContent(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', height: '60px', boxSizing: 'border-box' }} />
             </div>
             <div style={{ display: 'flex', gap: '8px' }}>
               <div style={{ flex: 1 }}>
@@ -2258,22 +2200,16 @@ export default function CalendarApp() {
               </div>
             </div>
             <div>
-              <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>일정 색상 선택</label>
-              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '8px' }}>
-                {PRESET_COLORS.map(color => {
-                  const label = colorLabels[color] || DEFAULT_COLOR_LABELS[color];
-                  return (
-                    <div 
-                      key={color} 
-                      onClick={() => setNewEventColor(color)}
-                      title={label}
-                      style={{ width: '24px', height: '24px', borderRadius: '50%', background: color, cursor: 'pointer', border: newEventColor === color ? '3px solid #000' : '1px solid #ddd' }}
-                    />
-                  );
-                })}
-              </div>
-              <div style={{ fontSize: '12px', color: '#555', background: '#f8f9fa', padding: '6px 8px', borderRadius: '4px', border: '1px solid #eee' }}>
-                선택된 색상 용도: <b>{colorLabels[newEventColor] || DEFAULT_COLOR_LABELS[newEventColor] || '일반 일정'}</b>
+              <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>색상 선택</label>
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                {PRESET_COLORS.map(color => (
+                  <div 
+                    key={color} 
+                    onClick={() => setNewEventColor(color)}
+                    style={{ width: '24px', height: '24px', borderRadius: '50%', background: color, cursor: 'pointer', border: newEventColor === color ? '3px solid #000' : '1px solid #ddd' }}
+                    title={colorLabels[color] || color}
+                  />
+                ))}
               </div>
             </div>
             <div style={{ display: 'flex', gap: '8px', marginTop: '15px' }}>
@@ -2289,7 +2225,10 @@ export default function CalendarApp() {
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100 }}>
           <form onSubmit={createRoom} style={{ background: '#fff', padding: '24px', borderRadius: '10px', width: '350px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <h3 style={{ margin: '0 0 5px 0' }}>새 캘린더 방 생성</h3>
-            <input type="text" placeholder="방 이름 (예: 제주도 여행)" value={newRoomName} onChange={e => setNewRoomName(e.target.value)} required style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }} />
+            <div>
+              <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>방 이름</label>
+              <input type="text" placeholder="예: 2026년 여행 모임" value={newRoomName} onChange={e => setNewRoomName(e.target.value)} required style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }} />
+            </div>
             <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
               <button type="submit" style={{ flex: 1, padding: '10px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>생성</button>
               <button type="button" onClick={() => setRoomModalOpen(false)} style={{ flex: 1, padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>취소</button>
@@ -2302,36 +2241,41 @@ export default function CalendarApp() {
       {roomManageModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100 }}>
           <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', width: '420px', maxHeight: '80vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <h3 style={{ margin: '0 0 5px 0', fontSize: '16px' }}>⚙️ 방 관리 및 순서 변경</h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
+              <h3 style={{ margin: 0, fontSize: '16px' }}>⚙️ 방 관리 및 순서 변경</h3>
+              <button onClick={() => setRoomManageModalOpen(false)} style={{ background: 'none', border: 'none', fontSize: '16px', cursor: 'pointer', fontWeight: 'bold' }}>✕</button>
+            </div>
+
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '5px' }}>
               {rooms.map((room, index) => (
-                <div key={room.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 10px', background: '#f8f9fa', borderRadius: '6px', border: '1px solid #ddd' }}>
+                <div key={room.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', background: '#f8f9fa', borderRadius: '6px', border: '1px solid #ddd' }}>
                   {editingRoomId === room.id ? (
                     <div style={{ display: 'flex', gap: '6px', flex: 1, marginRight: '8px' }}>
                       <input 
                         type="text" 
                         value={editRoomNameText} 
                         onChange={e => setEditRoomNameText(e.target.value)} 
-                        style={{ flex: 1, padding: '4px 8px', borderRadius: '4px', border: '1px solid #ccc', fontSize: '13px' }} 
+                        style={{ flex: 1, padding: '4px 8px', borderRadius: '4px', border: '1px solid #ccc', fontSize: '13px' }}
                       />
                       <button onClick={() => updateRoomName(room.id)} style={{ padding: '4px 8px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '12px', cursor: 'pointer' }}>저장</button>
                       <button onClick={() => setEditingRoomId(null)} style={{ padding: '4px 8px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '12px', cursor: 'pointer' }}>취소</button>
                     </div>
                   ) : (
-                    <span style={{ fontWeight: 'bold', fontSize: '14px', color: '#333', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{room.name}</span>
+                    <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#333', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{room.name}</span>
                   )}
 
                   {editingRoomId !== room.id && (
                     <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
                       <button onClick={() => moveRoomOrder(index, 'up')} disabled={index === 0} style={{ padding: '4px 6px', background: '#e9ecef', border: '1px solid #ced4da', borderRadius: '4px', cursor: index === 0 ? 'not-allowed' : 'pointer', fontSize: '11px' }}>▲</button>
                       <button onClick={() => moveRoomOrder(index, 'down')} disabled={index === rooms.length - 1} style={{ padding: '4px 6px', background: '#e9ecef', border: '1px solid #ced4da', borderRadius: '4px', cursor: index === rooms.length - 1 ? 'not-allowed' : 'pointer', fontSize: '11px' }}>▼</button>
-                      <button onClick={() => { setEditingRoomId(room.id); setEditRoomNameText(room.name); }} style={{ padding: '4px 8px', background: '#ffc107', color: '#000', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>수정</button>
-                      <button onClick={() => deleteRoom(room.id)} style={{ padding: '4px 8px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>삭제</button>
+                      <button onClick={() => { setEditingRoomId(room.id); setEditRoomNameText(room.name); }} style={{ padding: '4px 8px', background: '#ffc107', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '11px', fontWeight: 'bold' }}>수정</button>
+                      <button onClick={() => deleteRoom(room.id)} style={{ padding: '4px 8px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '11px', fontWeight: 'bold' }}>삭제</button>
                     </div>
                   )}
                 </div>
               ))}
             </div>
+
             <button onClick={() => setRoomManageModalOpen(false)} style={{ width: '100%', padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', marginTop: '10px' }}>닫기</button>
           </div>
         </div>
@@ -2341,44 +2285,47 @@ export default function CalendarApp() {
       {adminModalOpen && profile?.role === 'admin' && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100 }}>
           <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', width: '500px', maxHeight: '85vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '15px' }}>
-            <h3 style={{ margin: 0, fontSize: '18px' }}>⚙️ 관리자 멤버 및 가입 승인 관리</h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
+              <h3 style={{ margin: 0, fontSize: '18px' }}>⚙️ 관리자 멤버 관리 대시보드</h3>
+              <button onClick={() => setAdminModalOpen(false)} style={{ background: 'none', border: 'none', fontSize: '18px', cursor: 'pointer', fontWeight: 'bold' }}>✕</button>
+            </div>
 
-            {/* 가입 대기 목록 */}
+            {/* 가입 승인 대기 목록 */}
             <div>
-              <h4 style={{ fontSize: '14px', margin: '0 0 8px 0', color: '#007bff' }}>가입 대기 중인 멤버 ({pendingProfiles.length})</h4>
+              <h4 style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#007bff' }}>⏳ 가입 승인 대기 목록 ({pendingProfiles.length})</h4>
               {pendingProfiles.length === 0 ? (
-                <div style={{ fontSize: '13px', color: '#888', padding: '10px', background: '#f8f9fa', borderRadius: '6px' }}>대기 중인 멤버가 없습니다.</div>
+                <div style={{ fontSize: '13px', color: '#888', padding: '8px 0' }}>대기 중인 멤버가 없습니다.</div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  {pendingProfiles.map(p => (
-                    <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: '#fff3cd', borderRadius: '6px', border: '1px solid #ffeeba' }}>
+                  {pendingProfiles.map(user => (
+                    <div key={user.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: '#f8f9fa', borderRadius: '6px', border: '1px solid #ddd' }}>
                       <div>
-                        <div style={{ fontWeight: 'bold', fontSize: '13px' }}>{p.name}</div>
-                        <div style={{ fontSize: '11px', color: '#666' }}>{p.email}</div>
+                        <div style={{ fontWeight: 'bold', fontSize: '13px' }}>{user.name}</div>
+                        <div style={{ fontSize: '11px', color: '#666' }}>{user.email}</div>
                       </div>
-                      <button onClick={() => approveUser(p.id)} style={{ padding: '6px 12px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '12px' }}>승인하기</button>
+                      <button onClick={() => approveUser(user.id)} style={{ padding: '6px 12px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>승인하기</button>
                     </div>
                   ))}
                 </div>
               )}
             </div>
 
-            {/* 이름 변경 요청 목록 */}
+            {/* 이름 변경 신청 대기 목록 */}
             <div>
-              <h4 style={{ fontSize: '14px', margin: '10px 0 8px 0', color: '#fd7e14' }}>이름 변경 신청 목록</h4>
-              {allProfiles.filter(p => p.name_status === 'pending').length === 0 ? (
-                <div style={{ fontSize: '13px', color: '#888', padding: '10px', background: '#f8f9fa', borderRadius: '6px' }}>이름 변경 신청한 멤버가 없습니다.</div>
+              <h4 style={{ margin: '10px 0 8px 0', fontSize: '14px', color: '#e67700' }}>✏️ 이름(닉네임) 변경 신청 목록</h4>
+              {allProfiles.filter(u => u.name_status === 'pending' && u.requested_name).length === 0 ? (
+                <div style={{ fontSize: '13px', color: '#888', padding: '8px 0' }}>이름 변경을 신청한 멤버가 없습니다.</div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  {allProfiles.filter(p => p.name_status === 'pending').map(p => (
-                    <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: '#fff8db', borderRadius: '6px', border: '1px solid #ffe066' }}>
+                  {allProfiles.filter(u => u.name_status === 'pending' && u.requested_name).map(user => (
+                    <div key={user.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: '#fff9db', borderRadius: '6px', border: '1px solid #ffe066' }}>
                       <div>
-                        <div style={{ fontSize: '12px', color: '#666' }}>기존: <b>{p.name}</b></div>
-                        <div style={{ fontWeight: 'bold', fontSize: '13px', color: '#d9480f' }}>변경 요청: <b>{p.requested_name}</b></div>
+                        <div style={{ fontSize: '13px' }}>기존 이름: <b>{user.name}</b></div>
+                        <div style={{ fontSize: '13px', color: '#d9480f' }}>변경 요청: <b>{user.requested_name}</b></div>
                       </div>
-                      <div style={{ display: 'flex', gap: '4px' }}>
-                        <button onClick={() => approveNameChange(p.id, p.requested_name)} style={{ padding: '6px 10px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px' }}>승인</button>
-                        <button onClick={() => rejectNameChange(p.id)} style={{ padding: '6px 10px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '11px' }}>거절</button>
+                      <div style={{ display: 'flex', gap: '6px' }}>
+                        <button onClick={() => approveNameChange(user.id, user.requested_name)} style={{ padding: '6px 10px', background: '#2b8a3e', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>승인</button>
+                        <button onClick={() => rejectNameChange(user.id)} style={{ padding: '6px 10px', background: '#c92a2a', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>거절</button>
                       </div>
                     </div>
                   ))}
@@ -2386,31 +2333,47 @@ export default function CalendarApp() {
               )}
             </div>
 
-            {/* 전체 멤버 색상 관리 */}
+            {/* 전체 멤버 프로필 색상 지정 */}
             <div>
-              <h4 style={{ fontSize: '14px', margin: '10px 0 8px 0', color: '#333' }}>전체 멤버 프로필 색상 관리</h4>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '180px', overflowY: 'auto' }}>
-                {allProfiles.filter(p => p.status === 'approved').map(p => (
-                  <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 10px', background: '#f8f9fa', borderRadius: '6px', border: '1px solid #ddd' }}>
+              <h4 style={{ margin: '10px 0 8px 0', fontSize: '14px', color: '#333' }}>🎨 전체 멤버 프로필 색상 지정</h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '200px', overflowY: 'auto' }}>
+                {allProfiles.map(user => (
+                  <div key={user.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: '#f8f9fa', borderRadius: '6px', border: '1px solid #ddd' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{ fontWeight: 'bold', fontSize: '13px' }}>{p.name}</span>
-                      <span style={{ fontSize: '11px', color: '#888' }}>({p.email})</span>
+                      <span style={{ fontWeight: 'bold', fontSize: '13px' }}>{user.name}</span>
+                      <span style={{ fontSize: '11px', color: '#888' }}>({user.email})</span>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <input 
                         type="color" 
-                        value={adminEditedColors[p.id] || p.color || '#339af0'} 
-                        onChange={e => setAdminEditedColors({ ...adminEditedColors, [p.id]: e.target.value })}
-                        style={{ width: '32px', height: '26px', border: 'none', cursor: 'pointer', background: 'none' }}
+                        value={adminEditedColors[user.id] || '#339af0'} 
+                        onChange={e => setAdminEditedColors({ ...adminEditedColors, [user.id]: e.target.value })}
+                        style={{ width: '35px', height: '30px', border: 'none', cursor: 'pointer', background: 'none' }}
                       />
-                      <button onClick={() => adminUpdateUserColor(p.id)} style={{ padding: '4px 8px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>변경</button>
+                      <button 
+                        onClick={() => {
+                          const newColor = adminEditedColors[user.id];
+                          if (!newColor) return;
+                          supabase.from('profiles').update({ color: newColor }).eq('id', user.id).then(({ error }) => {
+                            if (error) alert('변경 실패: ' + error.message);
+                            else {
+                              alert('변경되었습니다.');
+                              fetchAllProfiles();
+                              fetchProfilesMap();
+                            }
+                          });
+                        }} 
+                        style={{ padding: '6px 10px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}
+                      >
+                        저장
+                      </button>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            <button onClick={() => setAdminModalOpen(false)} style={{ width: '100%', padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', marginTop: '5px' }}>닫기</button>
+            <button onClick={() => setAdminModalOpen(false)} style={{ width: '100%', padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', marginTop: '10px' }}>닫기</button>
           </div>
         </div>
       )}
@@ -2419,9 +2382,12 @@ export default function CalendarApp() {
       {nameChangeModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100 }}>
           <form onSubmit={requestNameChange} style={{ background: '#fff', padding: '24px', borderRadius: '10px', width: '350px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <h3 style={{ margin: '0 0 5px 0' }}>본인 이름 변경 신청</h3>
-            <p style={{ fontSize: '12px', color: '#666', margin: 0 }}>관리자 승인 후 닉네임이 변경됩니다.</p>
-            <input type="text" placeholder="변경할 이름 입력" value={newNameRequestText} onChange={e => setNewNameRequestText(e.target.value)} required style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }} />
+            <h3 style={{ margin: '0 0 5px 0' }}>이름(닉네임) 변경 신청</h3>
+            <p style={{ fontSize: '12px', color: '#666', margin: 0 }}>관리자 승인 후 변경된 이름이 반영됩니다.</p>
+            <div>
+              <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>변경할 새 이름</label>
+              <input type="text" value={newNameRequestText} onChange={e => setNewNameRequestText(e.target.value)} required style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }} />
+            </div>
             <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
               <button type="submit" style={{ flex: 1, padding: '10px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>신청하기</button>
               <button type="button" onClick={() => setNameChangeModalOpen(false)} style={{ flex: 1, padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>취소</button>

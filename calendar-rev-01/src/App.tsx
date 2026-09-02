@@ -106,6 +106,7 @@ export default function CalendarApp() {
   // 일정 수정 관련 상태
   const [eventEditModalOpen, setEventEditModalOpen] = useState(false);
   const [editEventTitle, setEditEventTitle] = useState('');
+  const [editEventContent, setEditEventContent] = useState(''); // 💡 일정 내용 수정 상태 추가
   const [editEventStartDate, setEditEventStartDate] = useState('');
   const [editEventEndDate, setEditEventEndDate] = useState('');
   const [editEventColor, setEditEventColor] = useState('#339af0');
@@ -114,9 +115,10 @@ export default function CalendarApp() {
   const [editingRoomId, setEditingRoomId] = useState(null);
   const [editRoomNameText, setEditRoomNameText] = useState('');
   
-  // 폼 입력 상태
+  // 폼 입력 상태 (일정 등록)
   const [newRoomName, setNewRoomName] = useState('');
   const [newEventTitle, setNewEventTitle] = useState('');
+  const [newEventContent, setNewEventContent] = useState(''); // 💡 일정 내용 입력 상태 추가
   const [newEventStartDate, setNewEventStartDate] = useState('');
   const [newEventEndDate, setNewEventEndDate] = useState('');
 
@@ -472,6 +474,7 @@ export default function CalendarApp() {
       room_id: targetRoomIdForAdd,
       user_id: session.user.id,
       title: newEventTitle,
+      content: newEventContent, // 💡 일정 내용 저장
       event_date: newEventStartDate,
       end_date: newEventEndDate || newEventStartDate,
       color: finalColor
@@ -481,6 +484,7 @@ export default function CalendarApp() {
       alert('일정 등록 실패: ' + error.message);
     } else {
       setNewEventTitle('');
+      setNewEventContent(''); // 💡 초기화
       setNewEventStartDate('');
       setNewEventEndDate('');
       setNewEventColor(PRESET_COLORS[0]);
@@ -499,6 +503,7 @@ export default function CalendarApp() {
 
     const { error } = await supabase.from('events').update({
       title: editEventTitle,
+      content: editEventContent, // 💡 일정 내용 업데이트
       event_date: editEventStartDate,
       end_date: editEventEndDate || editEventStartDate,
       color: editEventColor
@@ -512,6 +517,7 @@ export default function CalendarApp() {
       const updated = {
         ...selectedEvent,
         title: editEventTitle,
+        content: editEventContent,
         event_date: editEventStartDate,
         end_date: editEventEndDate || editEventStartDate,
         color: editEventColor
@@ -955,7 +961,7 @@ export default function CalendarApp() {
         )}
       </div>
 
-      {/* 3. 우측 상세 패널 컨테이너 */}
+      {/* 3. 우측 상세 패널 컨테이너 (💡 상세 내용 및 댓글 영역) */}
       <div style={{
         width: rightSidebarOpen ? '320px' : '0px',
         minWidth: rightSidebarOpen ? '320px' : '0px',
@@ -976,15 +982,22 @@ export default function CalendarApp() {
           <div style={{ flex: 1, overflowY: 'auto', marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
             {selectedEvent ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <div style={{ background: '#fff', padding: '12px', borderRadius: '6px', border: '1px solid #ddd' }}>
-                  <p style={{ margin: '0 0 6px 0' }}><strong>제목:</strong> {selectedEvent.title}</p>
-                  <p style={{ margin: '0 0 6px 0' }}><strong>기간:</strong> {selectedEvent.event_date} {selectedEvent.end_date ? `~ ${selectedEvent.end_date}` : ''}</p>
-                  <p style={{ margin: '0 0 10px 0', fontSize: '13px', color: '#666' }}>작성자: {profilesMap[selectedEvent.user_id]?.name || '알 수 없음'}</p>
+                <div style={{ background: '#fff', padding: '14px', borderRadius: '6px', border: '1px solid #ddd', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <p style={{ margin: 0, fontSize: '16px', fontWeight: 'bold', color: '#222' }}>{selectedEvent.title}</p>
+                  <p style={{ margin: 0, fontSize: '12px', color: '#666' }}><strong>기간:</strong> {selectedEvent.event_date} {selectedEvent.end_date ? `~ ${selectedEvent.end_date}` : ''}</p>
+                  <p style={{ margin: 0, fontSize: '12px', color: '#666' }}><strong>작성자:</strong> {profilesMap[selectedEvent.user_id]?.name || '알 수 없음'}</p>
+                  
+                  {/* 💡 등록된 상세 내용 박스 */}
+                  <div style={{ marginTop: '6px', padding: '10px', background: '#f8f9fa', borderRadius: '4px', border: '1px solid #eee', fontSize: '13px', whiteSpace: 'pre-wrap', wordBreak: 'break-all', minHeight: '60px', color: '#333' }}>
+                    {selectedEvent.content || '작성된 내용이 없습니다.'}
+                  </div>
+
                   {(selectedEvent.user_id === session?.user?.id || profile?.role === 'admin') && (
-                    <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
+                    <div style={{ display: 'flex', gap: '8px', marginTop: '6px' }}>
                       <button
                         onClick={() => {
                           setEditEventTitle(selectedEvent.title);
+                          setEditEventContent(selectedEvent.content || ''); // 💡 수정창에 기존 내용 세팅
                           setEditEventStartDate(selectedEvent.event_date);
                           setEditEventEndDate(selectedEvent.end_date || '');
                           setEditEventColor((selectedEvent.color || '#339af0').trim());
@@ -1313,7 +1326,7 @@ export default function CalendarApp() {
       {/* 10. 일정 수정 모달 */}
       {eventEditModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
-          <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', width: '350px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
+          <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', width: '380px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
             <h3 style={{ margin: '0 0 16px 0', fontSize: '18px' }}>일정 수정</h3>
             <form onSubmit={updateEvent} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <div>
@@ -1324,6 +1337,16 @@ export default function CalendarApp() {
                   onChange={e => setEditEventTitle(e.target.value)} 
                   required 
                   style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }} 
+                />
+              </div>
+              <div>
+                <label style={{ fontSize: '12px', color: '#666', display: 'block', marginBottom: '4px' }}>내용</label>
+                <textarea 
+                  value={editEventContent} 
+                  onChange={e => setEditEventContent(e.target.value)} 
+                  rows={4}
+                  placeholder="일정 내용을 입력하세요"
+                  style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box', resize: 'vertical' }} 
                 />
               </div>
               <div>
@@ -1363,7 +1386,7 @@ export default function CalendarApp() {
         </div>
       )}
       
-      {/* 11. 일정 등록 모달 */}
+      {/* 11. 일정 등록 모달 (💡 내용 입력 필드 추가) */}
       {eventAddModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
           <form onSubmit={createEvent} style={{ background: '#fff', padding: '24px', borderRadius: '10px', width: '680px', maxWidth: '95vw', display: 'flex', flexDirection: 'column', gap: '15px', boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
@@ -1371,10 +1394,10 @@ export default function CalendarApp() {
             
             <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
               
-              <div style={{ flex: 1, minWidth: '280px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ flex: 1, minWidth: '280px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                   <label style={{ fontSize: '12px', fontWeight: 'bold' }}>대상 방</label>
-                  <select value={targetRoomIdForAdd || ''} onChange={e => setTargetRoomIdForAdd(e.target.value)} style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }}>
+                  <select value={targetRoomIdForAdd || ''} onChange={e => setTargetRoomIdForAdd(e.target.value)} style={{ padding: '8px', borderRadius: '6px', border: '1px solid #ccc' }}>
                     {rooms.map(room => (
                       <option key={room.id} value={room.id}>{room.name}</option>
                     ))}
@@ -1383,17 +1406,23 @@ export default function CalendarApp() {
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                   <label style={{ fontSize: '12px', fontWeight: 'bold' }}>일정 제목</label>
-                  <input type="text" placeholder="일정 제목 입력" value={newEventTitle} onChange={e => setNewEventTitle(e.target.value)} required style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} />
+                  <input type="text" placeholder="일정 제목 입력" value={newEventTitle} onChange={e => setNewEventTitle(e.target.value)} required style={{ padding: '8px', borderRadius: '6px', border: '1px solid #ccc' }} />
+                </div>
+
+                {/* 💡 일정 내용 입력 영역 추가 */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <label style={{ fontSize: '12px', fontWeight: 'bold' }}>상세 내용</label>
+                  <textarea placeholder="일정 내용을 입력하세요" value={newEventContent} onChange={e => setNewEventContent(e.target.value)} rows={3} style={{ padding: '8px', borderRadius: '6px', border: '1px solid #ccc', resize: 'vertical' }} />
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                   <label style={{ fontSize: '12px', fontWeight: 'bold' }}>시작일</label>
-                  <input type="date" value={newEventStartDate} onChange={e => setNewEventStartDate(e.target.value)} required style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} />
+                  <input type="date" value={newEventStartDate} onChange={e => setNewEventStartDate(e.target.value)} required style={{ padding: '8px', borderRadius: '6px', border: '1px solid #ccc' }} />
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                   <label style={{ fontSize: '12px', fontWeight: 'bold' }}>종료일 (선택)</label>
-                  <input type="date" value={newEventEndDate} onChange={e => setNewEventEndDate(e.target.value)} style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }} />
+                  <input type="date" value={newEventEndDate} onChange={e => setNewEventEndDate(e.target.value)} style={{ padding: '8px', borderRadius: '6px', border: '1px solid #ccc' }} />
                 </div>
               </div>
 
@@ -1405,7 +1434,7 @@ export default function CalendarApp() {
                   지정된 색상 항목은 고정되어 있으며, 본인 색상은 닉네임으로 자동 표시됩니다.
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', maxHeight: '250px', overflowY: 'auto', paddingRight: '4px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', maxHeight: '280px', overflowY: 'auto', paddingRight: '4px' }}>
                   
                   <div 
                     onClick={() => {
@@ -1424,7 +1453,7 @@ export default function CalendarApp() {
                       cursor: 'pointer'
                     }}
                   >
-                    <div style={{ width: '22px', height: '22px', backgroundColor: profile?.color || '#339af0', borderRadius: '4px', flexShrink: 0, border: '1px solid rgba(0,0,0,0.1)' }} />
+                    <div style={{ width: '22px', height: '22px', backgroundColor: profile?.color || '#339af0', borderRadius: '4px', flexShrink: '0', border: '1px solid rgba(0,0,0,0.1)' }} />
                     <span style={{ flex: 1, fontSize: '12px', fontWeight: 'bold', color: '#333' }}>
                       {profile?.name || '내 이름'} (본인)
                     </span>
@@ -1447,7 +1476,7 @@ export default function CalendarApp() {
                         cursor: 'pointer'
                       }}
                     >
-                      <div style={{ width: '22px', height: '22px', backgroundColor: colorCode, borderRadius: '4px', flexShrink: 0, border: '1px solid rgba(0,0,0,0.1)' }} />
+                      <div style={{ width: '22px', height: '22px', backgroundColor: colorCode, borderRadius: '4px', flexShrink: '0', border: '1px solid rgba(0,0,0,0.1)' }} />
                       <span style={{ flex: 1, fontSize: '12px', color: '#333', fontWeight: '500' }}>
                         {(colorLabels && colorLabels[colorCode]) ? colorLabels[colorCode] : '지정 항목'}
                       </span>

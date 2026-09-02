@@ -4,7 +4,6 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-// 💡 자동로그인 체크 여부에 따라 localStorage / sessionStorage를 동적으로 선택
 const customStorage = {
   getItem: (key) => {
     return window.localStorage.getItem(key) || window.sessionStorage.getItem(key);
@@ -32,14 +31,12 @@ export const supabase = createClient(supabaseUrl, supabaseKey, {
   }
 });
 
-// 15가지 고정 색상 팔레트
 const PRESET_COLORS = [
   '#ff6b6b', '#fa5252', '#ff922b', '#fab005', '#fcc419',
   '#82c91e', '#40c057', '#12b886', '#22b8cf', '#15aabf',
   '#339af0', '#4c6ef5', '#7950f2', '#be4bdb', '#f06595'
 ];
 
-// 💡 15가지 색상에 대응하는 기본 이름
 const DEFAULT_COLOR_LABELS: Record<string, string> = {
   '#ff6b6b': '술 모집',
   '#fa5252': '술 약속',
@@ -84,16 +81,18 @@ export default function CalendarApp() {
     localStorage.setItem('keepLoggedIn', e.target.checked.toString());
   };
 
-  // 모달 상태들
   const [adminModalOpen, setAdminModalOpen] = useState(false);
   const [roomModalOpen, setRoomModalOpen] = useState(false);
   const [roomManageModalOpen, setRoomManageModalOpen] = useState(false);
   const [eventAddModalOpen, setEventAddModalOpen] = useState(false);
   const [dateDetailModalOpen, setDateDetailModalOpen] = useState(false);
+  
+  // 일정 상세 정보 + 댓글 모달 상태
+  const [eventDetailModalOpen, setEventDetailModalOpen] = useState(false);
+
   const [clickedDateEvents, setClickedDateEvents] = useState<any[]>([]);
   const [clickedDateStr, setClickedDateStr] = useState('');
 
-  // 데이터 상태
   const [rooms, setRooms] = useState<any[]>([]);
   const [events, setEvents] = useState<any[]>([]);
   const [profilesMap, setProfilesMap] = useState<Record<string, any>>({});
@@ -103,30 +102,25 @@ export default function CalendarApp() {
   const [newCommentText, setNewCommentText] = useState('');
   const [membersDropdownOpen, setMembersDropdownOpen] = useState(false);
   
-  // 일정 수정 관련 상태
   const [eventEditModalOpen, setEventEditModalOpen] = useState(false);
   const [editEventTitle, setEditEventTitle] = useState('');
-  const [editEventContent, setEditEventContent] = useState(''); // 💡 일정 내용 수정 상태 추가
+  const [editEventContent, setEditEventContent] = useState('');
   const [editEventStartDate, setEditEventStartDate] = useState('');
   const [editEventEndDate, setEditEventEndDate] = useState('');
   const [editEventColor, setEditEventColor] = useState('#339af0');
 
-  // 방 관리(이름 변경 및 순서) 관련 상태
   const [editingRoomId, setEditingRoomId] = useState(null);
   const [editRoomNameText, setEditRoomNameText] = useState('');
   
-  // 폼 입력 상태 (일정 등록)
   const [newRoomName, setNewRoomName] = useState('');
   const [newEventTitle, setNewEventTitle] = useState('');
-  const [newEventContent, setNewEventContent] = useState(''); // 💡 일정 내용 입력 상태 추가
+  const [newEventContent, setNewEventContent] = useState('');
   const [newEventStartDate, setNewEventStartDate] = useState('');
   const [newEventEndDate, setNewEventEndDate] = useState('');
 
-  // 이름 변경 신청 관련 상태
   const [nameChangeModalOpen, setNameChangeModalOpen] = useState(false);
   const [newNameRequestText, setNewNameRequestText] = useState('');
   
-  // 모바일 스와이프 감지용 상태
   const [touchStartX, setTouchStartX] = useState(0);
   const [touchEndX, setTouchEndX] = useState(0);
   const handleTouchStart = (e) => {
@@ -137,12 +131,10 @@ export default function CalendarApp() {
     setTouchEndX(e.targetTouches[0].clientX);
   };
   
-  // 일정 등록 시 선택된 색상
   const [newEventColor, setNewEventColor] = useState(PRESET_COLORS[0]);
   const [customPickerColor, setCustomPickerColor] = useState('#ff0000');
   const [customColorLabel, setCustomColorLabel] = useState('');
 
-  // 색상별 항목 이름 상태 (localStorage 연동)
   const [colorLabels, setColorLabels] = useState<Record<string, string>>(() => {
     try {
       const saved = localStorage.getItem('calendar_color_labels');
@@ -474,7 +466,7 @@ export default function CalendarApp() {
       room_id: targetRoomIdForAdd,
       user_id: session.user.id,
       title: newEventTitle,
-      content: newEventContent, // 💡 일정 내용 저장
+      content: newEventContent,
       event_date: newEventStartDate,
       end_date: newEventEndDate || newEventStartDate,
       color: finalColor
@@ -484,7 +476,7 @@ export default function CalendarApp() {
       alert('일정 등록 실패: ' + error.message);
     } else {
       setNewEventTitle('');
-      setNewEventContent(''); // 💡 초기화
+      setNewEventContent('');
       setNewEventStartDate('');
       setNewEventEndDate('');
       setNewEventColor(PRESET_COLORS[0]);
@@ -503,7 +495,7 @@ export default function CalendarApp() {
 
     const { error } = await supabase.from('events').update({
       title: editEventTitle,
-      content: editEventContent, // 💡 일정 내용 업데이트
+      content: editEventContent,
       event_date: editEventStartDate,
       end_date: editEventEndDate || editEventStartDate,
       color: editEventColor
@@ -534,6 +526,7 @@ export default function CalendarApp() {
       alert('삭제 실패: ' + error.message);
     } else {
       setSelectedEvent(null);
+      setEventDetailModalOpen(false);
       fetchEvents();
       if (dateDetailModalOpen) {
         const updatedEvents = events.filter(ev => {
@@ -911,7 +904,7 @@ export default function CalendarApp() {
                             onClick={(e) => { 
                               e.stopPropagation(); 
                               setSelectedEvent(ev); 
-                              setRightSidebarOpen(true); 
+                              setEventDetailModalOpen(true); // 💡 일정 클릭 시 상세/댓글 모달 팝업
                             }}
                             style={{ 
                               background: eventColor, 
@@ -928,10 +921,14 @@ export default function CalendarApp() {
                               borderTopRightRadius: isEnd ? '4px' : '0px',
                               borderBottomRightRadius: isEnd ? '4px' : '0px',
                               zIndex: 2,
-                              position: 'relative'
+                              position: 'relative',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap'
                             }}
                           >
-                            {isStart || formattedDate.endsWith('-01') || new Date(formattedDate).getDay() === 0 ? ev.title : '\u00A0'}
+                            {/* 💡 캘린더 칸 안에는 오직 '제목'만 깔끔하게 표시 */}
+                            {ev.title}
                           </div>
                         );
                       })}
@@ -961,96 +958,7 @@ export default function CalendarApp() {
         )}
       </div>
 
-      {/* 3. 우측 상세 패널 컨테이너 (💡 상세 내용 및 댓글 영역) */}
-      <div style={{
-        width: rightSidebarOpen ? '320px' : '0px',
-        minWidth: rightSidebarOpen ? '320px' : '0px',
-        height: '100vh',
-        background: '#f8f9fa',
-        borderLeft: rightSidebarOpen ? '1px solid #ddd' : 'none',
-        overflow: 'hidden',
-        transition: 'width 0.3s ease, min-width 0.3s ease',
-        display: 'flex',
-        flexDirection: 'column',
-        boxSizing: 'border-box',
-        flexShrink: 0,
-        zIndex: 10
-      }}>
-        <div style={{ width: '320px', height: '100vh', display: 'flex', flexDirection: 'column', boxSizing: 'border-box', padding: '20px', paddingBottom: '75px', overflowY: 'auto' }}>
-          <h3 style={{ marginTop: '0', borderBottom: '1px solid #ddd', paddingBottom: '10px' }}>일정 상세 / 댓글</h3>
-          
-          <div style={{ flex: 1, overflowY: 'auto', marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
-            {selectedEvent ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <div style={{ background: '#fff', padding: '14px', borderRadius: '6px', border: '1px solid #ddd', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <p style={{ margin: 0, fontSize: '16px', fontWeight: 'bold', color: '#222' }}>{selectedEvent.title}</p>
-                  <p style={{ margin: 0, fontSize: '12px', color: '#666' }}><strong>기간:</strong> {selectedEvent.event_date} {selectedEvent.end_date ? `~ ${selectedEvent.end_date}` : ''}</p>
-                  <p style={{ margin: 0, fontSize: '12px', color: '#666' }}><strong>작성자:</strong> {profilesMap[selectedEvent.user_id]?.name || '알 수 없음'}</p>
-                  
-                  {/* 💡 등록된 상세 내용 박스 */}
-                  <div style={{ marginTop: '6px', padding: '10px', background: '#f8f9fa', borderRadius: '4px', border: '1px solid #eee', fontSize: '13px', whiteSpace: 'pre-wrap', wordBreak: 'break-all', minHeight: '60px', color: '#333' }}>
-                    {selectedEvent.content || '작성된 내용이 없습니다.'}
-                  </div>
-
-                  {(selectedEvent.user_id === session?.user?.id || profile?.role === 'admin') && (
-                    <div style={{ display: 'flex', gap: '8px', marginTop: '6px' }}>
-                      <button
-                        onClick={() => {
-                          setEditEventTitle(selectedEvent.title);
-                          setEditEventContent(selectedEvent.content || ''); // 💡 수정창에 기존 내용 세팅
-                          setEditEventStartDate(selectedEvent.event_date);
-                          setEditEventEndDate(selectedEvent.end_date || '');
-                          setEditEventColor((selectedEvent.color || '#339af0').trim());
-                          setEventEditModalOpen(true);
-                        }}
-                        style={{ padding: '4px 8px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
-                      >
-                        일정 수정
-                      </button>
-                      
-                      <button 
-                        onClick={() => deleteEvent(selectedEvent.id)} 
-                        style={{ padding: '4px 8px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
-                      >
-                        일정 삭제
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <h4>댓글</h4>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '200px', overflowY: 'auto' }}>
-                    {comments.length === 0 ? (
-                      <p style={{ fontSize: '13px', color: '#888' }}>작성된 댓글이 없습니다.</p>
-                    ) : (
-                      comments.map(c => (
-                        <div key={c.id} style={{ background: '#fff', padding: '8px', borderRadius: '4px', border: '1px solid #eee', fontSize: '13px' }}>
-                          <div style={{ fontWeight: 'bold', fontSize: '11px', color: '#555', marginBottom: '2px' }}>
-                            {profilesMap[c.user_id]?.name || '익명'}
-                          </div>
-                          <div>{c.content}</div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-
-                  <form onSubmit={addComment} style={{ display: 'flex', gap: '6px', marginTop: '5px' }}>
-                    <input type="text" placeholder="댓글을 입력하세요..." value={newCommentText} onChange={e => setNewCommentText(e.target.value)} style={{ flex: 1, padding: '8px', borderRadius: '4px', border: '1px solid #ccc', fontSize: '13px' }} />
-                    <button type="submit" style={{ padding: '8px 12px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>등록</button>
-                  </form>
-                </div>
-              </div>
-            ) : (
-              <div>
-                <p style={{ color: '#666', fontSize: '13px' }}>
-                  달력에서 일정을 클릭하여 상세 내용을 확인하고 댓글을 남겨보세요.
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
+      {/* 3. 우측 상세 패널 컨테이너는 제거하고 하단바 구성 유지 */}
 
       {/* 4. 화면 하단 고정 네비게이션 바 */}
       <div style={{
@@ -1074,18 +982,9 @@ export default function CalendarApp() {
         >
           📁 방 목록 / 메뉴 {leftSidebarOpen ? '▼' : '▲'}
         </button>
-
-        <div style={{ width: '1px', height: '60%', background: '#495057' }} />
-
-        <button 
-          onClick={() => setRightSidebarOpen(!rightSidebarOpen)}
-          style={{ flex: 1, height: '100%', background: rightSidebarOpen ? '#495057' : 'transparent', color: '#fff', border: 'none', fontSize: '14px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
-        >
-          💬 상세 / 댓글 {rightSidebarOpen ? '▼' : '▲'}
-        </button>
       </div>
 
-      {/* ================= 모달 모음 (최상위 루트 바로 아래 독립적 배치) ================= */}
+      {/* ================= 모달 모음 ================= */}
 
       {/* 5. 날짜 더블클릭 시 열리는 일자별 관리 모달 */}
       {dateDetailModalOpen && (
@@ -1119,8 +1018,8 @@ export default function CalendarApp() {
                         key={ev.id}
                         onClick={() => {
                           setSelectedEvent(ev);
-                          setRightSidebarOpen(true);
                           setDateDetailModalOpen(false);
+                          setEventDetailModalOpen(true); // 💡 날짜 상세창에서도 클릭 시 정보+댓글 모달 팝업
                         }}
                         style={{ padding: '10px 12px', background: '#f8f9fa', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'background 0.2s' }}
                       >
@@ -1148,7 +1047,111 @@ export default function CalendarApp() {
         </div>
       )}
 
-      {/* 6. 멤버 관리 (관리자) 모달 */}
+      {/* 💡 6. 일정 상세 정보 및 댓글 모달 (요청사항 반영 핵심) */}
+      {eventDetailModalOpen && selectedEvent && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100 }}>
+          <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', width: '450px', maxHeight: '85vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '15px', boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
+              <h3 style={{ margin: 0, fontSize: '18px', color: '#222' }}>📌 일정 상세 정보</h3>
+              <button onClick={() => setEventDetailModalOpen(false)} style={{ background: 'none', border: 'none', fontSize: '18px', cursor: 'pointer', fontWeight: 'bold', color: '#666' }}>✕</button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <div>
+                <span style={{ fontSize: '12px', color: '#888' }}>제목</span>
+                <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#222', marginTop: '2px' }}>{selectedEvent.title}</div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '20px' }}>
+                <div>
+                  <span style={{ fontSize: '12px', color: '#888' }}>기간</span>
+                  <div style={{ fontSize: '13px', color: '#444', marginTop: '2px' }}>
+                    {selectedEvent.event_date} {selectedEvent.end_date ? `~ ${selectedEvent.end_date}` : ''}
+                  </div>
+                </div>
+                <div>
+                  <span style={{ fontSize: '12px', color: '#888' }}>작성자</span>
+                  <div style={{ fontSize: '13px', color: '#444', marginTop: '2px' }}>
+                    {profilesMap[selectedEvent.user_id]?.name || '알 수 없음'}
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <span style={{ fontSize: '12px', color: '#888' }}>상세 내용</span>
+                <div style={{ marginTop: '4px', padding: '12px', background: '#f8f9fa', borderRadius: '6px', border: '1px solid #e9ecef', fontSize: '14px', whiteSpace: 'pre-wrap', wordBreak: 'break-all', minHeight: '70px', color: '#333' }}>
+                  {selectedEvent.content || '작성된 내용이 없습니다.'}
+                </div>
+              </div>
+
+              {(selectedEvent.user_id === session?.user?.id || profile?.role === 'admin') && (
+                <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
+                  <button
+                    onClick={() => {
+                      setEditEventTitle(selectedEvent.title);
+                      setEditEventContent(selectedEvent.content || '');
+                      setEditEventStartDate(selectedEvent.event_date);
+                      setEditEventEndDate(selectedEvent.end_date || '');
+                      setEditEventColor((selectedEvent.color || '#339af0').trim());
+                      setEventDetailModalOpen(false);
+                      setEventEditModalOpen(true);
+                    }}
+                    style={{ flex: 1, padding: '8px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: 'bold' }}
+                  >
+                    일정 수정
+                  </button>
+                  <button 
+                    onClick={() => deleteEvent(selectedEvent.id)} 
+                    style={{ flex: 1, padding: '8px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: 'bold' }}
+                  >
+                    일정 삭제
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* 댓글 영역이 일정 정보창 하단에 포함됨 */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', borderTop: '1px solid #eee', paddingTop: '15px', marginTop: '5px' }}>
+              <h4 style={{ margin: 0, fontSize: '14px', color: '#333' }}>💬 해당 일정 댓글</h4>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '150px', overflowY: 'auto' }}>
+                {comments.length === 0 ? (
+                  <p style={{ fontSize: '13px', color: '#888', margin: '5px 0' }}>작성된 댓글이 없습니다.</p>
+                ) : (
+                  comments.map(c => (
+                    <div key={c.id} style={{ background: '#f8f9fa', padding: '8px 10px', borderRadius: '6px', border: '1px solid #e9ecef', fontSize: '13px' }}>
+                      <div style={{ fontWeight: 'bold', fontSize: '11px', color: '#555', marginBottom: '2px' }}>
+                        {profilesMap[c.user_id]?.name || '익명'}
+                      </div>
+                      <div style={{ color: '#333' }}>{c.content}</div>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              <form onSubmit={addComment} style={{ display: 'flex', gap: '6px', marginTop: '6px' }}>
+                <input 
+                  type="text" 
+                  placeholder="이 일정에 댓글을 입력하세요..." 
+                  value={newCommentText} 
+                  onChange={e => setNewCommentText(e.target.value)} 
+                  style={{ flex: 1, padding: '9px', borderRadius: '6px', border: '1px solid #ccc', fontSize: '13px' }} 
+                />
+                <button type="submit" style={{ padding: '9px 14px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: 'bold' }}>등록</button>
+              </form>
+            </div>
+
+            <button 
+              onClick={() => setEventDetailModalOpen(false)} 
+              style={{ width: '100%', padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', marginTop: '5px' }}
+            >
+              닫기
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 7. 멤버 관리 (관리자) 모달 */}
       {adminModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
           <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '450px', maxHeight: '80vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '15px' }}>
@@ -1203,7 +1206,7 @@ export default function CalendarApp() {
         </div>
       )}
 
-      {/* 7. 이름 변경 신청 모달 */}
+      {/* 8. 이름 변경 신청 모달 */}
       {nameChangeModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
           <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '300px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
@@ -1226,7 +1229,7 @@ export default function CalendarApp() {
         </div>
       )}
       
-      {/* 8. 방 생성 모달 */}
+      {/* 9. 방 생성 모달 */}
       {roomModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
           <form onSubmit={createRoom} style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '350px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -1240,7 +1243,7 @@ export default function CalendarApp() {
         </div>
       )}
 
-      {/* 9. 방 관리 모달 */}
+      {/* 10. 방 관리 모달 */}
       {roomManageModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
           <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '450px', maxHeight: '80vh', overflowY: 'auto' }}>
@@ -1323,9 +1326,9 @@ export default function CalendarApp() {
         </div>
       )}
       
-      {/* 10. 일정 수정 모달 */}
+      {/* 11. 일정 수정 모달 */}
       {eventEditModalOpen && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1200 }}>
           <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', width: '380px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
             <h3 style={{ margin: '0 0 16px 0', fontSize: '18px' }}>일정 수정</h3>
             <form onSubmit={updateEvent} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -1386,7 +1389,7 @@ export default function CalendarApp() {
         </div>
       )}
       
-      {/* 11. 일정 등록 모달 (💡 내용 입력 필드 추가) */}
+      {/* 12. 일정 등록 모달 */}
       {eventAddModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
           <form onSubmit={createEvent} style={{ background: '#fff', padding: '24px', borderRadius: '10px', width: '680px', maxWidth: '95vw', display: 'flex', flexDirection: 'column', gap: '15px', boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
@@ -1409,7 +1412,6 @@ export default function CalendarApp() {
                   <input type="text" placeholder="일정 제목 입력" value={newEventTitle} onChange={e => setNewEventTitle(e.target.value)} required style={{ padding: '8px', borderRadius: '6px', border: '1px solid #ccc' }} />
                 </div>
 
-                {/* 💡 일정 내용 입력 영역 추가 */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                   <label style={{ fontSize: '12px', fontWeight: 'bold' }}>상세 내용</label>
                   <textarea placeholder="일정 내용을 입력하세요" value={newEventContent} onChange={e => setNewEventContent(e.target.value)} rows={3} style={{ padding: '8px', borderRadius: '6px', border: '1px solid #ccc', resize: 'vertical' }} />

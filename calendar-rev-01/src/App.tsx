@@ -873,7 +873,7 @@ export default function CalendarApp() {
                     key={`day-${dayNum}`} 
                     onClick={(e) => {
                       e.stopPropagation();
-                      // 💡 달력 그리드 칸을 누르면 우측바에 해당 날짜의 일정 목록이 나오도록 설정
+                      // 💡 달력 그리드 칸 전체(일정 포함)를 누르면 우측바에 해당 날짜의 일정 목록이 나오도록 설정
                       setRightSidebarDateStr(formattedDate);
                       setRightSidebarEvents(dayEvents);
                       setRightSidebarOpen(true);
@@ -905,11 +905,7 @@ export default function CalendarApp() {
                         return (
                           <div 
                             key={ev.id} 
-                            onClick={(e) => { 
-                              e.stopPropagation(); 
-                              setSelectedEvent(ev); 
-                              setEventDetailModalOpen(true); // 💡 일정 바를 직접 클릭 시 상세 모달 팝업
-                            }}
+                            // 💡 일정 아이템 개별의 onClick은 삭제되어, 누르면 부모(날짜 칸)의 이벤트가 발생해 우측바만 열립니다.
                             style={{ 
                               background: eventColor, 
                               color: '#fff', 

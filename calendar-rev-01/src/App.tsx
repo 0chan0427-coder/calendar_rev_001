@@ -2,9 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
 // --- Supabase 설정 ---
+// --- Supabase 설정 ---
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 // --- 프리셋 색상 ---
 const PRESET_COLORS = ['#FF6B6B', '#4D96FF', '#6BCB77', '#FFD93D', '#9370DB', '#FF8C00', '#20B2AA'];

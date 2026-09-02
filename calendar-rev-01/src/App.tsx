@@ -69,10 +69,19 @@ export default function CalendarApp() {
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
   const [rightSidebarOpen, setRightSidebarOpen] = useState(false);
   
-  const [currentViewMode, setCurrentViewMode] = useState<'calendar' | 'chat'>('calendar');
+  // [수정 포인트 1] currentViewMode에 'vote' 추가
+  const [currentViewMode, setCurrentViewMode] = useState<'calendar' | 'chat' | 'vote'>('calendar');
+  
   const [chatMessages, setChatMessages] = useState<any[]>([]);
   const [chatInputText, setChatInputText] = useState('');
   const chatScrollRef = useRef<HTMLDivElement>(null);
+
+  // 투표 관련 상태 추가 (추후 Supabase 연동 가능)
+  const [votes, setVotes] = useState<any[]>([
+    { id: 1, title: '다음 주 정기 모임 장소 추천해주세요!', author: '관리자', status: 'active', endDate: '2026-04-10', totalVoters: 5 },
+    { id: 2, title: '워크샵 날짜 투표 (토요일 vs 일요일)', author: '홍길동', status: 'active', endDate: '2026-04-15', totalVoters: 12 },
+    { id: 3, title: '지난 회식 비용 정산 방식 의견 수렴', author: '김철수', status: 'closed', endDate: '2026-03-01', totalVoters: 8 },
+  ]);
 
   const [selectedRoomIds, setSelectedRoomIds] = useState<string[]>([]);
   const [targetRoomIdForAdd, setTargetRoomIdForAdd] = useState<string | null>(null);
@@ -828,25 +837,49 @@ export default function CalendarApp() {
               {/* [커뮤니티 카테고리] */}
               <div>
                 <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#888', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>커뮤니티</div>
-                <div 
-                  onClick={() => setCurrentViewMode('chat')}
-                  style={{ 
-                    padding: '10px 12px', 
-                    background: currentViewMode === 'chat' ? '#228be6' : '#fff', 
-                    color: currentViewMode === 'chat' ? '#fff' : '#333', 
-                    borderRadius: '6px', 
-                    cursor: 'pointer', 
-                    border: '1px solid #ddd', 
-                    fontSize: '14px', 
-                    fontWeight: currentViewMode === 'chat' ? 'bold' : 'normal', 
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
-                    alignItems: 'center',
-                    boxShadow: currentViewMode === 'chat' ? '0 2px 4px rgba(0,0,0,0.1)' : 'none'
-                  }}
-                >
-                  <span>💬 자유 채팅방</span>
-                  {currentViewMode === 'chat' && <span style={{ fontSize: '12px', background: 'rgba(255,255,255,0.3)', padding: '2px 6px', borderRadius: '4px' }}>선택됨</span>}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <div 
+                    onClick={() => setCurrentViewMode('chat')}
+                    style={{ 
+                      padding: '10px 12px', 
+                      background: currentViewMode === 'chat' ? '#228be6' : '#fff', 
+                      color: currentViewMode === 'chat' ? '#fff' : '#333', 
+                      borderRadius: '6px', 
+                      cursor: 'pointer', 
+                      border: '1px solid #ddd', 
+                      fontSize: '14px', 
+                      fontWeight: currentViewMode === 'chat' ? 'bold' : 'normal', 
+                      display: 'flex', 
+                      justifyContent: 'space-between', 
+                      alignItems: 'center',
+                      boxShadow: currentViewMode === 'chat' ? '0 2px 4px rgba(0,0,0,0.1)' : 'none'
+                    }}
+                  >
+                    <span>💬 자유 채팅방</span>
+                    {currentViewMode === 'chat' && <span style={{ fontSize: '12px', background: 'rgba(255,255,255,0.3)', padding: '2px 6px', borderRadius: '4px' }}>선택됨</span>}
+                  </div>
+
+                  {/* [수정 포인트 2] 좌측바 투표 버튼 추가 */}
+                  <div 
+                    onClick={() => setCurrentViewMode('vote')}
+                    style={{ 
+                      padding: '10px 12px', 
+                      background: currentViewMode === 'vote' ? '#228be6' : '#fff', 
+                      color: currentViewMode === 'vote' ? '#fff' : '#333', 
+                      borderRadius: '6px', 
+                      cursor: 'pointer', 
+                      border: '1px solid #ddd', 
+                      fontSize: '14px', 
+                      fontWeight: currentViewMode === 'vote' ? 'bold' : 'normal', 
+                      display: 'flex', 
+                      justifyContent: 'space-between', 
+                      alignItems: 'center',
+                      boxShadow: currentViewMode === 'vote' ? '0 2px 4px rgba(0,0,0,0.1)' : 'none'
+                    }}
+                  >
+                    <span>📊 투표 목록</span>
+                    {currentViewMode === 'vote' && <span style={{ fontSize: '12px', background: 'rgba(255,255,255,0.3)', padding: '2px 6px', borderRadius: '4px' }}>선택됨</span>}
+                  </div>
                 </div>
               </div>
 
@@ -885,7 +918,7 @@ export default function CalendarApp() {
         </div>
       </div>
 
-      {/* 2. 중앙 메인 콘텐츠 뷰 (채팅방 모드 또는 캘린더 모드 분기) */}
+      {/* 2. 중앙 메인 콘텐츠 뷰 (채팅방 모드, 투표 모드, 캘린더 모드 분기) */}
       <div style={{ flex: 1, height: '100vh', padding: '20px', paddingBottom: '75px', overflowY: 'hidden', background: currentViewMode === 'chat' ? '#abc1de' : '#fff', display: 'flex', flexDirection: 'column', boxSizing: 'border-box', minWidth: 0 }}>
         
         {/* [자유 채팅방 화면] */}
@@ -974,6 +1007,67 @@ export default function CalendarApp() {
               />
               <button type="submit" style={{ padding: '10px 18px', background: '#fee102', color: '#3c1e1e', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px' }}>전송</button>
             </form>
+          </div>
+        ) : currentViewMode === 'vote' ? (
+          /* [수정 포인트 3] 투표 전용 화면 (기존 달력 그리드 영역 대체) */
+          <div style={{ display: 'flex', flexDirection: 'column', height: '100%', maxWidth: '900px', margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
+            <div style={{ padding: '10px 0', borderBottom: '1px solid #eee', marginBottom: '15px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div>
+                <h2 style={{ margin: 0, fontSize: '18px', color: '#222' }}>📊 커뮤니티 투표 목록</h2>
+                <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#666' }}>진행 중이거나 완료된 투표 목록을 확인하고 참여할 수 있습니다.</p>
+              </div>
+              <button 
+                onClick={() => alert('새 투표 만들기 기능은 추후 연동됩니다!')}
+                style={{ padding: '8px 14px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer' }}
+              >
+                + 투표 만들기
+              </button>
+            </div>
+
+            {/* 투표 리스트 컨테이너 */}
+            <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px', paddingBottom: '20px' }}>
+              {votes.map((vote) => (
+                <div 
+                  key={vote.id}
+                  onClick={() => alert(`"${vote.title}" 투표 상세 화면으로 이동합니다.`)}
+                  style={{ 
+                    background: '#fff', 
+                    border: '1px solid #ddd', 
+                    borderRadius: '8px', 
+                    padding: '16px', 
+                    cursor: 'pointer', 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    gap: '8px',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                    transition: 'border-color 0.2s'
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ 
+                      fontSize: '11px', 
+                      fontWeight: 'bold', 
+                      padding: '3px 8px', 
+                      borderRadius: '4px', 
+                      background: vote.status === 'active' ? '#e7f5ff' : '#f1f3f5',
+                      color: vote.status === 'active' ? '#1c7ed6' : '#495057'
+                    }}>
+                      {vote.status === 'active' ? '🟢 진행 중' : '⚪ 마감됨'}
+                    </span>
+                    <span style={{ fontSize: '12px', color: '#888' }}>마감일: {vote.endDate}</span>
+                  </div>
+
+                  <div style={{ fontSize: '15px', fontWeight: 'bold', color: '#333' }}>
+                    {vote.title}
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px', fontSize: '12px', color: '#666' }}>
+                    <span>작성자: {vote.author}</span>
+                    <span style={{ fontWeight: 'bold', color: '#007bff' }}>참여 인원: {vote.totalVoters}명 &gt;</span>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         ) : (
           /* [기존 캘린더 모드 화면] */

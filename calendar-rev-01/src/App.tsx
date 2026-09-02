@@ -69,7 +69,7 @@ export default function CalendarApp() {
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
   const [rightSidebarOpen, setRightSidebarOpen] = useState(false);
   
-  const [currentViewMode, setCurrentViewMode] = useState<'calendar' | 'chat' | 'vote'>('calendar');
+  const [currentViewMode, setCurrentViewMode] = useState<'calendar' | 'chat' | 'vote' | 'settlement'>('calendar');
   
   const [chatMessages, setChatMessages] = useState<any[]>([]);
   const [chatInputText, setChatInputText] = useState('');
@@ -81,16 +81,25 @@ export default function CalendarApp() {
   const [newVoteTitle, setNewVoteTitle] = useState('');
   const [newVoteEndDate, setNewVoteEndDate] = useState('');
   const [newVoteOptions, setNewVoteOptions] = useState<string[]>(['', '']);
-  const [newVoteIsMultiple, setNewVoteIsMultiple] = useState(false); // 중복 선택 가능 여부
-  const [newVoteIsAnonymous, setNewVoteIsAnonymous] = useState(true);   // 익명 투표 여부 (기본 익명)
+  const [newVoteIsMultiple, setNewVoteIsMultiple] = useState(false);
+  const [newVoteIsAnonymous, setNewVoteIsAnonymous] = useState(true);
   
-  // 투표 상세 및 참여를 위한 상태
   const [selectedVote, setSelectedVote] = useState<any>(null);
   const [voteOptionsList, setVoteOptionsList] = useState<any[]>([]);
   const [voteRecordsList, setVoteRecordsList] = useState<any[]>([]);
   const [voteDetailModalOpen, setVoteDetailModalOpen] = useState(false);
-  const [selectedOptionIds, setSelectedOptionIds] = useState<string[]>([]); // 다중 선택 대응을 위한 배열
-  const [voteStatusModalOpen, setVoteStatusModalOpen] = useState(false); // 누가 누구에게 투표했는지 보는 현황 모달
+  const [selectedOptionIds, setSelectedOptionIds] = useState<string[]>([]);
+  const [voteStatusModalOpen, setVoteStatusModalOpen] = useState(false);
+
+  // 정산 관련 상태 추가
+  const [settlements, setSettlements] = useState<any[]>([]);
+  const [settlementModalOpen, setSettlementModalOpen] = useState(false);
+  const [newSettlementTitle, setNewSettlementTitle] = useState('');
+  const [newSettlementTotalAmount, setNewSettlementTotalAmount] = useState('');
+  const [targetRoomIdForSettlement, setTargetRoomIdForSettlement] = useState<string | null>(null);
+  const [selectedSettlement, setSelectedSettlement] = useState<any>(null);
+  const [settlementItemsList, setSettlementItemsList] = useState<any[]>([]);
+  const [settlementDetailModalOpen, setSettlementDetailModalOpen] = useState(false);
 
   const [selectedRoomIds, setSelectedRoomIds] = useState<string[]>([]);
   const [targetRoomIdForAdd, setTargetRoomIdForAdd] = useState<string | null>(null);
@@ -206,12 +215,13 @@ export default function CalendarApp() {
       fetchEvents();
       fetchProfilesMap();
       fetchVotes();
+      fetchSettlements();
       if (profile.role === 'admin') {
         fetchPendingProfiles();
         fetchAllProfiles();
       }
     }
-  }, [session, profile]);
+  }, [session, profile, selectedRoomIds]);
 
   useEffect(() => {
     if (currentViewMode === 'chat') {
@@ -251,6 +261,12 @@ export default function CalendarApp() {
   }, [selectedVote]);
 
   useEffect(() => {
+    if (selectedSettlement) {
+      fetchSettlementDetails(selectedSettlement.id);
+    }
+  }, [selectedSettlement]);
+
+  useEffect(() => {
     if (rightSidebarOpen && rightSidebarDateStr) {
       const updatedEvents = events.filter(ev => {
         if (!selectedRoomIds.includes(ev.room_id)) return false;
@@ -288,6 +304,99 @@ export default function CalendarApp() {
     if (records) setVoteRecordsList(records);
   };
 
+  const fetchSettlements = async () => {
+    if (selectedRoomIds.length === 0) {
+      setSettlements([]);
+      return;
+    }
+    const { data, error } = await supabase
+      .from('settlements')
+      .select('*')
+      .in('room_id', selectedRoomIds)
+      .order('created_at', { ascending: false });
+    if (!error && data) {
+      setSettlements(data);
+    }
+  };
+
+  const fetchSettlementDetails = async (settlementId: string) => {
+    const { data, error } = await supabase
+      .from('settlement_items')
+      .select('*')
+      .eq('settlement_id', settlementId);
+    if (!error && data) {
+      setSettlementItemsList(data);
+    }
+  };
+
+  const createSettlement = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newSettlementTitle.trim() || !newSettlementTotalAmount || !targetRoomIdForSettlement) {
+      alert('방, 제목, 총 금액을 모두 입력해주세요.');
+      return;
+    }
+    const amountNum = parseFloat(newSettlementTotalAmount);
+    if (isNaN(amountNum) || amountNum <= 0) {
+      alert('유효한 금액을 입력해주세요.');
+      return;
+    }
+
+    const { data: settlementData, error: settlementError } = await supabase
+      .from('settlements')
+      .insert([{
+        room_id: targetRoomIdForSettlement,
+        user_id: session.user.id,
+        title: newSettlementTitle.trim(),
+        total_amount: amountNum
+      }])
+      .select()
+      .single();
+
+    if (settlementError || !settlementData) {
+      alert('정산 생성 실패: ' + (settlementError?.message || '알 수 없는 오류'));
+      return;
+    }
+
+    const allProfileIds = Object.keys(profilesMap);
+    if (allProfileIds.length > 0) {
+      const share = parseFloat((amountNum / allProfileIds.length).toFixed(2));
+      const itemsToInsert = allProfileIds.map(uid => ({
+        settlement_id: settlementData.id,
+        user_id: uid,
+        amount: share,
+        is_paid: uid === session.user.id
+      }));
+      await supabase.from('settlement_items').insert(itemsToInsert);
+    }
+
+    alert('정산이 생성되었습니다!');
+    setNewSettlementTitle('');
+    setNewSettlementTotalAmount('');
+    setSettlementModalOpen(false);
+    fetchSettlements();
+  };
+
+  const toggleItemPaid = async (itemId: string, currentPaid: boolean) => {
+    const { error } = await supabase
+      .from('settlement_items')
+      .update({ is_paid: !currentPaid })
+      .eq('id', itemId);
+    if (!error && selectedSettlement) {
+      fetchSettlementDetails(selectedSettlement.id);
+    }
+  };
+
+  const deleteSettlement = async (settlementId: string) => {
+    if (!confirm('정말 이 정산을 삭제하시겠습니까?')) return;
+    const { error } = await supabase.from('settlements').delete().eq('id', settlementId);
+    if (!error) {
+      alert('정산이 삭제되었습니다.');
+      setSettlementDetailModalOpen(false);
+      setSelectedSettlement(null);
+      fetchSettlements();
+    }
+  };
+
   const createVote = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newVoteTitle.trim()) {
@@ -300,7 +409,6 @@ export default function CalendarApp() {
       return;
     }
 
-    // 1. 투표 생성 (is_multiple, is_anonymous 컬럼 포함)
     const { data: voteData, error: voteError } = await supabase.from('votes').insert([{
       title: newVoteTitle.trim(),
       user_id: session.user.id,
@@ -315,7 +423,6 @@ export default function CalendarApp() {
       return;
     }
 
-    // 2. 투표 항목 생성
     const optionInserts = validOptions.map(opt => ({
       vote_id: voteData.id,
       content: opt.trim()
@@ -342,10 +449,8 @@ export default function CalendarApp() {
       return;
     }
 
-    // 기존 내 투표 기록 전체 삭제 (중복/수정 처리 위함)
     await supabase.from('vote_records').delete().match({ vote_id: selectedVote.id, user_id: session.user.id });
 
-    // 선택한 항목들 일괄 insert
     const inserts = selectedOptionIds.map(optId => ({
       vote_id: selectedVote.id,
       option_id: optId,
@@ -472,6 +577,7 @@ export default function CalendarApp() {
       if (selectedRoomIds.length === 0 && data.length > 0) {
         setSelectedRoomIds([data[0].id]);
         setTargetRoomIdForAdd(data[0].id);
+        setTargetRoomIdForSettlement(data[0].id);
       }
     }
   };
@@ -795,11 +901,17 @@ export default function CalendarApp() {
       if (targetRoomIdForAdd === roomId && next.length > 0) {
         setTargetRoomIdForAdd(next[0]);
       }
+      if (targetRoomIdForSettlement === roomId && next.length > 0) {
+        setTargetRoomIdForSettlement(next[0]);
+      }
     } else {
       const next = [...selectedRoomIds, roomId];
       setSelectedRoomIds(next);
       if (!targetRoomIdForAdd) {
         setTargetRoomIdForAdd(roomId);
+      }
+      if (!targetRoomIdForSettlement) {
+        setTargetRoomIdForSettlement(roomId);
       }
     }
   };
@@ -1006,6 +1118,27 @@ export default function CalendarApp() {
                     <span>📊 투표 목록</span>
                     {currentViewMode === 'vote' && <span style={{ fontSize: '12px', background: 'rgba(255,255,255,0.3)', padding: '2px 6px', borderRadius: '4px' }}>선택됨</span>}
                   </div>
+
+                  <div 
+                    onClick={() => setCurrentViewMode('settlement')}
+                    style={{ 
+                      padding: '10px 12px', 
+                      background: currentViewMode === 'settlement' ? '#228be6' : '#fff', 
+                      color: currentViewMode === 'settlement' ? '#fff' : '#333', 
+                      borderRadius: '6px', 
+                      cursor: 'pointer', 
+                      border: '1px solid #ddd', 
+                      fontSize: '14px', 
+                      fontWeight: currentViewMode === 'settlement' ? 'bold' : 'normal', 
+                      display: 'flex', 
+                      justifyContent: 'space-between', 
+                      alignItems: 'center',
+                      boxShadow: currentViewMode === 'settlement' ? '0 2px 4px rgba(0,0,0,0.1)' : 'none'
+                    }}
+                  >
+                    <span>💰 정산 관리</span>
+                    {currentViewMode === 'settlement' && <span style={{ fontSize: '12px', background: 'rgba(255,255,255,0.3)', padding: '2px 6px', borderRadius: '4px' }}>선택됨</span>}
+                  </div>
                 </div>
               </div>
 
@@ -1159,7 +1292,6 @@ export default function CalendarApp() {
                       key={vote.id}
                       onClick={() => {
                         setSelectedVote(vote);
-                        // 이미 내가 한 투표가 있다면 미리 세팅
                         const myRecords = voteRecordsList.filter(r => r.vote_id === vote.id && r.user_id === session?.user?.id);
                         setSelectedOptionIds(myRecords.map(r => r.option_id));
                         setVoteDetailModalOpen(true);
@@ -1205,6 +1337,71 @@ export default function CalendarApp() {
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px', fontSize: '12px', color: '#666' }}>
                         <span>작성자: {author}</span>
                         <span style={{ fontWeight: 'bold', color: '#007bff' }}>참여하기 &gt;</span>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+        ) : currentViewMode === 'settlement' ? (
+          /* [정산 관리 화면] */
+          <div style={{ display: 'flex', flexDirection: 'column', height: '100%', maxWidth: '900px', margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
+            <div style={{ padding: '10px 0', borderBottom: '1px solid #eee', marginBottom: '15px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div>
+                <h2 style={{ margin: 0, fontSize: '18px', color: '#222' }}>💰 지출 및 정산 관리</h2>
+                <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#666' }}>선택된 방의 지출 내역을 확인하고 송금 상태를 관리할 수 있습니다.</p>
+              </div>
+              <button 
+                onClick={() => setSettlementModalOpen(true)}
+                style={{ padding: '8px 14px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer' }}
+              >
+                + 정산 등록하기
+              </button>
+            </div>
+
+            <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px', paddingBottom: '20px' }}>
+              {settlements.length === 0 ? (
+                <div style={{ textAlign: 'center', color: '#888', marginTop: '40px' }}>등록된 정산 내역이 없습니다. 좌측 메뉴에서 방을 선택하거나 정산을 등록해보세요!</div>
+              ) : (
+                settlements.map((st) => {
+                  const roomInfo = rooms.find(r => r.id === st.room_id);
+                  const author = profilesMap[st.user_id]?.name || '알 수 없음';
+                  return (
+                    <div 
+                      key={st.id}
+                      onClick={() => {
+                        setSelectedSettlement(st);
+                        setSettlementDetailModalOpen(true);
+                      }}
+                      style={{ 
+                        background: '#fff', 
+                        border: '1px solid #ddd', 
+                        borderRadius: '8px', 
+                        padding: '16px', 
+                        cursor: 'pointer', 
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        gap: '8px',
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: '11px', fontWeight: 'bold', padding: '3px 8px', borderRadius: '4px', background: '#e6fcf5', color: '#0ca678' }}>
+                          방: {roomInfo?.name || '일반'}
+                        </span>
+                        <span style={{ fontSize: '12px', color: '#888' }}>{new Date(st.created_at).toLocaleDateString()}</span>
+                      </div>
+
+                      <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#333' }}>
+                        {st.title}
+                      </div>
+
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
+                        <span style={{ fontSize: '13px', color: '#666' }}>등록자: {author}</span>
+                        <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#e03131' }}>
+                          총 {Number(st.total_amount).toLocaleString()}원
+                        </span>
                       </div>
                     </div>
                   );
@@ -1477,13 +1674,114 @@ export default function CalendarApp() {
 
       {/* ================= 모달 모음 ================= */}
 
-      {/* 투표 만들기 모달 (중복 선택 & 익명 체크박스 추가 완료) */}
+      {/* 정산 등록 모달 */}
+      {settlementModalOpen && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100 }}>
+          <form onSubmit={createSettlement} style={{ background: '#fff', padding: '24px', borderRadius: '10px', width: '400px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <h3 style={{ margin: '0 0 5px 0' }}>새 정산 등록</h3>
+            <div>
+              <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>대상 방</label>
+              <select value={targetRoomIdForSettlement || ''} onChange={e => setTargetRoomIdForSettlement(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }}>
+                {rooms.map(room => (
+                  <option key={room.id} value={room.id}>{room.name}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>지출 내역 제목</label>
+              <input type="text" placeholder="예: 부산 여행 첫째 날 저녁 고깃집" value={newSettlementTitle} onChange={e => setNewSettlementTitle(e.target.value)} required style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }} />
+            </div>
+            <div>
+              <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>총 지출 금액 (원)</label>
+              <input type="number" placeholder="예: 60000" value={newSettlementTotalAmount} onChange={e => setNewSettlementTotalAmount(e.target.value)} required style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box' }} />
+            </div>
+            <p style={{ fontSize: '11px', color: '#666', margin: '4px 0 0 0' }}>* 등록 시 등록된 전체 멤버 수만큼 1/N 균등 분할 항목이 생성됩니다.</p>
+            <div style={{ display: 'flex', gap: '8px', marginTop: '15px' }}>
+              <button type="submit" style={{ flex: 1, padding: '10px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>등록하기</button>
+              <button type="button" onClick={() => setSettlementModalOpen(false)} style={{ flex: 1, padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>취소</button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* 정산 상세 및 송금 체크 모달 */}
+      {settlementDetailModalOpen && selectedSettlement && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100 }}>
+          <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', width: '450px', maxHeight: '85vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '15px', boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
+              <h3 style={{ margin: 0, fontSize: '18px', color: '#222' }}>💰 정산 상세 및 송금 현황</h3>
+              <button onClick={() => setSettlementDetailModalOpen(false)} style={{ background: 'none', border: 'none', fontSize: '18px', cursor: 'pointer', fontWeight: 'bold', color: '#666' }}>✕</button>
+            </div>
+
+            <div>
+              <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#333' }}>{selectedSettlement.title}</div>
+              <div style={{ fontSize: '13px', color: '#e03131', fontWeight: 'bold', marginTop: '4px' }}>
+                총 금액: {Number(selectedSettlement.total_amount).toLocaleString()}원
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#555' }}>참여자별 분담금 (체크박스로 송금완료 토글)</span>
+              {settlementItemsList.map(item => {
+                const member = profilesMap[item.user_id] || { name: '알 수 없음' };
+                return (
+                  <div 
+                    key={item.id}
+                    style={{ 
+                      padding: '10px 12px', 
+                      background: item.is_paid ? '#ebfbee' : '#f8f9fa', 
+                      border: item.is_paid ? '1px solid #b2f2bb' : '1px solid #ddd', 
+                      borderRadius: '8px', 
+                      display: 'flex', 
+                      justifyContent: 'space-between', 
+                      alignItems: 'center' 
+                    }}
+                  >
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', flex: 1 }}>
+                      <input 
+                        type="checkbox" 
+                        checked={item.is_paid} 
+                        onChange={() => toggleItemPaid(item.id, item.is_paid)}
+                        style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                      />
+                      <span style={{ fontWeight: 'bold', fontSize: '14px', color: '#333' }}>{member.name}</span>
+                    </label>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#333' }}>{Number(item.amount).toLocaleString()}원</span>
+                      <span style={{ fontSize: '12px', color: item.is_paid ? '#2b8a3e' : '#c92a2a', fontWeight: 'bold' }}>
+                        {item.is_paid ? '송금완료' : '미송금'}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {(selectedSettlement.user_id === session?.user?.id || profile?.role === 'admin') && (
+              <button 
+                onClick={() => deleteSettlement(selectedSettlement.id)}
+                style={{ width: '100%', padding: '8px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px' }}
+              >
+                정산 내역 삭제
+              </button>
+            )}
+
+            <button 
+              onClick={() => setSettlementDetailModalOpen(false)} 
+              style={{ width: '100%', padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+            >
+              닫기
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 투표 만들기 모달 */}
       {voteModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100 }}>
           <form onSubmit={createVote} style={{ background: '#fff', padding: '24px', borderRadius: '10px', width: '450px', maxHeight: '90vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <h3 style={{ margin: '0 0 5px 0' }}>새 투표 만들기</h3>
             
-            {/* 중복 선택 및 익명 투표 체크박스 영역 */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '10px', background: '#f8f9fa', borderRadius: '6px', border: '1px solid #eee' }}>
               <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', cursor: 'pointer', fontWeight: 'bold' }}>
                 <input 
@@ -1558,7 +1856,7 @@ export default function CalendarApp() {
         </div>
       )}
 
-      {/* 투표 상세 및 참여 모달 (실명일 때 항목별 투표자 표시 및 투표 현황 버튼 추가) */}
+      {/* 투표 상세 및 참여 모달 */}
       {voteDetailModalOpen && selectedVote && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100 }}>
           <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', width: '480px', maxHeight: '85vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '15px', boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
@@ -1582,7 +1880,6 @@ export default function CalendarApp() {
               <div style={{ fontSize: '12px', color: '#888' }}>마감일: {selectedVote.end_date || '기한 없음'}</div>
             </div>
 
-            {/* 비익명인 경우 '투표 현황' 버튼 제공 */}
             {!selectedVote.is_anonymous && (
               <button 
                 onClick={() => setVoteStatusModalOpen(true)}
@@ -1597,11 +1894,9 @@ export default function CalendarApp() {
               {voteOptionsList.map(opt => {
                 const matchedRecords = voteRecordsList.filter(r => r.option_id === opt.id);
                 const count = matchedRecords.length;
-                const totalCount = voteRecordsList.length; // 단순 기록 개수
+                const totalCount = voteRecordsList.length;
                 const percent = totalCount > 0 ? Math.round((count / totalCount) * 100) : 0;
                 const isSelectedByMe = selectedOptionIds.includes(opt.id);
-
-                // 실명 투표일 경우 이 항목에 투표한 사람들의 이름 추출
                 const voterNames = matchedRecords.map(r => profilesMap[r.user_id]?.name || '알 수 없음').join(', ');
 
                 return (
@@ -1610,14 +1905,12 @@ export default function CalendarApp() {
                     onClick={() => {
                       if (selectedVote.status === 'active') {
                         if (selectedVote.is_multiple) {
-                          // 다중 선택 토글
                           if (selectedOptionIds.includes(opt.id)) {
                             setSelectedOptionIds(selectedOptionIds.filter(id => id !== opt.id));
                           } else {
                             setSelectedOptionIds([...selectedOptionIds, opt.id]);
                           }
                         } else {
-                          // 단일 선택
                           setSelectedOptionIds([opt.id]);
                         }
                       }
@@ -1638,7 +1931,7 @@ export default function CalendarApp() {
                         <input 
                           type={selectedVote.is_multiple ? "checkbox" : "radio"} 
                           checked={isSelectedByMe} 
-                          onChange={() => {}} // 부모 div에서 관리
+                          onChange={() => {}} 
                           style={{ cursor: 'pointer' }}
                         />
                         <span style={{ fontWeight: isSelectedByMe ? 'bold' : 'normal', color: '#333' }}>
@@ -1648,7 +1941,6 @@ export default function CalendarApp() {
                       <span style={{ fontWeight: 'bold', color: '#007bff' }}>{count}표</span>
                     </div>
 
-                    {/* 실명 투표일 때 해당 항목에 투표한 사람 목록 표시 */}
                     {!selectedVote.is_anonymous && count > 0 && (
                       <div style={{ marginTop: '6px', fontSize: '11px', color: '#555', position: 'relative', zIndex: 2, paddingLeft: '22px' }}>
                         투표자: <b>{voterNames}</b>
@@ -1695,7 +1987,7 @@ export default function CalendarApp() {
         </div>
       )}
 
-      {/* 투표 현황 상세 보기 모달 (누가 어느 항목에 투표했는지 리스트업) */}
+      {/* 투표 현황 상세 보기 모달 */}
       {voteStatusModalOpen && selectedVote && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1200 }}>
           <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', width: '420px', maxHeight: '80vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -1704,7 +1996,6 @@ export default function CalendarApp() {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '10px' }}>
               {(() => {
-                // 유저별로 어떤 항목들을 골랐는지 매핑
                 const userVotedMap: Record<string, string[]> = {};
                 voteRecordsList.forEach(r => {
                   if (!userVotedMap[r.user_id]) userVotedMap[r.user_id] = [];
@@ -1740,7 +2031,7 @@ export default function CalendarApp() {
         </div>
       )}
 
-      {/* 5. 일정 상세 정보 및 댓글 모달 */}
+      {/* 일정 상세 정보 및 댓글 모달 */}
       {eventDetailModalOpen && selectedEvent && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100 }}>
           <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', width: '450px', maxHeight: '85vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '15px', boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
@@ -1843,7 +2134,7 @@ export default function CalendarApp() {
         </div>
       )}
 
-      {/* 6. 멤버 관리 (관리자) 모달 */}
+      {/* 멤버 관리 (관리자) 모달 */}
       {adminModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
           <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '480px', maxHeight: '85vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '15px' }}>
@@ -1926,7 +2217,7 @@ export default function CalendarApp() {
         </div>
       )}
 
-      {/* 7. 이름 변경 신청 모달 */}
+      {/* 이름 변경 신청 모달 */}
       {nameChangeModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
           <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '300px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
@@ -1949,7 +2240,7 @@ export default function CalendarApp() {
         </div>
       )}
       
-      {/* 8. 방 생성 모달 */}
+      {/* 방 생성 모달 */}
       {roomModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
           <form onSubmit={createRoom} style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '350px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -1963,7 +2254,7 @@ export default function CalendarApp() {
         </div>
       )}
 
-      {/* 9. 방 관리 모달 */}
+      {/* 방 관리 모달 */}
       {roomManageModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
           <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '450px', maxHeight: '80vh', overflowY: 'auto' }}>
@@ -2046,7 +2337,7 @@ export default function CalendarApp() {
         </div>
       )}
       
-      {/* 10. 일정 수정 모달 */}
+      {/* 일정 수정 모달 */}
       {eventEditModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1200 }}>
           <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', width: '380px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
@@ -2109,14 +2400,13 @@ export default function CalendarApp() {
         </div>
       )}
       
-      {/* 11. 일정 등록 모달 */}
+      {/* 일정 등록 모달 */}
       {eventAddModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
           <form onSubmit={createEvent} style={{ background: '#fff', padding: '24px', borderRadius: '10px', width: '680px', maxWidth: '95vw', display: 'flex', flexDirection: 'column', gap: '15px', boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
             <h3 style={{ margin: 0 }}>일정 등록</h3>
             
             <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
-              
               <div style={{ flex: 1, minWidth: '280px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                   <label style={{ fontSize: '12px', fontWeight: 'bold' }}>대상 방</label>
@@ -2137,81 +2427,64 @@ export default function CalendarApp() {
                   <textarea placeholder="일정 내용을 입력하세요" value={newEventContent} onChange={e => setNewEventContent(e.target.value)} rows={3} style={{ padding: '8px', borderRadius: '6px', border: '1px solid #ccc', resize: 'vertical' }} />
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <label style={{ fontSize: '12px', fontWeight: 'bold' }}>시작일</label>
-                  <input type="date" value={newEventStartDate} onChange={e => setNewEventStartDate(e.target.value)} required style={{ padding: '8px', borderRadius: '6px', border: '1px solid #ccc' }} />
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <label style={{ fontSize: '12px', fontWeight: 'bold' }}>종료일 (선택)</label>
-                  <input type="date" value={newEventEndDate} onChange={e => setNewEventEndDate(e.target.value)} style={{ padding: '8px', borderRadius: '6px', border: '1px solid #ccc' }} />
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <label style={{ fontSize: '12px', fontWeight: 'bold' }}>시작일</label>
+                    <input type="date" value={newEventStartDate} onChange={e => setNewEventStartDate(e.target.value)} required style={{ padding: '8px', borderRadius: '6px', border: '1px solid #ccc' }} />
+                  </div>
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <label style={{ fontSize: '12px', fontWeight: 'bold' }}>종료일 (선택)</label>
+                    <input type="date" value={newEventEndDate} onChange={e => setNewEventEndDate(e.target.value)} style={{ padding: '8px', borderRadius: '6px', border: '1px solid #ccc' }} />
+                  </div>
                 </div>
               </div>
 
-              <div style={{ flex: 1, minWidth: '300px', display: 'flex', flexDirection: 'column', gap: '6px', background: '#f8f9fa', padding: '12px', borderRadius: '8px', border: '1px solid #ddd' }}>
-                <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#333', marginBottom: '2px' }}>
-                  🎨 색상별 항목 지정 (선택한 색상: <span style={{ color: newEventColor, fontWeight: 'bold' }}>{newEventColor}</span>)
-                </label>
-                <div style={{ fontSize: '11px', color: '#666', marginBottom: '6px' }}>
-                  지정된 색상 항목은 고정되어 있으며, 본인 색상은 닉네임으로 자동 표시됩니다.
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', maxHeight: '280px', overflowY: 'auto', paddingRight: '4px' }}>
-                  
-                  <div 
-                    onClick={() => {
-                      const userColor = profile?.color || '#339af0';
-                      setCustomPickerColor(userColor);
-                      setNewEventColor(userColor);
-                    }}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '10px',
-                      padding: '6px 8px',
-                      background: newEventColor === (profile?.color || '#339af0') ? '#e7f5ff' : '#fff',
-                      border: newEventColor === (profile?.color || '#339af0') ? '2px solid #339af0' : '1px solid #e2e8f0',
-                      borderRadius: '6px',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <div style={{ width: '22px', height: '22px', backgroundColor: profile?.color || '#339af0', borderRadius: '4px', flexShrink: '0', border: '1px solid rgba(0,0,0,0.1)' }} />
-                    <span style={{ flex: 1, fontSize: '12px', fontWeight: 'bold', color: '#333' }}>
-                      {profile?.name || '내 이름'} (본인)
-                    </span>
-                  </div>
-
-                  {Array.isArray(PRESET_COLORS) && PRESET_COLORS.map(colorCode => (
+              <div style={{ width: '260px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <label style={{ fontSize: '12px', fontWeight: 'bold' }}>색상 선택</label>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '6px' }}>
+                  {PRESET_COLORS.map(colorHex => (
                     <div 
-                      key={colorCode}
-                      onClick={() => {
-                        setNewEventColor(colorCode);
+                      key={colorHex}
+                      onClick={() => setNewEventColor(colorHex)}
+                      style={{ 
+                        width: '36px', 
+                        height: '36px', 
+                        background: colorHex, 
+                        borderRadius: '6px', 
+                        cursor: 'pointer', 
+                        border: newEventColor === colorHex ? '3px solid #000' : '1px solid #ddd' 
                       }}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '10px',
-                        padding: '6px 8px',
-                        background: newEventColor === colorCode ? '#e7f5ff' : '#fff',
-                        border: newEventColor === colorCode ? '2px solid #339af0' : '1px solid #e2e8f0',
-                        borderRadius: '6px',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      <div style={{ width: '22px', height: '22px', backgroundColor: colorCode, borderRadius: '4px', flexShrink: '0', border: '1px solid rgba(0,0,0,0.1)' }} />
-                      <span style={{ flex: 1, fontSize: '12px', color: '#333', fontWeight: '500' }}>
-                        {(colorLabels && colorLabels[colorCode]) ? colorLabels[colorCode] : '지정 항목'}
-                      </span>
-                    </div>
+                    />
                   ))}
                 </div>
-              </div>
 
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '10px' }}>
+                  <label style={{ fontSize: '12px', fontWeight: 'bold' }}>커스텀 색상 및 라벨 지정</label>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <input 
+                      type="color" 
+                      value={customPickerColor} 
+                      onChange={e => {
+                        setCustomPickerColor(e.target.value);
+                        setNewEventColor(e.target.value);
+                      }} 
+                      style={{ width: '40px', height: '35px', border: 'none', cursor: 'pointer', background: 'none' }} 
+                    />
+                    <input 
+                      type="text" 
+                      placeholder="색상 라벨 (예: 특별 일정)" 
+                      value={customColorLabel} 
+                      onChange={e => setCustomColorLabel(e.target.value)} 
+                      style={{ flex: 1, padding: '6px', borderRadius: '6px', border: '1px solid #ccc', fontSize: '12px' }} 
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div style={{ display: 'flex', gap: '8px', marginTop: '5px' }}>
-              <button type="submit" style={{ flex: 1, padding: '12px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px' }}>등록</button>
-              <button type="button" onClick={() => setEventAddModalOpen(false)} style={{ flex: 1, padding: '12px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '14px' }}>취소</button>
+            <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
+              <button type="submit" style={{ flex: 1, padding: '10px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>등록</button>
+              <button type="button" onClick={() => setEventAddModalOpen(false)} style={{ flex: 1, padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>취소</button>
             </div>
           </form>
         </div>

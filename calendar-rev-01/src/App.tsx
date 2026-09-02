@@ -69,7 +69,6 @@ export default function CalendarApp() {
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
   const [rightSidebarOpen, setRightSidebarOpen] = useState(false);
   
-  // 뷰 모드 추가 ('calendar' 또는 'chat')
   const [currentViewMode, setCurrentViewMode] = useState<'calendar' | 'chat'>('calendar');
   const [chatMessages, setChatMessages] = useState<any[]>([]);
   const [chatInputText, setChatInputText] = useState('');
@@ -195,7 +194,6 @@ export default function CalendarApp() {
     }
   }, [session, profile]);
 
-  // 자유 채팅방 모드일 때 메시지 불러오기 및 실시간 구독 설정
   useEffect(() => {
     if (currentViewMode === 'chat') {
       fetchMessages();
@@ -213,7 +211,6 @@ export default function CalendarApp() {
     }
   }, [currentViewMode]);
 
-  // 채팅 메시지 최하단 스크롤 이동
   useEffect(() => {
     if (currentViewMode === 'chat' && chatScrollRef.current) {
       chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
@@ -826,53 +823,58 @@ export default function CalendarApp() {
               </button>
             )}
 
-            <div style={{ marginTop: '15px' }}>
-              <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#555', marginBottom: '4px' }}>방 목록</div>
+            <div style={{ marginTop: '15px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
               
-              {/* [자유 채팅방 버튼] 방 목록 맨 위에 배치 */}
-              <div 
-                onClick={() => setCurrentViewMode('chat')}
-                style={{ 
-                  padding: '10px 12px', 
-                  background: currentViewMode === 'chat' ? '#228be6' : '#fff', 
-                  color: currentViewMode === 'chat' ? '#fff' : '#333', 
-                  borderRadius: '6px', 
-                  cursor: 'pointer', 
-                  border: '1px solid #ddd', 
-                  fontSize: '14px', 
-                  fontWeight: currentViewMode === 'chat' ? 'bold' : 'normal', 
-                  display: 'flex', 
-                  justifyContent: 'space-between', 
-                  alignItems: 'center',
-                  marginBottom: '8px',
-                  boxShadow: currentViewMode === 'chat' ? '0 2px 4px rgba(0,0,0,0.1)' : 'none'
-                }}
-              >
-                <span>💬 자유 채팅방</span>
-                {currentViewMode === 'chat' && <span style={{ fontSize: '12px', background: 'rgba(255,255,255,0.3)', padding: '2px 6px', borderRadius: '4px' }}>선택됨</span>}
+              {/* [커뮤니티 카테고리] */}
+              <div>
+                <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#888', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>커뮤니티</div>
+                <div 
+                  onClick={() => setCurrentViewMode('chat')}
+                  style={{ 
+                    padding: '10px 12px', 
+                    background: currentViewMode === 'chat' ? '#228be6' : '#fff', 
+                    color: currentViewMode === 'chat' ? '#fff' : '#333', 
+                    borderRadius: '6px', 
+                    cursor: 'pointer', 
+                    border: '1px solid #ddd', 
+                    fontSize: '14px', 
+                    fontWeight: currentViewMode === 'chat' ? 'bold' : 'normal', 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    alignItems: 'center',
+                    boxShadow: currentViewMode === 'chat' ? '0 2px 4px rgba(0,0,0,0.1)' : 'none'
+                  }}
+                >
+                  <span>💬 자유 채팅방</span>
+                  {currentViewMode === 'chat' && <span style={{ fontSize: '12px', background: 'rgba(255,255,255,0.3)', padding: '2px 6px', borderRadius: '4px' }}>선택됨</span>}
+                </div>
               </div>
 
-              <div style={{ fontSize: '11px', color: '#888', marginBottom: '8px', marginTop: '10px' }}>캘린더 방 목록 (다중 선택)</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                {rooms.map(room => {
-                  const isSelected = currentViewMode === 'calendar' && selectedRoomIds.includes(room.id);
-                  return (
-                    <div 
-                      key={room.id} 
-                      onClick={() => {
-                        setCurrentViewMode('calendar');
-                        toggleRoomSelection(room.id);
-                      }}
-                      style={{ 
-                        padding: '10px 12px', background: isSelected ? '#007bff' : '#fff', color: isSelected ? '#fff' : '#333', borderRadius: '6px', cursor: 'pointer', border: '1px solid #ddd', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '14px', fontWeight: isSelected ? 'bold' : 'normal', display: 'flex', justifyContent: 'space-between', alignItems: 'center'
-                      }}
-                    >
-                      <span>{room.name}</span>
-                      {isSelected && <span style={{ fontSize: '12px', background: 'rgba(255,255,255,0.3)', padding: '2px 6px', borderRadius: '4px' }}>선택됨</span>}
-                    </div>
-                  );
-                })}
+              {/* [캘린더 방 목록 카테고리] */}
+              <div>
+                <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#888', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>캘린더 방 목록</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  {rooms.map(room => {
+                    const isSelected = currentViewMode === 'calendar' && selectedRoomIds.includes(room.id);
+                    return (
+                      <div 
+                        key={room.id} 
+                        onClick={() => {
+                          setCurrentViewMode('calendar');
+                          toggleRoomSelection(room.id);
+                        }}
+                        style={{ 
+                          padding: '10px 12px', background: isSelected ? '#007bff' : '#fff', color: isSelected ? '#fff' : '#333', borderRadius: '6px', cursor: 'pointer', border: '1px solid #ddd', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '14px', fontWeight: isSelected ? 'bold' : 'normal', display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+                        }}
+                      >
+                        <span>{room.name}</span>
+                        {isSelected && <span style={{ fontSize: '12px', background: 'rgba(255,255,255,0.3)', padding: '2px 6px', borderRadius: '4px' }}>선택됨</span>}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
+
             </div>
           </div>
 
@@ -903,7 +905,6 @@ export default function CalendarApp() {
                   const isMyMessage = msg.user_id === session?.user?.id;
                   const sender = profilesMap[msg.user_id] || { name: '알 수 없음', color: '#339af0' };
 
-                  // 날짜 포맷팅 및 날짜 변경선 계산
                   const msgDateObj = new Date(msg.created_at);
                   const dateString = `${msgDateObj.getFullYear()}년 ${msgDateObj.getMonth() + 1}월 ${msgDateObj.getDate()}일 ${['일', '월', '화', '수', '목', '금', '토'][msgDateObj.getDay()]}요일`;
                   
@@ -913,7 +914,6 @@ export default function CalendarApp() {
 
                   const showDateDivider = !prevMsg || prevDateString !== currentDateStringOnly;
 
-                  // 시간 포맷팅 (오전/오후 HH:MM)
                   let hours = msgDateObj.getHours();
                   const minutes = String(msgDateObj.getMinutes()).padStart(2, '0');
                   const ampm = hours >= 12 ? '오후' : '오전';
@@ -923,7 +923,6 @@ export default function CalendarApp() {
 
                   return (
                     <React.Fragment key={msg.id || index}>
-                      {/* 날짜 변경선 */}
                       {showDateDivider && (
                         <div style={{ display: 'flex', justifyContent: 'center', margin: '15px 0 10px 0' }}>
                           <span style={{ background: 'rgba(0,0,0,0.15)', color: '#fff', fontSize: '11px', padding: '4px 12px', borderRadius: '12px', fontWeight: 'bold' }}>
@@ -932,7 +931,6 @@ export default function CalendarApp() {
                         </div>
                       )}
 
-                      {/* 카카오톡 스타일 채팅 말풍선 */}
                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: isMyMessage ? 'flex-end' : 'flex-start', margin: '2px 0' }}>
                         {!isMyMessage && (
                           <div style={{ fontSize: '12px', color: '#333', marginBottom: '2px', marginLeft: '4px', fontWeight: 'bold' }}>

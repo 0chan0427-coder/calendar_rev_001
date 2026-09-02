@@ -1,6 +1,6 @@
 {
-  "name": "공유 캘린더",
-  "short_name": "캘린더",
+  "name": "씩씩이들의 공유 캘린더",
+  "short_name": "공유캘린더",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -9,11 +9,6 @@
     {
       "src": "/calendar icon.png",
       "sizes": "1254x1254",
-      "type": "image/png"
-    },
-    {
-      "src": "/icon-512.png",
-      "sizes": "512x512",
       "type": "image/png"
     }
   ]

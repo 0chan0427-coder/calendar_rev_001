@@ -67,7 +67,7 @@ export default function CalendarApp() {
   
   const [currentDate, setCurrentDate] = useState(new Date());
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
-  const [rightSidebarOpen, setRightSidebarOpen] = useState(false);
+  const [rightSidebarOpen, setRightSidebarOpen] = useState(false); // 💡 우측바 상태 복원
   const [selectedRoomIds, setSelectedRoomIds] = useState<string[]>([]);
   const [targetRoomIdForAdd, setTargetRoomIdForAdd] = useState<string | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
@@ -85,13 +85,13 @@ export default function CalendarApp() {
   const [roomModalOpen, setRoomModalOpen] = useState(false);
   const [roomManageModalOpen, setRoomManageModalOpen] = useState(false);
   const [eventAddModalOpen, setEventAddModalOpen] = useState(false);
-  const [dateDetailModalOpen, setDateDetailModalOpen] = useState(false);
   
+  // 💡 달력 그리드 클릭 시 우측바에 띄우기 위한 상태
+  const [rightSidebarDateStr, setRightSidebarDateStr] = useState('');
+  const [rightSidebarEvents, setRightSidebarEvents] = useState<any[]>([]);
+
   // 일정 상세 정보 + 댓글 모달 상태
   const [eventDetailModalOpen, setEventDetailModalOpen] = useState(false);
-
-  const [clickedDateEvents, setClickedDateEvents] = useState<any[]>([]);
-  const [clickedDateStr, setClickedDateStr] = useState('');
 
   const [rooms, setRooms] = useState<any[]>([]);
   const [events, setEvents] = useState<any[]>([]);
@@ -194,6 +194,17 @@ export default function CalendarApp() {
       setComments([]);
     }
   }, [selectedEvent]);
+
+  // 이벤트가 변경될 때 우측바가 열려있다면 우측바 목록도 실시간 반영
+  useEffect(() => {
+    if (rightSidebarOpen && rightSidebarDateStr) {
+      const updatedEvents = events.filter(ev => {
+        if (!selectedRoomIds.includes(ev.room_id)) return false;
+        return rightSidebarDateStr >= ev.event_date && rightSidebarDateStr <= (ev.end_date || ev.event_date);
+      });
+      setRightSidebarEvents(updatedEvents);
+    }
+  }, [events]);
 
   const fetchProfile = async (userId: string) => {
     try {
@@ -528,12 +539,8 @@ export default function CalendarApp() {
       setSelectedEvent(null);
       setEventDetailModalOpen(false);
       fetchEvents();
-      if (dateDetailModalOpen) {
-        const updatedEvents = events.filter(ev => {
-          if (!selectedRoomIds.includes(ev.room_id)) return false;
-          return clickedDateStr >= ev.event_date && clickedDateStr <= (ev.end_date || ev.event_date);
-        });
-        setClickedDateEvents(updatedEvents.filter(ev => ev.id !== eventId));
+      if (rightSidebarOpen) {
+        setRightSidebarEvents(prev => prev.filter(ev => ev.id !== eventId));
       }
     }
   };
@@ -864,16 +871,13 @@ export default function CalendarApp() {
                 return (
                   <div 
                     key={`day-${dayNum}`} 
-                    onDoubleClick={(e) => {
+                    onClick={(e) => {
                       e.stopPropagation();
-                      setClickedDateStr(formattedDate);
-                      setClickedDateEvents(dayEvents);
+                      // 💡 달력 그리드 칸을 누르면 우측바에 해당 날짜의 일정 목록이 나오도록 설정
+                      setRightSidebarDateStr(formattedDate);
+                      setRightSidebarEvents(dayEvents);
+                      setRightSidebarOpen(true);
                       if (selectedRoomIds.length > 0) setTargetRoomIdForAdd(selectedRoomIds[0]);
-                      setNewEventStartDate(formattedDate);
-                      setNewEventEndDate(formattedDate);
-                      setNewEventColor(PRESET_COLORS[0]);
-                      setCustomColorLabel('');
-                      setDateDetailModalOpen(true);
                     }}
                     style={{ 
                       background: '#fff', 
@@ -904,7 +908,7 @@ export default function CalendarApp() {
                             onClick={(e) => { 
                               e.stopPropagation(); 
                               setSelectedEvent(ev); 
-                              setEventDetailModalOpen(true); // 💡 일정 클릭 시 상세/댓글 모달 팝업
+                              setEventDetailModalOpen(true); // 💡 일정 바를 직접 클릭 시 상세 모달 팝업
                             }}
                             style={{ 
                               background: eventColor, 
@@ -927,7 +931,6 @@ export default function CalendarApp() {
                               whiteSpace: 'nowrap'
                             }}
                           >
-                            {/* 💡 캘린더 칸 안에는 오직 '제목'만 깔끔하게 표시 */}
                             {ev.title}
                           </div>
                         );
@@ -958,7 +961,74 @@ export default function CalendarApp() {
         )}
       </div>
 
-      {/* 3. 우측 상세 패널 컨테이너는 제거하고 하단바 구성 유지 */}
+      {/* 3. 우측 사이드바 컨테이너 (달력 그리드 클릭 시 해당 날짜의 일정 목록 표시) */}
+      <div style={{
+        width: rightSidebarOpen ? '320px' : '0px',
+        minWidth: rightSidebarOpen ? '320px' : '0px',
+        height: '100vh',
+        background: '#f8f9fa',
+        borderLeft: rightSidebarOpen ? '1px solid #ddd' : 'none',
+        overflow: 'hidden',
+        transition: 'width 0.3s ease, min-width 0.3s ease',
+        display: 'flex',
+        flexDirection: 'column',
+        boxSizing: 'border-box',
+        flexShrink: 0,
+        zIndex: 10
+      }}>
+        <div style={{ width: '320px', height: '100vh', display: 'flex', flexDirection: 'column', boxSizing: 'border-box', padding: '20px', paddingBottom: '75px', overflowY: 'auto' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', borderBottom: '1px solid #ddd', paddingBottom: '10px' }}>
+            <h3 style={{ margin: 0, fontSize: '16px' }}>📅 {rightSidebarDateStr || '날짜 선택 안됨'}</h3>
+            <button onClick={() => setRightSidebarOpen(false)} style={{ background: 'none', border: 'none', fontSize: '16px', cursor: 'pointer', fontWeight: 'bold' }}>✕</button>
+          </div>
+
+          <button 
+            onClick={() => {
+              if (!rightSidebarDateStr) {
+                alert('날짜를 먼저 선택해주세요.');
+                return;
+              }
+              setNewEventStartDate(rightSidebarDateStr);
+              setNewEventEndDate(rightSidebarDateStr);
+              setNewEventColor(PRESET_COLORS[0]);
+              setCustomColorLabel('');
+              setEventAddModalOpen(true);
+            }}
+            style={{ width: '100%', padding: '10px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px', marginBottom: '15px' }}
+          >
+            이 날짜에 일정 등록하기 +
+          </button>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1, overflowY: 'auto' }}>
+            <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#555' }}>등록된 일정 목록</div>
+            {rightSidebarEvents.length === 0 ? (
+              <p style={{ fontSize: '13px', color: '#888', textAlign: 'center', marginTop: '20px' }}>해당 날짜에 등록된 일정이 없습니다.</p>
+            ) : (
+              rightSidebarEvents.map(ev => {
+                const roomInfo = rooms.find(r => r.id === ev.room_id);
+                return (
+                  <div 
+                    key={ev.id}
+                    onClick={() => {
+                      setSelectedEvent(ev);
+                      setEventDetailModalOpen(true); // 💡 우측바의 일정을 눌렀을 때만 상세/댓글 모달 팝업
+                    }}
+                    style={{ padding: '12px', background: '#fff', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: '4px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontWeight: 'bold', fontSize: '14px', color: '#333' }}>{ev.title}</span>
+                      <span style={{ fontSize: '11px', color: '#007bff', fontWeight: 'bold' }}>상세/댓글 &gt;</span>
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#666' }}>
+                      방: {roomInfo?.name || '알 수 없음'} | 작성자: {profilesMap[ev.user_id]?.name || '익명'}
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+      </div>
 
       {/* 4. 화면 하단 고정 네비게이션 바 */}
       <div style={{
@@ -982,72 +1052,17 @@ export default function CalendarApp() {
         >
           📁 방 목록 / 메뉴 {leftSidebarOpen ? '▼' : '▲'}
         </button>
+        <button 
+          onClick={() => setRightSidebarOpen(!rightSidebarOpen)}
+          style={{ flex: 1, height: '100%', background: rightSidebarOpen ? '#495057' : 'transparent', color: '#fff', border: 'none', fontSize: '14px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', borderLeft: '1px solid #495057' }}
+        >
+          📅 우측 일정 목록 {rightSidebarOpen ? '▼' : '▲'}
+        </button>
       </div>
 
       {/* ================= 모달 모음 ================= */}
 
-      {/* 5. 날짜 더블클릭 시 열리는 일자별 관리 모달 */}
-      {dateDetailModalOpen && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
-          <div style={{ background: '#fff', padding: '24px', borderRadius: '10px', width: '420px', maxHeight: '80vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '15px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ margin: 0, fontSize: '18px' }}>📅 {clickedDateStr} 일정 관리</h3>
-              <button onClick={() => setDateDetailModalOpen(false)} style={{ background: 'none', border: 'none', fontSize: '16px', cursor: 'pointer', fontWeight: 'bold' }}>✕</button>
-            </div>
-
-            <button 
-              onClick={() => {
-                setDateDetailModalOpen(false);
-                setEventAddModalOpen(true);
-              }}
-              style={{ width: '100%', padding: '10px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px' }}
-            >
-              이 날짜에 일정 등록하기 +
-            </button>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <h4 style={{ margin: '5px 0 0 0', fontSize: '14px', color: '#555' }}>등록된 일정 목록</h4>
-              {clickedDateEvents.length === 0 ? (
-                <p style={{ fontSize: '13px', color: '#888', textAlign: 'center', padding: '15px 0' }}>이 날짜에 등록된 일정이 없습니다.</p>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '250px', overflowY: 'auto' }}>
-                  {clickedDateEvents.map(ev => {
-                    const roomInfo = rooms.find(r => r.id === ev.room_id);
-                    return (
-                      <div 
-                        key={ev.id}
-                        onClick={() => {
-                          setSelectedEvent(ev);
-                          setDateDetailModalOpen(false);
-                          setEventDetailModalOpen(true); // 💡 날짜 상세창에서도 클릭 시 정보+댓글 모달 팝업
-                        }}
-                        style={{ padding: '10px 12px', background: '#f8f9fa', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'background 0.2s' }}
-                      >
-                        <div>
-                          <div style={{ fontWeight: 'bold', fontSize: '14px', color: '#333' }}>{ev.title}</div>
-                          <div style={{ fontSize: '11px', color: '#666', marginTop: '2px' }}>
-                            방: {roomInfo?.name || '알 수 없음'} | 작성자: {profilesMap[ev.user_id]?.name || '익명'}
-                          </div>
-                        </div>
-                        <span style={{ fontSize: '12px', color: '#007bff', fontWeight: 'bold' }}>상세/댓글 &gt;</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-
-            <button 
-              onClick={() => setDateDetailModalOpen(false)} 
-              style={{ width: '100%', padding: '10px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
-            >
-              닫기
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* 💡 6. 일정 상세 정보 및 댓글 모달 (요청사항 반영 핵심) */}
+      {/* 5. 💡 일정 상세 정보 및 댓글 모달 (우측바 목록에서 일정을 눌렀을 때만 팝업) */}
       {eventDetailModalOpen && selectedEvent && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100 }}>
           <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', width: '450px', maxHeight: '85vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '15px', boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
@@ -1110,7 +1125,7 @@ export default function CalendarApp() {
               )}
             </div>
 
-            {/* 댓글 영역이 일정 정보창 하단에 포함됨 */}
+            {/* 댓글 영역 */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', borderTop: '1px solid #eee', paddingTop: '15px', marginTop: '5px' }}>
               <h4 style={{ margin: 0, fontSize: '14px', color: '#333' }}>💬 해당 일정 댓글</h4>
               
@@ -1151,7 +1166,7 @@ export default function CalendarApp() {
         </div>
       )}
 
-      {/* 7. 멤버 관리 (관리자) 모달 */}
+      {/* 6. 멤버 관리 (관리자) 모달 */}
       {adminModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
           <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '450px', maxHeight: '80vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '15px' }}>
@@ -1206,7 +1221,7 @@ export default function CalendarApp() {
         </div>
       )}
 
-      {/* 8. 이름 변경 신청 모달 */}
+      {/* 7. 이름 변경 신청 모달 */}
       {nameChangeModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
           <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '300px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
@@ -1229,7 +1244,7 @@ export default function CalendarApp() {
         </div>
       )}
       
-      {/* 9. 방 생성 모달 */}
+      {/* 8. 방 생성 모달 */}
       {roomModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
           <form onSubmit={createRoom} style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '350px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -1243,7 +1258,7 @@ export default function CalendarApp() {
         </div>
       )}
 
-      {/* 10. 방 관리 모달 */}
+      {/* 9. 방 관리 모달 */}
       {roomManageModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
           <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '450px', maxHeight: '80vh', overflowY: 'auto' }}>
@@ -1326,7 +1341,7 @@ export default function CalendarApp() {
         </div>
       )}
       
-      {/* 11. 일정 수정 모달 */}
+      {/* 10. 일정 수정 모달 */}
       {eventEditModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1200 }}>
           <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', width: '380px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
@@ -1389,7 +1404,7 @@ export default function CalendarApp() {
         </div>
       )}
       
-      {/* 12. 일정 등록 모달 */}
+      {/* 11. 일정 등록 모달 */}
       {eventAddModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
           <form onSubmit={createEvent} style={{ background: '#fff', padding: '24px', borderRadius: '10px', width: '680px', maxWidth: '95vw', display: 'flex', flexDirection: 'column', gap: '15px', boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>

@@ -31,6 +31,7 @@ export default function ChatView({
   onChatInputChange,
   onSendMessage,
 }: ChatViewProps) {
+return (
 <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', maxWidth: '800px', margin: '0 auto', boxSizing: 'border-box' }}>
   <div style={{ padding: '10px 0', borderBottom: '1px solid rgba(0,0,0,0.1)', marginBottom: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
     <h2 style={{ margin: 0, fontSize: '18px', color: '#222' }}>💬 자유 채팅방</h2>
@@ -114,4 +115,5 @@ export default function ChatView({
     <button type="submit" style={{ padding: '10px 18px', background: '#fee102', color: '#3c1e1e', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px' }}>전송</button>
   </form>
 </div>
+);
 }

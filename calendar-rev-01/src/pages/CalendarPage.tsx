@@ -61,6 +61,8 @@ export default function CalendarApp() {
     { desc: '', amount: '' }
   ]);
   const [targetRoomIdForSettlement, setTargetRoomIdForSettlement] = useState<string | null>(null);
+  const [settlementMembers, setSettlementMembers] = useState<{ user_id: string }[]>([]);
+  const [selectedSettlementParticipantIds, setSelectedSettlementParticipantIds] = useState<string[]>([]);
   const [selectedSettlement, setSelectedSettlement] = useState<any>(null);
   const [settlementItemsList, setSettlementItemsList] = useState<any[]>([]);
   const [settlementDetailModalOpen, setSettlementDetailModalOpen] = useState(false);
@@ -305,6 +307,35 @@ export default function CalendarApp() {
     }, 0);
   };
 
+  const openSettlementModal = async () => {
+    const roomId = targetRoomIdForSettlement || selectedRoomIds[0] || null;
+    if (!roomId) {
+      alert('정산을 만들 방을 먼저 선택해주세요.');
+      return;
+    }
+
+    setTargetRoomIdForSettlement(roomId);
+
+    const { data, error } = await listRoomMembers(roomId);
+    if (error) {
+      alert('정산 참여자 목록을 불러오지 못했습니다: ' + error.message);
+      return;
+    }
+
+    const members = (data || []).filter((row: any) => row.user_id);
+    setSettlementMembers(members);
+
+    // 새 정산은 실수로 앱 전체 회원이 자동 포함되지 않도록
+    // 작성자만 기본 선택하고, 실제 참여자는 직접 선택합니다.
+    setSelectedSettlementParticipantIds(
+      members.some((row: any) => row.user_id === session.user.id)
+        ? [session.user.id]
+        : []
+    );
+
+    setSettlementModalOpen(true);
+  };
+
   const createSettlement = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newSettlementTitle.trim() || !targetRoomIdForSettlement) {
@@ -329,30 +360,36 @@ export default function CalendarApp() {
       return;
     }
 
-    const { data: memberRows, error: memberError } = await listRoomMembers(targetRoomIdForSettlement);
-    if (memberError) {
-      alert('정산 참여자 조회 실패: ' + memberError.message);
+    const memberIds = selectedSettlementParticipantIds.filter((uid, index, arr) => arr.indexOf(uid) === index);
+    if (memberIds.length === 0) {
+      alert('정산에 참여할 사람을 한 명 이상 선택해주세요.');
       return;
     }
-    const memberIds = (memberRows || []).map((row: any) => row.user_id);
-    if (memberIds.length > 0) {
-      const share = parseFloat((totalAmount / memberIds.length).toFixed(2));
-      const itemsToInsert = memberIds.map(uid => ({
-        settlement_id: settlementData.id,
-        user_id: uid,
-        amount: share,
-        is_paid: uid === session.user.id
-      }));
-      const { error: itemError } = await createSettlementItems(itemsToInsert);
-      if (itemError) {
-        alert('정산 참여자 등록 실패: ' + itemError.message);
-        return;
-      }
+
+    // 원 단위 정산을 기본으로 하되, 나눠떨어지지 않는 금액은 첫 번째 참여자에게
+    // 남는 금액을 더해 총액과 정확히 일치하도록 합니다.
+    const totalCents = Math.round(totalAmount * 100);
+    const baseCents = Math.floor(totalCents / memberIds.length);
+    const remainderCents = totalCents - (baseCents * memberIds.length);
+
+    const itemsToInsert = memberIds.map((uid, index) => ({
+      settlement_id: settlementData.id,
+      user_id: uid,
+      amount: (baseCents + (index === 0 ? remainderCents : 0)) / 100,
+      is_paid: uid === session.user.id
+    }));
+
+    const { error: itemError } = await createSettlementItems(itemsToInsert);
+    if (itemError) {
+      alert('정산 참여자 등록 실패: ' + itemError.message);
+      return;
     }
 
     alert('정산이 생성되었습니다!');
     setNewSettlementTitle('');
     setSettlementRows([{ desc: '', amount: '' }]);
+    setSelectedSettlementParticipantIds([]);
+    setSettlementMembers([]);
     setSettlementModalOpen(false);
     fetchSettlements();
   };
@@ -1243,7 +1280,7 @@ export default function CalendarApp() {
                 <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#666' }}>전체 정산 내역을 확인하고 송금 상태를 관리할 수 있습니다.</p>
               </div>
               <button 
-                onClick={() => setSettlementModalOpen(true)}
+                onClick={openSettlementModal}
                 style={{ padding: '8px 14px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 'bold', fontSize: '13px', cursor: 'pointer' }}
               >
                 + 정산 등록하기
@@ -1503,6 +1540,87 @@ export default function CalendarApp() {
 
             {/* 숨겨진 대상 방 자동 처리용 (첫 번째 방 지정) */}
             <input type="hidden" value={targetRoomIdForSettlement || ''} />
+
+            {/* 정산 참여자 선택 */}
+            <div style={{ padding: '12px', background: '#f8f9fa', borderRadius: '8px', border: '1px solid #ddd' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block' }}>정산 참여자</label>
+                  <span style={{ fontSize: '11px', color: '#666' }}>
+                    선택한 사람에게만 총 금액이 균등하게 분담됩니다.
+                  </span>
+                </div>
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedSettlementParticipantIds(settlementMembers.map(m => m.user_id))}
+                    style={{ padding: '4px 7px', border: '1px solid #ced4da', background: '#fff', borderRadius: '4px', fontSize: '11px', cursor: 'pointer' }}
+                  >
+                    전체 선택
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedSettlementParticipantIds([session.user.id].filter(id => settlementMembers.some(m => m.user_id === id)))}
+                    style={{ padding: '4px 7px', border: '1px solid #ced4da', background: '#fff', borderRadius: '4px', fontSize: '11px', cursor: 'pointer' }}
+                  >
+                    나만 선택
+                  </button>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '150px', overflowY: 'auto' }}>
+                {settlementMembers.length === 0 ? (
+                  <div style={{ fontSize: '12px', color: '#888', padding: '8px 0' }}>
+                    이 방에 참여할 수 있는 회원이 없습니다.
+                  </div>
+                ) : (
+                  settlementMembers.map(member => {
+                    const memberProfile = profilesMap[member.user_id] || { name: '알 수 없음', color: '#339af0' };
+                    const checked = selectedSettlementParticipantIds.includes(member.user_id);
+                    return (
+                      <label
+                        key={member.user_id}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          padding: '7px 8px',
+                          background: checked ? '#e7f5ff' : '#fff',
+                          border: checked ? '1px solid #74c0fc' : '1px solid #e9ecef',
+                          borderRadius: '6px',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={e => {
+                            setSelectedSettlementParticipantIds(prev =>
+                              e.target.checked
+                                ? [...prev, member.user_id]
+                                : prev.filter(id => id !== member.user_id)
+                            );
+                          }}
+                          style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+                        />
+                        <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: memberProfile.color || '#339af0' }} />
+                        <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#333' }}>
+                          {memberProfile.name || '알 수 없음'}
+                          {member.user_id === session.user.id ? ' (나)' : ''}
+                        </span>
+                      </label>
+                    );
+                  })
+                )}
+              </div>
+
+              <div style={{ marginTop: '8px', fontSize: '12px', fontWeight: 'bold', color: '#495057' }}>
+                선택 인원: {selectedSettlementParticipantIds.length}명
+                {selectedSettlementParticipantIds.length > 0 && calculateTotalAmount() > 0
+                  ? ` · 1인 약 ${Math.floor(calculateTotalAmount() / selectedSettlementParticipantIds.length).toLocaleString()}원`
+                  : ''}
+              </div>
+            </div>
 
             {/* 좌우 나눔 내역 및 금액 입력 영역 */}
             <div>

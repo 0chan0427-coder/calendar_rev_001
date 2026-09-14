@@ -76,3 +76,9 @@ This build keeps the existing Supabase schema/RLS migration and adds incremental
 - Existing calendar/chat/vote/settlement services and room-scoped queries are retained
 
 No additional Supabase SQL is required for these UI/logic changes.
+
+
+## 0.5.1 hotfix
+- Fixed the chat view rendering regression by restoring the component return.
+- Settlement creation now requires explicit participant selection and divides the total only among selected room members.
+- Existing settlements are preserved; their historical participant lists are not guessed or rewritten.

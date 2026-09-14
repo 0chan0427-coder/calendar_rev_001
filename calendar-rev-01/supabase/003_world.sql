@@ -112,7 +112,7 @@ begin
   if auth.uid() <> p_user_id then raise exception 'not allowed'; end if;
   select exists(select 1 from world_profiles where user_id=p_user_id) into v_exists;
   insert into world_profiles(user_id, display_name)
-    select p_user_id, coalesce(display_name, '') from profiles where id=p_user_id
+    select p_user_id, coalesce(name, '') from profiles where id=p_user_id
     on conflict (user_id) do update set display_name=excluded.display_name, updated_at=now();
   if not v_exists then
     insert into world_points_ledger(user_id, amount, reason, reference_key)

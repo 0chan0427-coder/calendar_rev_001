@@ -10,6 +10,7 @@ import { listMessages, createMessage, subscribeToMessages, removeMessageChannel 
 import { listVotes, getVoteDetails, createVote as createVoteRecord, createVoteOptions, replaceUserVote, updateVoteStatus, deleteVote as deleteVoteRecord } from '../services/votes';
 import { listSettlements, getSettlementItems, createSettlement as createSettlementRecord, createSettlementItems, updateSettlementItemPaid, deleteSettlement as deleteSettlementRecord } from '../services/settlements';
 import { getProfile, getProfiles, getPendingProfiles, updateOwnNameRequest, updateProfileColor, approveUser as approveUserRecord, approveNameChange as approveNameChangeRecord, rejectNameChange as rejectNameChangeRecord } from '../services/profiles';
+import { ensureWorldProfile, recordWorldActivity } from '../services/world';
 
 export default function CalendarApp() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -160,6 +161,8 @@ export default function CalendarApp() {
       setSession(session);
       if (session?.user) {
         fetchProfile(session.user.id);
+        ensureWorldProfile(session.user.id).catch(() => {});
+        recordWorldActivity(session.user.id, 'attendance').catch(() => {});
       }
     });
 
@@ -167,6 +170,8 @@ export default function CalendarApp() {
       setSession(session);
       if (session?.user) {
         fetchProfile(session.user.id);
+        ensureWorldProfile(session.user.id).catch(() => {});
+        recordWorldActivity(session.user.id, 'attendance').catch(() => {});
       } else {
         setProfile(null);
       }
@@ -516,6 +521,7 @@ export default function CalendarApp() {
     const roomId = selectedRoomIds[0];
     if (!roomId) return;
     const { error } = await createMessage(roomId, session.user.id, chatInputText.trim());
+    if (!error) { recordWorldActivity(session.user.id, 'chat').catch(() => {}); }
 
     if (error) {
       alert('메시지 전송 실패: ' + error.message);
@@ -1050,6 +1056,13 @@ export default function CalendarApp() {
                 ⚙️ 멤버 관리 (관리자)
               </button>
             )}
+
+            <button
+              onClick={() => { window.location.href = `${window.location.pathname}?world=1`; }}
+              style={{ width: '100%', marginBottom: '5px', padding: '11px 12px', background: '#8d70bd', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px' }}
+            >
+              🌐 씩씩이 월드
+            </button>
 
             <div style={{ marginTop: '15px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
               

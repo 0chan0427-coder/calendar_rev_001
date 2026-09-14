@@ -1,18 +1,18 @@
 {
-  "name": "vite-react-typescript-starter",
+  "name": "ssiksik-shared-calendar",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.2.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npx vite build",
+    "build": "vite build",
     "lint": "oxlint",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.39.8",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8",
-    "@supabase/supabase-js": "^2.39.8"
+    "react-dom": "^19.2.8"
   },
   "devDependencies": {
     "@types/node": "^24.13.3",

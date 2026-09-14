@@ -59,3 +59,20 @@ Vercel/로컬 환경에 다음 값이 필요합니다.
 ## 검증
 
 이 작업 환경에서는 npm 패키지 다운로드가 제한되어 `npm run build`의 실제 Vite 빌드 완료까지 확인하지 못했습니다. 따라서 GitHub에 반영한 뒤 Vercel Build 로그에서 첫 배포 결과를 반드시 확인하세요.
+
+
+## 0.3.0 step 3
+- Extracted the free chat UI into `src/components/chat/ChatView.tsx` without changing chat service behavior or room-selection logic.
+
+
+## Integrated enhancement build (2026-09)
+This build keeps the existing Supabase schema/RLS migration and adds incremental UI/UX improvements without changing the existing icon assets:
+- Calendar event title/content search
+- Vote title search and status filter
+- Automatic client-side closing of expired votes when vote data is refreshed
+- Settlement title search
+- Safer vote creation guard requiring a selected room
+- Calendar right-side date details follow the active event search filter
+- Existing calendar/chat/vote/settlement services and room-scoped queries are retained
+
+No additional Supabase SQL is required for these UI/logic changes.

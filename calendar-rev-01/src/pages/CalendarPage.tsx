@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { LoginScreen, PendingApprovalScreen } from '../components/auth/AuthScreens';
 import CalendarGrid from '../components/calendar/CalendarGrid';
+import ChatView from '../components/chat/ChatView';
 import { PRESET_COLORS, DEFAULT_COLOR_LABELS } from '../constants/calendar';
 import { getSession, signIn, signUp, signOut, onAuthStateChange } from '../services/auth';
 import { listRooms, createRoom as createRoomRecord, updateRoom, deleteRoom as deleteRoomRecord, updateRoomSortOrder, listRoomMembers } from '../services/rooms';
@@ -29,6 +30,12 @@ export default function CalendarApp() {
   const [chatMessages, setChatMessages] = useState<any[]>([]);
   const [chatInputText, setChatInputText] = useState('');
   const chatScrollRef = useRef<HTMLDivElement>(null);
+
+  // 검색/필터 상태
+  const [eventSearchText, setEventSearchText] = useState('');
+  const [voteSearchText, setVoteSearchText] = useState('');
+  const [voteStatusFilter, setVoteStatusFilter] = useState<'all' | 'active' | 'closed'>('all');
+  const [settlementSearchText, setSettlementSearchText] = useState('');
 
   // 투표 관련 상태
   const [votes, setVotes] = useState<any[]>([]);
@@ -231,16 +238,6 @@ export default function CalendarApp() {
     }
   }, [selectedSettlement]);
 
-  useEffect(() => {
-    if (rightSidebarOpen && rightSidebarDateStr) {
-      const updatedEvents = events.filter(ev => {
-        if (!selectedRoomIds.includes(ev.room_id)) return false;
-        return rightSidebarDateStr >= ev.event_date && rightSidebarDateStr <= (ev.end_date || ev.event_date);
-      });
-      setRightSidebarEvents(updatedEvents);
-    }
-  }, [events]);
-
   const fetchProfile = async (userId: string) => {
     try {
       const { data, error } = await getProfile(userId);
@@ -254,7 +251,25 @@ export default function CalendarApp() {
   const fetchVotes = async () => {
     const { data, error } = await listVotes(selectedRoomIds);
     if (!error && data) {
-      setVotes(data);
+      // 마감일이 지난 투표는 목록을 새로 불러올 때 자동으로 마감 처리합니다.
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const normalizedVotes = data.map((vote: any) => {
+        if (vote.status === 'active' && vote.end_date) {
+          const end = new Date(`${vote.end_date}T23:59:59`);
+          if (end < today) return { ...vote, status: 'closed' };
+        }
+        return vote;
+      });
+      setVotes(normalizedVotes);
+
+      const expired = data.filter((vote: any) => {
+        if (vote.status !== 'active' || !vote.end_date) return false;
+        return new Date(`${vote.end_date}T23:59:59`) < today;
+      });
+      if (expired.length) {
+        await Promise.all(expired.map((vote: any) => updateVoteStatus(vote.id, 'closed')));
+      }
     }
   };
 
@@ -362,6 +377,10 @@ export default function CalendarApp() {
 
   const createVote = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!selectedRoomIds[0]) {
+      alert('투표를 만들 방을 먼저 선택해주세요.');
+      return;
+    }
     if (!newVoteTitle.trim()) {
       alert('투표 제목을 입력해주세요.');
       return;
@@ -799,6 +818,42 @@ export default function CalendarApp() {
     }
   };
 
+  const filteredEvents = useMemo(() => {
+    const keyword = eventSearchText.trim().toLowerCase();
+    if (!keyword) return events;
+    return events.filter((event: any) =>
+      String(event.title || '').toLowerCase().includes(keyword) ||
+      String(event.content || '').toLowerCase().includes(keyword)
+    );
+  }, [events, eventSearchText]);
+
+  const filteredVotes = useMemo(() => {
+    const keyword = voteSearchText.trim().toLowerCase();
+    return votes.filter((vote: any) => {
+      const matchesKeyword = !keyword || String(vote.title || '').toLowerCase().includes(keyword);
+      const matchesStatus = voteStatusFilter === 'all' || vote.status === voteStatusFilter;
+      return matchesKeyword && matchesStatus;
+    });
+  }, [votes, voteSearchText, voteStatusFilter]);
+
+  const filteredSettlements = useMemo(() => {
+    const keyword = settlementSearchText.trim().toLowerCase();
+    if (!keyword) return settlements;
+    return settlements.filter((item: any) =>
+      String(item.title || '').toLowerCase().includes(keyword)
+    );
+  }, [settlements, settlementSearchText]);
+
+  useEffect(() => {
+    if (rightSidebarOpen && rightSidebarDateStr) {
+      const updatedEvents = filteredEvents.filter((ev: any) => {
+        if (!selectedRoomIds.includes(ev.room_id)) return false;
+        return rightSidebarDateStr >= ev.event_date && rightSidebarDateStr <= (ev.end_date || ev.event_date);
+      });
+      setRightSidebarEvents(updatedEvents);
+    }
+  }, [filteredEvents, selectedRoomIds, rightSidebarOpen, rightSidebarDateStr]);
+
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
   const firstDayOfMonth = new Date(year, month, 1).getDay();
@@ -1073,89 +1128,15 @@ export default function CalendarApp() {
         
         {/* [자유 채팅방 화면] */}
         {currentViewMode === 'chat' ? (
-          <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', maxWidth: '800px', margin: '0 auto', boxSizing: 'border-box' }}>
-            <div style={{ padding: '10px 0', borderBottom: '1px solid rgba(0,0,0,0.1)', marginBottom: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <h2 style={{ margin: 0, fontSize: '18px', color: '#222' }}>💬 자유 채팅방</h2>
-              <span style={{ fontSize: '12px', color: '#444' }}>실시간 소통 공간</span>
-            </div>
-
-            <div ref={chatScrollRef} style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px', paddingRight: '4px', paddingBottom: '10px' }}>
-              {chatMessages.length === 0 ? (
-                <div style={{ textAlign: 'center', color: '#555', marginTop: '40px', fontSize: '14px' }}>첫 메시지를 남겨보세요!</div>
-              ) : (
-                chatMessages.map((msg, index) => {
-                  const isMyMessage = msg.user_id === session?.user?.id;
-                  const sender = profilesMap[msg.user_id] || { name: '알 수 없음', color: '#339af0' };
-
-                  const msgDateObj = new Date(msg.created_at);
-                  const dateString = `${msgDateObj.getFullYear()}년 ${msgDateObj.getMonth() + 1}월 ${msgDateObj.getDate()}일 ${['일', '월', '화', '수', '목', '금', '토'][msgDateObj.getDay()]}요일`;
-                  
-                  const prevMsg = index > 0 ? chatMessages[index - 1] : null;
-                  const prevDateString = prevMsg ? `${new Date(prevMsg.created_at).getFullYear()}년 ${new Date(prevMsg.created_at).getMonth() + 1}월 ${new Date(prevMsg.created_at).getDate()}일` : null;
-                  const currentDateStringOnly = `${msgDateObj.getFullYear()}년 ${msgDateObj.getMonth() + 1}월 ${msgDateObj.getDate()}일`;
-
-                  const showDateDivider = !prevMsg || prevDateString !== currentDateStringOnly;
-
-                  let hours = msgDateObj.getHours();
-                  const minutes = String(msgDateObj.getMinutes()).padStart(2, '0');
-                  const ampm = hours >= 12 ? '오후' : '오전';
-                  hours = hours % 12;
-                  hours = hours ? hours : 12;
-                  const timeString = `${ampm} ${hours}:${minutes}`;
-
-                  return (
-                    <React.Fragment key={msg.id || index}>
-                      {showDateDivider && (
-                        <div style={{ display: 'flex', justifyContent: 'center', margin: '15px 0 10px 0' }}>
-                          <span style={{ background: 'rgba(0,0,0,0.15)', color: '#fff', fontSize: '11px', padding: '4px 12px', borderRadius: '12px', fontWeight: 'bold' }}>
-                            📅 {dateString}
-                          </span>
-                        </div>
-                      )}
-
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: isMyMessage ? 'flex-end' : 'flex-start', margin: '2px 0' }}>
-                        {!isMyMessage && (
-                          <div style={{ fontSize: '12px', color: '#333', marginBottom: '2px', marginLeft: '4px', fontWeight: 'bold' }}>
-                            {sender.name}
-                          </div>
-                        )}
-                        <div style={{ display: 'flex', alignItems: 'flex-end', gap: '6px', flexDirection: isMyMessage ? 'row-reverse' : 'row' }}>
-                          <div style={{
-                            background: isMyMessage ? '#fee102' : '#ffffff',
-                            color: '#111',
-                            padding: '8px 12px',
-                            borderRadius: '12px',
-                            maxWidth: '65%',
-                            wordBreak: 'break-all',
-                            fontSize: '14px',
-                            boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
-                            borderTopRightRadius: isMyMessage ? '2px' : '12px',
-                            borderTopLeftRadius: isMyMessage ? '12px' : '2px',
-                          }}>
-                            {msg.content}
-                          </div>
-                          <span style={{ fontSize: '10px', color: '#555', minWidth: '45px', textAlign: isMyMessage ? 'right' : 'left' }}>
-                            {timeString}
-                          </span>
-                        </div>
-                      </div>
-                    </React.Fragment>
-                  );
-                })
-              )}
-            </div>
-
-            <form onSubmit={sendChatMessage} style={{ display: 'flex', gap: '8px', marginTop: '10px', background: '#fff', padding: '8px', borderRadius: '8px', boxShadow: '0 -1px 4px rgba(0,0,0,0.05)' }}>
-              <input 
-                type="text" 
-                placeholder="메시지를 입력하세요..." 
-                value={chatInputText} 
-                onChange={e => setChatInputText(e.target.value)} 
-                style={{ flex: 1, padding: '10px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '14px', outline: 'none' }} 
-              />
-              <button type="submit" style={{ padding: '10px 18px', background: '#fee102', color: '#3c1e1e', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px' }}>전송</button>
-            </form>
-          </div>
+          <ChatView
+            chatMessages={chatMessages}
+            session={session}
+            profilesMap={profilesMap}
+            chatScrollRef={chatScrollRef}
+            chatInputText={chatInputText}
+            onChatInputChange={setChatInputText}
+            onSendMessage={sendChatMessage}
+          />
         ) : currentViewMode === 'vote' ? (
           /* [투표 목록 화면] */
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%', maxWidth: '900px', margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
@@ -1172,11 +1153,29 @@ export default function CalendarApp() {
               </button>
             </div>
 
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' }}>
+              <input
+                value={voteSearchText}
+                onChange={e => setVoteSearchText(e.target.value)}
+                placeholder="🔎 투표 제목 검색"
+                style={{ flex: 1, minWidth: '180px', padding: '9px 11px', border: '1px solid #ced4da', borderRadius: '6px', boxSizing: 'border-box' }}
+              />
+              <select
+                value={voteStatusFilter}
+                onChange={e => setVoteStatusFilter(e.target.value as 'all' | 'active' | 'closed')}
+                style={{ padding: '9px 10px', border: '1px solid #ced4da', borderRadius: '6px', background: '#fff' }}
+              >
+                <option value="all">전체 상태</option>
+                <option value="active">진행 중</option>
+                <option value="closed">마감됨</option>
+              </select>
+            </div>
+
             <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px', paddingBottom: '20px' }}>
-              {votes.length === 0 ? (
+              {filteredVotes.length === 0 ? (
                 <div style={{ textAlign: 'center', color: '#888', marginTop: '40px' }}>등록된 투표가 없습니다. 상단의 '투표 만들기'를 눌러 시작해보세요!</div>
               ) : (
-                votes.map((vote) => {
+                filteredVotes.map((vote) => {
                   const author = profilesMap[vote.user_id]?.name || '관리자';
                   return (
                     <div 
@@ -1251,11 +1250,20 @@ export default function CalendarApp() {
               </button>
             </div>
 
+            <div style={{ marginBottom: '12px' }}>
+              <input
+                value={settlementSearchText}
+                onChange={e => setSettlementSearchText(e.target.value)}
+                placeholder="🔎 정산 제목 검색"
+                style={{ width: '100%', padding: '9px 11px', border: '1px solid #ced4da', borderRadius: '6px', boxSizing: 'border-box' }}
+              />
+            </div>
+
             <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px', paddingBottom: '20px' }}>
-              {settlements.length === 0 ? (
+              {filteredSettlements.length === 0 ? (
                 <div style={{ textAlign: 'center', color: '#888', marginTop: '40px' }}>등록된 정산 내역이 없습니다. 우측 상단의 '정산 등록하기'를 눌러 시작해보세요!</div>
               ) : (
-                settlements.map((st) => {
+                filteredSettlements.map((st) => {
                   const author = profilesMap[st.user_id]?.name || '알 수 없음';
                   return (
                     <div 
@@ -1309,6 +1317,15 @@ export default function CalendarApp() {
                 </h2>
               </div>
 
+              <div style={{ margin: '4px 0 8px' }}>
+                <input
+                  value={eventSearchText}
+                  onChange={e => setEventSearchText(e.target.value)}
+                  placeholder="🔎 일정 제목/내용 검색 (비우면 전체 일정)"
+                  style={{ width: '100%', padding: '9px 11px', border: '1px solid #ced4da', borderRadius: '6px', boxSizing: 'border-box' }}
+                />
+              </div>
+
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', margin: '10px 0' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <button onClick={prevMonth} style={{ padding: '6px 12px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>&lt; 이전 달</button>
@@ -1346,7 +1363,7 @@ export default function CalendarApp() {
                 firstDayOfMonth={firstDayOfMonth}
                 lastDateOfMonth={lastDateOfMonth}
                 totalWeeks={totalWeeks}
-                events={events}
+                events={filteredEvents}
                 selectedRoomIds={selectedRoomIds}
                 profilesMap={profilesMap}
                 getRoomOrderIndex={getRoomOrderIndex}

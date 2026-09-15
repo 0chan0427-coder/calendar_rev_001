@@ -1,16 +1,16 @@
 import { supabase } from '../lib/supabase';
 
-export const ensureWorldProfile = (userId: string) =>
-  supabase.rpc('ensure_world_profile', { p_user_id: userId });
+export const ensureWorldProfile = async (userId: string) =>
+  await supabase.rpc('ensure_world_profile', { p_user_id: userId });
 
-export const awardWorldWeeklyBonuses = (week: string) =>
-  supabase.rpc('award_world_weekly_bonuses', { p_week_start: week });
+export const awardWorldWeeklyBonuses = async (week: string) =>
+  await supabase.rpc('award_world_weekly_bonuses', { p_week_start: week });
 
-export const recordWorldActivity = (
+export const recordWorldActivity = async (
   userId: string,
   activityType: 'attendance' | 'chat' | 'visit',
   targetUserId?: string,
-) => supabase.rpc('record_world_daily_activity', {
+) => await supabase.rpc('record_world_daily_activity', {
   p_user_id: userId,
   p_activity_type: activityType,
   p_target_user_id: targetUserId ?? null,

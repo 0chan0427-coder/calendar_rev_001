@@ -33,6 +33,7 @@ export interface WorldProfile {
   floor_id: string;
   window_id: string;
   my_bgm_id?: string | null;
+  curtain_id?: string | null;
 }
 
 export interface WorldRankingRow {
@@ -58,4 +59,14 @@ export interface WorldDailyStatus {
   attendance: boolean;
   chat: boolean;
   visitedUserIds: string[];
+}
+
+export interface WorldCompanion {
+  id: string;
+  user_id: string;
+  item_id: string;
+  name: string;
+  is_active: boolean;
+  created_at?: string;
+  updated_at?: string;
 }

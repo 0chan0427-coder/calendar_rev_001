@@ -140,3 +140,15 @@ export const uploadWorldItemImage = async (file: File, itemId: string) => {
   const { data } = supabase.storage.from('world-items').getPublicUrl(path);
   return { data: data.publicUrl, error: null };
 };
+
+export const listWorldCompanions = (userId: string) =>
+  supabase.from('world_companions').select('*').eq('user_id', userId).order('created_at', { ascending: true });
+
+export const purchaseWorldAnimal = (userId: string, itemId: string, name: string) =>
+  supabase.rpc('purchase_world_animal', { p_user_id: userId, p_item_id: itemId, p_name: name });
+
+export const setWorldActiveCompanion = (userId: string, companionId: string) =>
+  supabase.rpc('set_world_active_companion', { p_user_id: userId, p_companion_id: companionId });
+
+export const renameWorldCompanion = (userId: string, companionId: string, name: string) =>
+  supabase.rpc('rename_world_companion', { p_user_id: userId, p_companion_id: companionId, p_name: name });

@@ -1,0 +1,6 @@
+023 - mini-me gender selection and layered base
+- Added persistent avatar_gender (male/female) to world_profiles.
+- Added male/female layered base body + default hair SVGs.
+- Added male/female selector at the top of My Items.
+- Profile photo and miniroom character follow selected gender.
+- Kept existing shop, companion, points, ranking, room-item systems intact.

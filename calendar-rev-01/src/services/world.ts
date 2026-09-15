@@ -3,6 +3,9 @@ import { supabase } from '../lib/supabase';
 export const ensureWorldProfile = async (userId: string) =>
   await supabase.rpc('ensure_world_profile', { p_user_id: userId });
 
+export const syncWorldProfiles = async () =>
+  await supabase.rpc('sync_world_profiles');
+
 export const awardWorldWeeklyBonuses = async (week: string) =>
   await supabase.rpc('award_world_weekly_bonuses', { p_week_start: week });
 

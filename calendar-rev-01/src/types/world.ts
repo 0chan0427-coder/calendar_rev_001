@@ -1,4 +1,4 @@
-export type WorldView = 'home' | 'friends' | 'plaza' | 'shop' | 'ranking' | 'guestbook' | 'notifications';
+export type WorldView = 'home' | 'friends' | 'plaza' | 'shop' | 'ranking' | 'guestbook' | 'notifications' | 'admin';
 export type WorldSceneType = 'interior' | 'exterior';
 
 export interface WorldItem {
@@ -8,6 +8,16 @@ export interface WorldItem {
   image: string;
   price: number;
   description?: string;
+  category?: string;
+  subcategory?: string;
+  image_url?: string | null;
+  placement_type?: string;
+  min_scale?: number;
+  max_scale?: number;
+  default_z_index?: number;
+  animation_type?: string;
+  is_active?: boolean;
+  sort_order?: number;
 }
 
 export interface WorldProfile {

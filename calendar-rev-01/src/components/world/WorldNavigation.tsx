@@ -1,6 +1,7 @@
 import type { WorldView } from '../../types/world';
 
-export default function WorldNavigation({ view, onChange, onCalendar }: { view: WorldView; onChange: (v: WorldView) => void; onCalendar: () => void }) {
+export default function WorldNavigation({ view, onChange, onCalendar, isAdmin = false }: { view: WorldView; onChange: (v: WorldView) => void; onCalendar: () => void; isAdmin?: boolean }) {
   const items: [WorldView,string][] = [['home','🏠 내 미니홈피'],['friends','👥 1촌'],['plaza','🏛️ 광장'],['shop','🛍️ 포인트샵'],['ranking','🏆 주간랭킹'],['guestbook','💌 방명록']];
+  if (isAdmin) items.push(['admin','⚙️ 관리자']);
   return <nav className="world-nav">{items.map(([key,label]) => <button key={key} className={view===key?'active':''} onClick={()=>onChange(key)}>{label}</button>)}<button onClick={onCalendar}>📅 공유캘린더</button><button onClick={()=>alert('자유채팅은 공유캘린더의 자유 채팅방에서 이용할 수 있어요.')}>💬 자유채팅</button></nav>;
 }

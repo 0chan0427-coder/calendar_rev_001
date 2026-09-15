@@ -101,3 +101,42 @@ export const sendWorldGift = (recipientId: string, itemId: string) =>
 
 export const listWorldRankingHistory = () =>
   supabase.from('world_weekly_scores').select('*').order('week_start', { ascending: false }).order('weekly_score', { ascending: false }).limit(1000);
+
+export const listWorldItemCatalog = () =>
+  supabase.from('world_item_catalog').select('*').eq('is_active', true).order('sort_order', { ascending: true }).order('item_name', { ascending: true });
+
+export const listWorldItemCatalogAdmin = () =>
+  supabase.from('world_item_catalog').select('*').order('sort_order', { ascending: true }).order('item_name', { ascending: true });
+
+export const checkWorldAdmin = () => supabase.rpc('is_admin');
+
+export const adminUpsertWorldItem = (item: Record<string, unknown>) =>
+  supabase.rpc('admin_upsert_world_item', {
+    p_item_id: item.item_id,
+    p_item_name: item.item_name,
+    p_item_type: item.item_type,
+    p_price: item.price,
+    p_category: item.category,
+    p_subcategory: item.subcategory,
+    p_description: item.description,
+    p_image_url: item.image_url ?? null,
+    p_placement_type: item.placement_type,
+    p_min_scale: item.min_scale,
+    p_max_scale: item.max_scale,
+    p_default_z_index: item.default_z_index,
+    p_animation_type: item.animation_type,
+    p_is_active: item.is_active,
+    p_sort_order: item.sort_order,
+  });
+
+export const adminDeleteWorldItem = (itemId: string) =>
+  supabase.rpc('admin_delete_world_item', { p_item_id: itemId });
+
+export const uploadWorldItemImage = async (file: File, itemId: string) => {
+  const safeName = file.name.toLowerCase().replace(/[^a-z0-9._-]+/g, '-');
+  const path = `${itemId}/${crypto.randomUUID()}-${safeName}`;
+  const upload = await supabase.storage.from('world-items').upload(path, file, { upsert: false, contentType: file.type || undefined });
+  if (upload.error) return { data: null, error: upload.error };
+  const { data } = supabase.storage.from('world-items').getPublicUrl(path);
+  return { data: data.publicUrl, error: null };
+};

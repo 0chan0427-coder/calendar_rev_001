@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import type { WorldProfile, WorldSceneType } from '../../types/world';
+import type { WorldProfile, WorldSceneType, WorldItem } from '../../types/world';
 
 interface RoomItem { id: string; item_id: string; x: number; y: number; scale: number; z_index: number; }
 interface Props {
@@ -14,6 +14,7 @@ interface Props {
   onOpenInventory?: () => void;
   decorate?: boolean;
   onToggleDecorate?: () => void;
+  catalog?: WorldItem[];
 }
 
 const assetRoot = '/world';
@@ -36,7 +37,7 @@ const furnitureAssets = [
   ['lamp','/furniture/seasonal/lamp.png','스탠드 조명','lamp'],
 ] as const;
 
-export default function WorldScene({ profile, isOwner, onToggleScene, roomItems = [], onMoveItem, onScaleItem, onRemoveItem, onFrontItem, decorate = false, onOpenInventory, onToggleDecorate }: Props) {
+export default function WorldScene({ profile, isOwner, onToggleScene, roomItems = [], onMoveItem, onScaleItem, onRemoveItem, onFrontItem, decorate = false, onOpenInventory, onToggleDecorate, catalog = [] }: Props) {
   const now = new Date();
   const editMode = decorate;
   const [dragPositions, setDragPositions] = useState<Record<string,{x:number;y:number}>>({});
@@ -47,7 +48,7 @@ export default function WorldScene({ profile, isOwner, onToggleScene, roomItems 
   const background = `${assetRoot}/backgrounds/empty-gardenwindow/${season}_${time}.png`;
   const sceneClass = useMemo(() => `${scene} ${season} ${time}`, [scene, season, time]);
 
-  const getMeta = (itemId:string) => furnitureAssets.find(x => x[0] === itemId) || furnitureAssets[0];
+  const getMeta = (itemId:string) => { const db = catalog.find((x:any)=>x.id===itemId || x.item_id===itemId); const hard = furnitureAssets.find(x=>x[0]===itemId); return { image: db?.image_url || (hard ? `${assetRoot}${hard[1]}` : `${assetRoot}/furniture/livingroom/sofa.png`), label: db?.name || db?.item_name || (hard ? hard[2] : itemId), kind: db?.type || (hard ? hard[3] : 'props') }; };
   const positionOf = (item:RoomItem) => dragPositions[item.id] || { x:item.x, y:item.y };
 
   const startDrag = (e: React.PointerEvent<HTMLButtonElement>, item: RoomItem) => {
@@ -77,20 +78,20 @@ export default function WorldScene({ profile, isOwner, onToggleScene, roomItems 
       {scene === 'interior' && <div className="scene-floor-light" aria-hidden="true" />}
       {scene === 'interior' && roomItems.map((item, index) => {
         const meta = getMeta(item.item_id);
-        const kind = meta[3];
+        const kind = meta.kind;
         const pos = positionOf(item);
         return <div
           key={item.id}
           className={`scene-furniture ${kind} ${editMode && isOwner ? 'editing' : ''} ${selectedId === item.id ? 'selected' : ''}`}
           style={{ left:`${pos.x}%`, top:`${pos.y}%`, transform:`translate(-50%,-50%) scale(${item.scale})`, zIndex:item.z_index ?? index + 12 }}
-          title={meta[2]}
+          title={meta.label}
           onPointerDown={(e) => startDrag(e,item)}
           onClick={() => editMode && isOwner && setSelectedId(item.id)}
           role={editMode && isOwner ? "button" : undefined}
           tabIndex={editMode && isOwner ? 0 : undefined}
         >
-          <img src={`${assetRoot}${meta[1]}`} alt={meta[2]} />
-          {editMode && isOwner && <span className="furniture-label">{meta[2]}</span>}
+          <img src={meta.image} alt={meta.label} />
+          {editMode && isOwner && <span className="furniture-label">{meta.label}</span>}
           {editMode && isOwner && selectedId === item.id && <span className="furniture-controls" onPointerDown={e=>e.stopPropagation()}>
             <button type="button" onClick={()=>onScaleItem?.(item.id, Math.min(1.1, Number(item.scale)+0.05))}>＋ 크게</button>
             <button type="button" onClick={()=>onScaleItem?.(item.id, Math.max(0.25, Number(item.scale)-0.05))}>－ 작게</button>

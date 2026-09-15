@@ -16,8 +16,6 @@ interface Props {
   onToggleDecorate?: () => void;
   catalog?: WorldItem[];
   companion?: WorldCompanion | null;
-  onOpenCompanion?: () => void;
-  onToggleCurtain?: () => void;
 }
 
 const assetRoot = '/world';
@@ -45,9 +43,8 @@ export default function WorldScene({ profile, isOwner, onToggleScene, roomItems 
   const scene: WorldSceneType = profile.scene_type;
   const background = `${assetRoot}/backgrounds/empty/${season}_${time}.png`;
   const sceneClass = useMemo(() => `${scene} ${season} ${time}`, [scene, season, time]);
-  const curtain = profile.curtain_id || 'none';
 
-  const getMeta = (itemId:string) => { const db = catalog.find((x:any)=>x.id===itemId || x.item_id===itemId); const hard = furnitureAssets.find(x=>x[0]===itemId); return { image: db?.image_url || (hard ? `${assetRoot}${hard[1]}` : `${assetRoot}/furniture/livingroom/sofa.png`), label: db?.name || db?.item_name || (hard ? hard[2] : itemId), kind: db?.type || (hard ? hard[3] : 'props') }; };
+  const getMeta = (itemId:string) => { const db = catalog.find((x:any)=>x.id===itemId || x.item_id===itemId); const hard = furnitureAssets.find(x=>x[0]===itemId); return { image: db?.image_url || (hard ? `${assetRoot}${hard[1]}` : `${assetRoot}/furniture/livingroom/sofa.png`), label: db?.name || db?.item_name || (hard ? hard[2] : itemId), kind: ((db?.category==='커튼'||db?.subcategory==='커튼') ? 'curtain' : (db?.type || (hard ? hard[3] : 'props'))) }; };
   const positionOf = (item:RoomItem) => dragPositions[item.id] || { x:item.x, y:item.y };
   const startDrag = (e: React.PointerEvent<HTMLDivElement>, item: RoomItem) => {
     if (!editMode || !isOwner || !onMoveItem) return;
@@ -60,13 +57,21 @@ export default function WorldScene({ profile, isOwner, onToggleScene, roomItems 
 
   return <section className={`world-scene-real cyworld-room ${sceneClass}`}>
     {scene === 'interior' ? <>
-      <img className="scene-background" src={background} alt="미니홈피 방 배경" />
-      <div className="cy-window-sill" aria-hidden="true" />
-      {curtain !== 'none' && <div className={`cy-curtain curtain-${curtain}`} aria-hidden="true"><span/><span/></div>}
+      <div className="cy-room-wall" aria-hidden="true">
+        <div className="cy-room-door"><span className="door-knob"/></div>
+        <div className="cy-room-window">
+          <div className="cy-window-outside"><img src={background} alt="" /></div>
+          <div className="cy-window-frame frame-v"/><div className="cy-window-frame frame-h"/>
+          <div className="cy-window-glass-shine"/>
+          <div className="cy-window-sill"/>
+        </div>
+        <div className="cy-room-wall-art"/>
+      </div>
+      <div className="cy-room-floor" aria-hidden="true"/>
       <div className="cy-room-overlay" aria-hidden="true" />
     </> : <div className="scene-garden-field" aria-label="비어 있는 정원" />}
 
-    {scene === 'interior' && roomItems.map((item,index) => { const meta=getMeta(item.item_id); const pos=positionOf(item); return <div key={item.id} className={`scene-furniture ${meta.kind} ${editMode&&isOwner?'editing':''} ${selectedId===item.id?'selected':''}`} style={{left:`${pos.x}%`,top:`${pos.y}%`,transform:`translate(-50%,-50%) scale(${item.scale})`,zIndex:item.z_index??index+12}} title={meta.label} onPointerDown={e=>startDrag(e,item)} onClick={()=>editMode&&isOwner&&setSelectedId(item.id)}>
+    {scene === 'interior' && roomItems.map((item,index) => { const meta=getMeta(item.item_id); const pos=positionOf(item); return <div key={item.id} className={`scene-furniture ${meta.kind} ${meta.kind==='curtain'?'scene-room-curtain':''} ${editMode&&isOwner?'editing':''} ${selectedId===item.id?'selected':''}`} style={{left:`${pos.x}%`,top:`${pos.y}%`,transform:`translate(-50%,-50%) scale(${item.scale})`,zIndex:item.z_index??index+12}} title={meta.label} onPointerDown={e=>startDrag(e,item)} onClick={()=>editMode&&isOwner&&setSelectedId(item.id)}>
       <img src={meta.image} alt={meta.label}/>
       {editMode&&isOwner&&<span className="furniture-label">{meta.label}</span>}
       {editMode&&isOwner&&selectedId===item.id&&<span className="furniture-controls" onPointerDown={e=>e.stopPropagation()}>
@@ -74,15 +79,13 @@ export default function WorldScene({ profile, isOwner, onToggleScene, roomItems 
       </span>}
     </div>; })}
 
-    <div className="scene-character-wrap" title="내 미니미"><img className="scene-character" src={`${assetRoot}/characters/base/character_test_maple.png`} alt="씩씩이 미니미" /></div>
+    <div className="scene-character-wrap" title="내 미니미"><img className="scene-character" src={`${assetRoot}/characters/base/character_base_layered.svg`} alt="씩씩이 미니미" /></div>
     {scene === 'interior' && companion && <button className="scene-companion" onClick={onOpenCompanion} title={`${companion.name} 동물 관리`}><span className="companion-emoji">🐾</span><span className="companion-nameplate">{companion.name}</span></button>}
-    {scene === 'interior' && !companion && isOwner && <button className="scene-companion-empty" onClick={onOpenCompanion}>🐾 동물도 함께 꾸며보세요</button>}
     <div className="scene-info"><b>{seasonLabel[season]} · {timeLabel[time]}</b><span>{scene==='interior'?'나만의 미니룸':'나만의 정원'}</span></div>
 
     {isOwner && <div className="scene-tools">
       <button onClick={()=>{setSelectedId(null);onToggleDecorate?.();}}>{editMode?'✓ 꾸미기 완료':'✏️ 방 꾸미기'}</button>
-      {editMode&&<button onClick={onOpenInventory}>📦 아이템 목록</button>}
-      {scene==='interior'&&<button onClick={onToggleCurtain}>🪟 커튼: {curtain==='none'?'없음':curtain==='lace'?'레이스':'체크'}</button>}
+      {editMode&&<button onClick={onOpenInventory}>📦 내 아이템</button>}
       <button onClick={onToggleScene}>{scene==='interior'?'🌳 정원 보기':'🏠 집 안 보기'}</button>
     </div>}
   </section>;

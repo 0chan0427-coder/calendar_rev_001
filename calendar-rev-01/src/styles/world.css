@@ -127,3 +127,24 @@
 .scene-character-wrap .scene-character{width:170px;height:250px;max-height:none}
 .profile-photo.character-layer .character-avatar .character-avatar-image{width:100%;height:100%;object-fit:contain;left:50%;top:50%;transform:translate(-50%,-50%)}
 @media(max-width:650px){.scene-character-wrap{width:132px;height:194px}.scene-character-wrap .scene-character{width:132px;height:194px}.profile-photo.character-layer .character-avatar .character-avatar-image{width:100%;height:100%}}
+
+/* 028: finalized idle motion — remove legacy whole-wrapper bobbing. */
+.scene-character-wrap,
+.scene-character-wrap .scene-character {
+  animation: none !important;
+}
+.scene-character-wrap .character-avatar {
+  animation: characterIdle 7.2s ease-in-out infinite !important;
+}
+.character-blink {
+  animation: characterBlink 8.4s linear infinite !important;
+}
+@keyframes characterIdle {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  45% { transform: translateY(-0.8px) scaleY(1.002); }
+  55% { transform: translateY(-1.1px) scaleY(1.003); }
+}
+@keyframes characterBlink {
+  0%, 90%, 100% { opacity: 0; }
+  91%, 92.2% { opacity: 1; }
+}

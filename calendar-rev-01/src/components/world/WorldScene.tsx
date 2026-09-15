@@ -27,6 +27,7 @@ const furnitureAssets = [
   ['piano','/furniture/study_pc/piano.png','피아노'],
   ['desk','/furniture/study_pc/computer_desk.png','컴퓨터 책상'],
   ['bed','/furniture/bedroom/bed.png','침대'],
+  ['lamp','/furniture/seasonal/lamp.png','스탠드 조명'],
 ] as const;
 
 export default function WorldScene({ profile, isOwner, onToggleScene, roomItems = [], onMoveItem }: Props) {
@@ -36,13 +37,11 @@ export default function WorldScene({ profile, isOwner, onToggleScene, roomItems 
   const season = seasonByMonth(now.getMonth() + 1);
   const time = timeByHour(now.getHours());
   const scene: WorldSceneType = profile.scene_type;
-  const background = `${assetRoot}/backgrounds/${season}/${time}/background_01.png`;
+  // 첫 시작은 가구가 없는 방. 가구는 아이템함에서 직접 꺼내 배치합니다.
+  const background = `${assetRoot}/backgrounds/empty/${season}_${time}.png`;
   const sceneClass = useMemo(() => `${scene} ${season} ${time}`, [scene, season, time]);
 
-  const movable = roomItems.length ? roomItems : [
-    { id:'demo-sofa', item_id:'sofa-basic', x:18, y:68, scale:0.48, z_index:4 },
-    { id:'demo-plant', item_id:'cactus', x:78, y:67, scale:0.34, z_index:5 },
-  ];
+  const movable = roomItems;
   const getAsset = (itemId:string) => furnitureAssets.find(x => x[0] === itemId)?.[1] || furnitureAssets[0][1];
   const getName = (itemId:string) => furnitureAssets.find(x => x[0] === itemId)?.[2] || '가구';
   const positionOf = (item:RoomItem) => dragPositions[item.id] || { x:item.x, y:item.y };
@@ -91,7 +90,6 @@ export default function WorldScene({ profile, isOwner, onToggleScene, roomItems 
       <div className="scene-character-wrap" title="내 캐릭터">
         <img className="scene-character" src={`${assetRoot}/characters/base/character_01.png`} alt="내 캐릭터" />
       </div>
-      <div className="scene-pet" title="동반 동물"><img src={`${assetRoot}/animals/cats/cat.png`} alt="고양이" /></div>
       <div className="scene-info"><b>{seasonLabel[season]} · {timeLabel[time]}</b><span>{scene === 'interior' ? '나만의 방' : '나만의 정원'}</span></div>
 
       {isOwner && <div className="scene-tools">

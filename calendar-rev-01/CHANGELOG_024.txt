@@ -1,0 +1,8 @@
+024 - B reference character visual lock
+
+- User-provided B-style guide image is now the visual reference for the mini-me.
+- Male/female profile and miniroom characters use transparent crops derived from the provided guide image.
+- Removed the built-in wall frame/art element from the miniroom.
+- Preserved gender selection in My Items.
+- Kept room window/door as future purchasable/placeable items rather than hard-coded furniture.
+- This version is a visual-lock test; future clothing/hair/cosmetics will be layered onto the same character style.

@@ -11,6 +11,7 @@ interface Props {
   onScaleItem?: (id: string, scale: number) => void;
   onRemoveItem?: (id: string) => void;
   onFrontItem?: (id: string) => void;
+  onOpenInventory?: () => void;
 }
 
 const assetRoot = '/world';
@@ -72,11 +73,6 @@ export default function WorldScene({ profile, isOwner, onToggleScene, roomItems 
     <section className={`world-scene-real ${sceneClass}`}>
       {scene === 'interior' ? <img className="scene-background" src={background} alt="미니홈 빈 방 배경" /> : <div className="scene-garden-field" aria-label="비어 있는 정원" />}
       {scene === 'interior' && <div className="scene-floor-light" aria-hidden="true" />}
-      <div className="scene-atmosphere" aria-hidden="true">
-        <span>{season === 'spring' ? '✿' : season === 'summer' ? '✦' : season === 'autumn' ? '🍂' : '❄'}</span>
-        <span>{time === 'night' || time === 'late_night' ? '✦　☾　✦' : '☁　☁'}</span>
-      </div>
-
       {scene === 'interior' && roomItems.map((item, index) => {
         const meta = getMeta(item.item_id);
         const kind = meta[3];
@@ -94,10 +90,10 @@ export default function WorldScene({ profile, isOwner, onToggleScene, roomItems 
           <img src={`${assetRoot}${meta[1]}`} alt={meta[2]} />
           {editMode && isOwner && <span className="furniture-label">{meta[2]}</span>}
           {editMode && isOwner && selectedId === item.id && <span className="furniture-controls" onPointerDown={e=>e.stopPropagation()}>
-            <button type="button" onClick={()=>onScaleItem?.(item.id, Math.min(1.1, Number(item.scale)+0.05))}>＋</button>
-            <button type="button" onClick={()=>onScaleItem?.(item.id, Math.max(0.25, Number(item.scale)-0.05))}>－</button>
-            <button type="button" onClick={()=>onFrontItem?.(item.id)}>앞</button>
-            <button type="button" onClick={()=>onRemoveItem?.(item.id)}>수거</button>
+            <button type="button" onClick={()=>onScaleItem?.(item.id, Math.min(1.1, Number(item.scale)+0.05))}>＋ 크게</button>
+            <button type="button" onClick={()=>onScaleItem?.(item.id, Math.max(0.25, Number(item.scale)-0.05))}>－ 작게</button>
+            <button type="button" onClick={()=>onFrontItem?.(item.id)}>↥ 앞으로</button>
+            <button type="button" className="remove-item-btn" onClick={()=>onRemoveItem?.(item.id)}>📦 수거</button>
           </span>}
         </div>;
       })}
@@ -109,6 +105,7 @@ export default function WorldScene({ profile, isOwner, onToggleScene, roomItems 
 
       {isOwner && <div className="scene-tools">
         <button onClick={() => {setEditMode(v=>!v);setSelectedId(null);}}>{editMode ? '✓ 꾸미기 완료' : '✏️ 방 꾸미기'}</button>
+        {editMode && <button onClick={onOpenInventory}>📦 아이템 목록</button>}
         <button onClick={onToggleScene}>{scene === 'interior' ? '🌳 정원 보기' : '🏠 집 안 보기'}</button>
       </div>}
     </section>

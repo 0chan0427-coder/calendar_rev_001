@@ -34,6 +34,7 @@ export interface WorldProfile {
   window_id: string;
   my_bgm_id?: string | null;
   curtain_id?: string | null;
+  avatar_gender?: 'male' | 'female';
 }
 
 export interface WorldRankingRow {

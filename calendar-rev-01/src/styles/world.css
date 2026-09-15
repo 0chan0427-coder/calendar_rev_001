@@ -75,3 +75,11 @@
 .character-layer>img:last-child{height:166px;width:auto;z-index:2}
 .cyworld-room.day .scene-character-wrap,.cyworld-room.night .scene-character-wrap{filter:none}
 @media(max-width:650px){.scene-character-wrap{width:150px;height:217px;left:52%;bottom:5%}.scene-character{width:150px;height:217px}.character-layer>img:first-child,.character-layer>img:last-child{height:92px}.cyworld-room.day .scene-character-wrap,.cyworld-room.night .scene-character-wrap{transform:translateX(-50%) scale(.95)}}
+
+
+/* 023: avatar gender selector and cleaner layered mini-me presentation */
+.avatar-gender-box{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:0 0 14px;padding:12px 14px;background:#fff;border:1px solid #c9dfe7;border-radius:10px;box-shadow:inset 0 0 0 2px #f4fafc}
+.avatar-gender-box>div:first-child{display:flex;flex-direction:column;gap:3px}.avatar-gender-box b{color:#4e6f80;font-size:13px}.avatar-gender-box small{color:#91a0a8;font-size:11px}.avatar-gender-buttons{display:flex;gap:6px}.avatar-gender-buttons button{min-width:78px;border:1px solid #bfd6df;background:#f8fcfd;color:#5f7c89;border-radius:8px;padding:8px 10px;font-weight:900;cursor:pointer}.avatar-gender-buttons button.active{background:linear-gradient(#6eabc3,#4e91ac);border-color:#4b8299;color:#fff}.avatar-gender-buttons button.active.female{background:linear-gradient(#d99bb5,#c97e9d);border-color:#bb718f}
+.profile-photo.character-layer{position:relative}.profile-photo.character-layer img{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);height:164px;width:auto}.profile-photo.character-layer img:first-child{position:absolute}.profile-photo.character-layer img:last-child{position:absolute}
+.scene-character-wrap{width:190px;height:274px}.scene-character{width:190px;height:274px}.scene-character-body,.scene-character-hair{position:absolute;inset:0}.scene-character-hair{pointer-events:none}
+@media(max-width:650px){.avatar-gender-box{align-items:flex-start;flex-direction:column}.avatar-gender-buttons{width:100%}.avatar-gender-buttons button{flex:1}.profile-photo.character-layer img{height:92px}.scene-character-wrap{width:155px;height:224px}.scene-character{width:155px;height:224px}}

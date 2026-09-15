@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import type { WorldProfile, WorldSceneType, WorldItem, WorldCompanion } from '../../types/world';
+import CharacterAvatar from './CharacterAvatar';
 
 interface RoomItem { id: string; item_id: string; x: number; y: number; scale: number; z_index: number; }
 interface Props {
@@ -70,7 +71,7 @@ export default function WorldScene({ profile, isOwner, onToggleScene, roomItems 
       </span>}
     </div>; })}
 
-    <div className="scene-character-wrap" title="내 미니미"><img className="scene-character" src={`${assetRoot}/characters/base/${avatarGender === 'female' ? 'minime_female_default.png' : 'minime_male_default.png'}`} alt="씩씩이 미니미" /></div>
+    <div className="scene-character-wrap" title="내 미니미"><CharacterAvatar gender={avatarGender} className="scene-character" /></div>
     {scene === 'interior' && companion && <div className="scene-companion" title={companion.name}><span className="companion-emoji">🐾</span><span className="companion-nameplate">{companion.name}</span></div>}
     <div className="scene-info"><b>{seasonLabel[season]} · {timeLabel[time]}</b><span>{scene==='interior'?'나만의 미니룸':'나만의 정원'}</span></div>
 

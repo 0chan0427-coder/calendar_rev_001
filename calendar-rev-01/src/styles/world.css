@@ -105,3 +105,25 @@
 .scene-character-wrap{width:170px;height:250px}
 .scene-character{width:170px;height:auto;max-height:250px;object-fit:contain}
 @media(max-width:650px){.profile-photo.character-layer img{height:94px}.scene-character-wrap{width:132px;height:194px}.scene-character{width:132px;max-height:194px}}
+
+/* 027: finalized B-style mini-me foundation. The reference proportions are locked;
+   motion is intentionally subtle so furniture and companions remain the focus. */
+.character-avatar{position:relative;width:100%;height:100%;display:block;transform-origin:50% 86%;}
+.character-avatar-image{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:100%;height:100%;object-fit:contain;image-rendering:auto;}
+.character-avatar::after{content:"";position:absolute;left:22%;right:22%;bottom:2%;height:5%;border-radius:50%;background:#5b506022;filter:blur(3px);pointer-events:none;}
+.scene-character-wrap .character-avatar{animation:characterIdle 5.8s ease-in-out infinite;}
+.scene-character-wrap .character-avatar-image{filter:drop-shadow(0 9px 5px #493b4425);}
+.character-blink{position:absolute;inset:0;pointer-events:none;opacity:0;animation:characterBlink 6.2s linear infinite;}
+.character-blink i{position:absolute;top:36.5%;width:8%;height:2.2%;border-radius:999px;background:#ffd7b8;box-shadow:0 0 0 1px #a66f6a22;}
+.character-blink i:first-child{left:29%;transform:rotate(-2deg)}
+.character-blink i:last-child{right:29%;transform:rotate(2deg)}
+.profile-photo.character-layer .character-avatar{width:100%;height:100%;}
+.profile-photo.character-layer .character-avatar-image{width:100%;height:100%;}
+@keyframes characterIdle{0%,100%{transform:translateY(0) scaleY(1)}50%{transform:translateY(-1.5px) scaleY(1.004)}}
+@keyframes characterBlink{0%,88%,100%{opacity:0}89%,91%{opacity:1}90%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.scene-character-wrap .character-avatar,.character-blink{animation:none}.character-blink{display:none}}
+/* 027 sizing override: keep the finalized mini-me at the approved room scale. */
+.scene-character-wrap{width:170px;height:250px}
+.scene-character-wrap .scene-character{width:170px;height:250px;max-height:none}
+.profile-photo.character-layer .character-avatar .character-avatar-image{width:100%;height:100%;object-fit:contain;left:50%;top:50%;transform:translate(-50%,-50%)}
+@media(max-width:650px){.scene-character-wrap{width:132px;height:194px}.scene-character-wrap .scene-character{width:132px;height:194px}.profile-photo.character-layer .character-avatar .character-avatar-image{width:100%;height:100%}}

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="260" viewBox="0 0 180 260">
+  <ellipse cx="90" cy="244" rx="42" ry="7" fill="#5a5363" opacity=".18"/>
+  <!-- head -->
+  <path d="M49 55 Q52 18 90 14 Q128 18 131 55 L127 91 Q119 111 90 116 Q61 111 53 91Z" fill="#ffd8bd" stroke="#4a5870" stroke-width="3"/>
+  <circle cx="50" cy="66" r="8" fill="#ffd2b5" stroke="#4a5870" stroke-width="3"/>
+  <circle cx="130" cy="66" r="8" fill="#ffd2b5" stroke="#4a5870" stroke-width="3"/>
+  <!-- face -->
+  <ellipse cx="71" cy="69" rx="6" ry="9" fill="#3d4564"/>
+  <ellipse cx="109" cy="69" rx="6" ry="9" fill="#3d4564"/>
+  <circle cx="62" cy="84" r="5" fill="#f19cae" opacity=".82"/><circle cx="118" cy="84" r="5" fill="#f19cae" opacity=".82"/>
+  <path d="M84 88 Q90 94 96 88" fill="none" stroke="#9a5f68" stroke-width="3" stroke-linecap="round"/>
+  <!-- neck / simple base clothes -->
+  <path d="M79 108 L101 108 L101 122 Q90 128 79 122Z" fill="#ffd8bd" stroke="#4a5870" stroke-width="3"/>
+  <path d="M62 116 Q90 108 118 116 L124 174 Q90 184 56 174Z" fill="#fff7ef" stroke="#4a5870" stroke-width="3"/>
+  <!-- arms -->
+  <path d="M57 120 Q46 125 41 148 Q39 158 47 162 Q55 164 60 153 L67 132" fill="#ffd8bd" stroke="#4a5870" stroke-width="3"/>
+  <path d="M123 120 Q134 125 139 148 Q141 158 133 162 Q125 164 120 153 L113 132" fill="#ffd8bd" stroke="#4a5870" stroke-width="3"/>
+  <!-- skirt / legs -->
+  <path d="M57 169 Q90 181 123 169 L116 203 Q90 211 64 203Z" fill="#e8d9f5" stroke="#4a5870" stroke-width="3"/>
+  <path d="M68 199 L84 199 L82 226 Q70 232 58 225 L58 211Z" fill="#ffd8bd" stroke="#4a5870" stroke-width="3"/>
+  <path d="M96 199 L112 199 L122 211 L122 225 Q110 232 98 226Z" fill="#ffd8bd" stroke="#4a5870" stroke-width="3"/>
+  <!-- shoes -->
+  <path d="M57 220 Q70 216 83 223 L83 236 Q66 241 52 234 Q49 228 57 220Z" fill="#8ba3d1" stroke="#4a5870" stroke-width="3"/>
+  <path d="M123 220 Q110 216 97 223 L97 236 Q114 241 128 234 Q131 228 123 220Z" fill="#8ba3d1" stroke="#4a5870" stroke-width="3"/>
+</svg>

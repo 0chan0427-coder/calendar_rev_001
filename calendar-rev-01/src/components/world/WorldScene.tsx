@@ -36,7 +36,7 @@ const furnitureAssets = [
   ['lamp','/furniture/seasonal/lamp.png','스탠드 조명','lamp'],
 ] as const;
 
-export default function WorldScene({ profile, isOwner, onToggleScene, roomItems = [], onMoveItem, onScaleItem, onRemoveItem, onFrontItem }: Props) {
+export default function WorldScene({ profile, isOwner, onToggleScene, roomItems = [], onMoveItem, onScaleItem, onRemoveItem, onFrontItem, decorate = false, onOpenInventory, onToggleDecorate }: Props) {
   const now = new Date();
   const editMode = decorate;
   const [dragPositions, setDragPositions] = useState<Record<string,{x:number;y:number}>>({});

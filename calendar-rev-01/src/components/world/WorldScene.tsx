@@ -20,9 +20,9 @@ interface Props {
 
 const assetRoot = '/world';
 const seasonLabel: Record<string,string> = { spring:'봄', summer:'여름', autumn:'가을', winter:'겨울' };
-const timeLabel: Record<string,string> = { morning:'아침', day:'낮', evening:'저녁', night:'밤', late_night:'심야' };
+const timeLabel: Record<string,string> = { day:'낮', night:'밤' };
 const seasonByMonth = (month:number) => month <= 2 || month === 12 ? 'winter' : month <= 5 ? 'spring' : month <= 8 ? 'summer' : 'autumn';
-const timeByHour = (hour:number) => hour < 7 ? 'late_night' : hour < 11 ? 'morning' : hour < 17 ? 'day' : hour < 20 ? 'evening' : 'night';
+const timeByHour = (hour:number) => hour < 7 || hour >= 20 ? 'night' : 'day';
 
 const furnitureAssets = [
   ['sofa-basic','/furniture/livingroom/sofa.png','소파','sofa'], ['table','/furniture/livingroom/table.png','테이블','table'],
@@ -33,7 +33,7 @@ const furnitureAssets = [
   ['lamp','/furniture/seasonal/lamp.png','스탠드 조명','lamp'],
 ] as const;
 
-export default function WorldScene({ profile, isOwner, onToggleScene, roomItems = [], onMoveItem, onScaleItem, onRemoveItem, onFrontItem, onOpenInventory, decorate = false, onToggleDecorate, catalog = [], companion = null, onOpenCompanion, onToggleCurtain }: Props) {
+export default function WorldScene({ profile, isOwner, onToggleScene, roomItems = [], onMoveItem, onScaleItem, onRemoveItem, onFrontItem, onOpenInventory, decorate = false, onToggleDecorate, catalog = [], companion = null }: Props) {
   const now = new Date();
   const editMode = decorate;
   const [dragPositions, setDragPositions] = useState<Record<string,{x:number;y:number}>>({});
@@ -41,7 +41,6 @@ export default function WorldScene({ profile, isOwner, onToggleScene, roomItems 
   const season = seasonByMonth(now.getMonth() + 1);
   const time = timeByHour(now.getHours());
   const scene: WorldSceneType = profile.scene_type;
-  const background = `${assetRoot}/backgrounds/empty/${season}_${time}.png`;
   const sceneClass = useMemo(() => `${scene} ${season} ${time}`, [scene, season, time]);
 
   const getMeta = (itemId:string) => { const db = catalog.find((x:any)=>x.id===itemId || x.item_id===itemId); const hard = furnitureAssets.find(x=>x[0]===itemId); return { image: db?.image_url || (hard ? `${assetRoot}${hard[1]}` : `${assetRoot}/furniture/livingroom/sofa.png`), label: db?.name || db?.item_name || (hard ? hard[2] : itemId), kind: ((db?.category==='커튼'||db?.subcategory==='커튼') ? 'curtain' : (db?.type || (hard ? hard[3] : 'props'))) }; };
@@ -58,13 +57,6 @@ export default function WorldScene({ profile, isOwner, onToggleScene, roomItems 
   return <section className={`world-scene-real cyworld-room ${sceneClass}`}>
     {scene === 'interior' ? <>
       <div className="cy-room-wall" aria-hidden="true">
-        <div className="cy-room-door"><span className="door-knob"/></div>
-        <div className="cy-room-window">
-          <div className="cy-window-outside"><img src={background} alt="" /></div>
-          <div className="cy-window-frame frame-v"/><div className="cy-window-frame frame-h"/>
-          <div className="cy-window-glass-shine"/>
-          <div className="cy-window-sill"/>
-        </div>
         <div className="cy-room-wall-art"/>
       </div>
       <div className="cy-room-floor" aria-hidden="true"/>
@@ -79,8 +71,8 @@ export default function WorldScene({ profile, isOwner, onToggleScene, roomItems 
       </span>}
     </div>; })}
 
-    <div className="scene-character-wrap" title="내 미니미"><img className="scene-character" src={`${assetRoot}/characters/base/character_base_layered.svg`} alt="씩씩이 미니미" /></div>
-    {scene === 'interior' && companion && <button className="scene-companion" onClick={onOpenCompanion} title={`${companion.name} 동물 관리`}><span className="companion-emoji">🐾</span><span className="companion-nameplate">{companion.name}</span></button>}
+    <div className="scene-character-wrap" title="내 미니미"><img className="scene-character scene-character-body" src={`${assetRoot}/characters/base/character_base_layered.svg`} alt="씩씩이 미니미" /><img className="scene-character scene-character-hair" src={`${assetRoot}/characters/base/hair_default_brown.svg`} alt="" aria-hidden="true" /></div>
+    {scene === 'interior' && companion && <div className="scene-companion" title={companion.name}><span className="companion-emoji">🐾</span><span className="companion-nameplate">{companion.name}</span></div>}
     <div className="scene-info"><b>{seasonLabel[season]} · {timeLabel[time]}</b><span>{scene==='interior'?'나만의 미니룸':'나만의 정원'}</span></div>
 
     {isOwner && <div className="scene-tools">

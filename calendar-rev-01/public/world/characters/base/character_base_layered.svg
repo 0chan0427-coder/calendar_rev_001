@@ -1,35 +1,32 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="180" height="240" viewBox="0 0 180 240">
-  <!-- Original SD/pixel-inspired base body. Hair, clothes and accessories are intentionally omitted for future layers. -->
-  <g shape-rendering="crispEdges">
-    <!-- shadow -->
-    <ellipse cx="90" cy="226" rx="47" ry="8" fill="#6b536f" opacity=".20"/>
-    <!-- legs -->
-    <rect x="63" y="178" width="22" height="35" rx="8" fill="#5c77a7" stroke="#3e547b" stroke-width="3"/>
-    <rect x="95" y="178" width="22" height="35" rx="8" fill="#5c77a7" stroke="#3e547b" stroke-width="3"/>
-    <!-- shoes -->
-    <path d="M58 207h30v14c-5 6-24 7-32 0v-8z" fill="#35425f" stroke="#29354d" stroke-width="3"/>
-    <path d="M92 207h30v14c-5 6-24 7-32 0v-8z" fill="#35425f" stroke="#29354d" stroke-width="3"/>
-    <rect x="61" y="217" width="24" height="4" fill="#7888a9"/>
-    <rect x="95" y="217" width="24" height="4" fill="#7888a9"/>
-    <!-- torso -->
-    <path d="M58 119 Q90 105 122 119 L128 181 Q119 194 90 196 Q61 194 52 181z" fill="#78a9d8" stroke="#405c83" stroke-width="4"/>
-    <!-- arms -->
-    <path d="M58 124 Q47 128 44 143 L48 171 Q52 178 59 173 L65 145z" fill="#f6c6a5" stroke="#b87d67" stroke-width="3"/>
-    <path d="M122 124 Q133 128 136 143 L132 171 Q128 178 121 173 L115 145z" fill="#f6c6a5" stroke="#b87d67" stroke-width="3"/>
-    <!-- neck -->
-    <rect x="79" y="104" width="22" height="22" rx="8" fill="#f6c6a5" stroke="#b87d67" stroke-width="3"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="260" viewBox="0 0 180 260">
+  <defs>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.4"/><feOffset dy="3"/><feComponentTransfer><feFuncA type="linear" slope=".24"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <g filter="url(#shadow)">
+    <!-- neutral base body: deliberately simple so future hair/clothes/accessories can be layered -->
+    <ellipse cx="90" cy="248" rx="48" ry="8" fill="#6d596e" opacity=".25"/>
+    <path d="M61 103 Q90 94 119 103 L125 178 Q90 191 55 178Z" fill="#fff7ef" stroke="#3f536b" stroke-width="3"/>
+    <path d="M56 111 Q44 117 39 145 Q37 156 46 160 Q54 162 59 151 L68 126" fill="#ffd7b8" stroke="#3f536b" stroke-width="3"/>
+    <path d="M124 111 Q136 117 141 145 Q143 156 134 160 Q126 162 121 151 L112 126" fill="#ffd7b8" stroke="#3f536b" stroke-width="3"/>
+    <circle cx="42" cy="151" r="5" fill="#ffb99c"/>
+    <circle cx="138" cy="151" r="5" fill="#ffb99c"/>
+    <path d="M66 174 Q90 183 114 174 L116 211 L99 211 L96 181 L84 181 L81 211 L64 211Z" fill="#ffd7b8" stroke="#3f536b" stroke-width="3"/>
+    <path d="M61 205 Q73 201 83 208 L80 226 Q69 232 56 225 Q53 217 61 205Z" fill="#6f86b8" stroke="#3f536b" stroke-width="3"/>
+    <path d="M119 205 Q107 201 97 208 L100 226 Q111 232 124 225 Q127 217 119 205Z" fill="#6f86b8" stroke="#3f536b" stroke-width="3"/>
+    <path d="M55 221 Q68 218 82 224 L82 238 Q65 242 51 235 Q48 229 55 221Z" fill="#4f607f" stroke="#3f536b" stroke-width="3"/>
+    <path d="M125 221 Q112 218 98 224 L98 238 Q115 242 129 235 Q132 229 125 221Z" fill="#4f607f" stroke="#3f536b" stroke-width="3"/>
     <!-- head -->
-    <path d="M48 43 Q51 18 90 15 Q129 18 132 43 L128 91 Q123 113 90 118 Q57 113 52 91z" fill="#f6c6a5" stroke="#4c5c78" stroke-width="4"/>
+    <path d="M48 55 Q50 17 90 14 Q130 17 132 55 L128 92 Q121 111 90 116 Q59 111 52 92Z" fill="#ffd7b8" stroke="#3f536b" stroke-width="3"/>
     <!-- ears -->
-    <rect x="45" y="57" width="9" height="22" rx="4" fill="#f0b896" stroke="#b87d67" stroke-width="2"/>
-    <rect x="126" y="57" width="9" height="22" rx="4" fill="#f0b896" stroke="#b87d67" stroke-width="2"/>
-    <!-- face -->
-    <rect x="68" y="61" width="9" height="11" rx="3" fill="#3e4150"/>
-    <rect x="103" y="61" width="9" height="11" rx="3" fill="#3e4150"/>
-    <rect x="57" y="79" width="13" height="7" rx="3" fill="#ef8f9b" opacity=".75"/>
-    <rect x="110" y="79" width="13" height="7" rx="3" fill="#ef8f9b" opacity=".75"/>
-    <path d="M83 82h14v4h-4v5h-6v-5h-4z" fill="#8f5961"/>
-    <!-- tiny hair-safe head guide, no actual hair -->
-    <path d="M51 44 Q55 19 90 17 Q125 19 129 44" fill="none" stroke="#59667d" stroke-width="3"/>
+    <circle cx="50" cy="66" r="9" fill="#ffd0ad" stroke="#3f536b" stroke-width="3"/>
+    <circle cx="130" cy="66" r="9" fill="#ffd0ad" stroke="#3f536b" stroke-width="3"/>
+    <!-- simple face, leaving forehead/head silhouette open for hair overlays -->
+    <ellipse cx="73" cy="68" rx="5" ry="7" fill="#33425b"/>
+    <ellipse cx="107" cy="68" rx="5" ry="7" fill="#33425b"/>
+    <circle cx="61" cy="83" r="4" fill="#f3a1a1" opacity=".85"/>
+    <circle cx="119" cy="83" r="4" fill="#f3a1a1" opacity=".85"/>
+    <path d="M84 87 Q90 93 96 87" fill="none" stroke="#9b5e67" stroke-width="3" stroke-linecap="round"/>
+    <!-- neck anchor -->
+    <path d="M80 107 L100 107 L100 119 Q90 124 80 119Z" fill="#ffd7b8" stroke="#3f536b" stroke-width="3"/>
   </g>
 </svg>

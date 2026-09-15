@@ -1,4 +1,4 @@
-export type WorldView = 'home' | 'friends' | 'plaza' | 'shop' | 'ranking' | 'guestbook';
+export type WorldView = 'home' | 'friends' | 'plaza' | 'shop' | 'ranking' | 'guestbook' | 'notifications';
 export type WorldSceneType = 'interior' | 'exterior';
 
 export interface WorldItem {

@@ -76,3 +76,28 @@ export const updateWorldRoomItem = (userId: string, id: string, values: { x?: nu
 
 export const deleteWorldRoomItem = (userId: string, id: string) =>
   supabase.rpc('remove_world_room_item', { p_user_id: userId, p_room_item_id: id });
+
+
+export const createWorldGuestbookSecure = (ownerId: string, content: string, isSecret: boolean) =>
+  supabase.rpc('create_world_guestbook', { p_owner_id: ownerId, p_content: content, p_is_secret: isSecret });
+
+export const listWorldGuestbookSecure = (ownerId: string) =>
+  supabase.rpc('list_world_guestbook', { p_owner_id: ownerId });
+
+export const createWorldGuestbookReply = (guestbookId: string, content: string) =>
+  supabase.rpc('create_world_guestbook_reply', { p_guestbook_id: guestbookId, p_content: content });
+
+export const listWorldTodayAttendance = () =>
+  supabase.rpc('list_world_today_attendance');
+
+export const listWorldNotifications = () =>
+  supabase.rpc('list_world_notifications', { p_limit: 50 });
+
+export const markWorldNotificationsRead = () =>
+  supabase.rpc('mark_world_notifications_read');
+
+export const sendWorldGift = (recipientId: string, itemId: string) =>
+  supabase.rpc('send_world_gift', { p_recipient_id: recipientId, p_item_id: itemId });
+
+export const listWorldRankingHistory = () =>
+  supabase.from('world_weekly_scores').select('*').order('week_start', { ascending: false }).order('weekly_score', { ascending: false }).limit(1000);

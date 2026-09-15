@@ -119,7 +119,7 @@ export default function WorldPage() {
     await reload(session.user.id);
     setMessage(gender==='male'?'남성 미니미로 바꿨어요.':'여성 미니미로 바꿨어요.');
   };
-  const characterSrc=(gender:'male'|'female')=>gender==='female'?'/world/characters/base/minime_female_b.png':'/world/characters/base/minime_male_b.png';
+  const characterSrc=(gender:'male'|'female')=>gender==='female'?'/world/characters/base/minime_female_default.png':'/world/characters/base/minime_male_default.png';
 
   const openGuestbook=async(ownerId=session.user.id)=>{setView('guestbook');await loadGuestbook(ownerId);};
   const postGuest=async()=>{if(!guestText.trim())return;const r=await createWorldGuestbookSecure(guestOwnerId||session.user.id,guestText.trim(),guestSecret);if(r.error){setMessage('방명록을 등록하지 못했어요.');return;}setGuestText('');setGuestSecret(false);await loadGuestbook(guestOwnerId||session.user.id);await reload(session.user.id);};

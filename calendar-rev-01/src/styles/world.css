@@ -99,3 +99,9 @@
 .cyworld-shell.with-items .side-item-panel .decorate-art{height:100px}
 @media(max-width:980px){.cyworld-shell.with-items{grid-template-columns:190px minmax(0,1fr) 290px}.cyworld-shell.with-items .side-item-panel .decorate-grid{grid-template-columns:1fr}}
 @media(max-width:760px){.cyworld-shell.with-items{display:block}.cyworld-shell.with-items .side-item-panel{border-left:0;border-top:1px solid #c1d7e0;max-height:none}.cyworld-shell.with-items .side-item-panel .decorate-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* 026: default avatar visual contract. The profile thumbnail and room avatar always use the same current equipped appearance. */
+.profile-photo.character-layer img{height:170px;width:auto;object-fit:contain}
+.scene-character-wrap{width:170px;height:250px}
+.scene-character{width:170px;height:auto;max-height:250px;object-fit:contain}
+@media(max-width:650px){.profile-photo.character-layer img{height:94px}.scene-character-wrap{width:132px;height:194px}.scene-character{width:132px;max-height:194px}}

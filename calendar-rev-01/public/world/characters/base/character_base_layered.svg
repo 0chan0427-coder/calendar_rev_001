@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="240" viewBox="0 0 180 240">
+  <!-- Original SD/pixel-inspired base body. Hair, clothes and accessories are intentionally omitted for future layers. -->
+  <g shape-rendering="crispEdges">
+    <!-- shadow -->
+    <ellipse cx="90" cy="226" rx="47" ry="8" fill="#6b536f" opacity=".20"/>
+    <!-- legs -->
+    <rect x="63" y="178" width="22" height="35" rx="8" fill="#5c77a7" stroke="#3e547b" stroke-width="3"/>
+    <rect x="95" y="178" width="22" height="35" rx="8" fill="#5c77a7" stroke="#3e547b" stroke-width="3"/>
+    <!-- shoes -->
+    <path d="M58 207h30v14c-5 6-24 7-32 0v-8z" fill="#35425f" stroke="#29354d" stroke-width="3"/>
+    <path d="M92 207h30v14c-5 6-24 7-32 0v-8z" fill="#35425f" stroke="#29354d" stroke-width="3"/>
+    <rect x="61" y="217" width="24" height="4" fill="#7888a9"/>
+    <rect x="95" y="217" width="24" height="4" fill="#7888a9"/>
+    <!-- torso -->
+    <path d="M58 119 Q90 105 122 119 L128 181 Q119 194 90 196 Q61 194 52 181z" fill="#78a9d8" stroke="#405c83" stroke-width="4"/>
+    <!-- arms -->
+    <path d="M58 124 Q47 128 44 143 L48 171 Q52 178 59 173 L65 145z" fill="#f6c6a5" stroke="#b87d67" stroke-width="3"/>
+    <path d="M122 124 Q133 128 136 143 L132 171 Q128 178 121 173 L115 145z" fill="#f6c6a5" stroke="#b87d67" stroke-width="3"/>
+    <!-- neck -->
+    <rect x="79" y="104" width="22" height="22" rx="8" fill="#f6c6a5" stroke="#b87d67" stroke-width="3"/>
+    <!-- head -->
+    <path d="M48 43 Q51 18 90 15 Q129 18 132 43 L128 91 Q123 113 90 118 Q57 113 52 91z" fill="#f6c6a5" stroke="#4c5c78" stroke-width="4"/>
+    <!-- ears -->
+    <rect x="45" y="57" width="9" height="22" rx="4" fill="#f0b896" stroke="#b87d67" stroke-width="2"/>
+    <rect x="126" y="57" width="9" height="22" rx="4" fill="#f0b896" stroke="#b87d67" stroke-width="2"/>
+    <!-- face -->
+    <rect x="68" y="61" width="9" height="11" rx="3" fill="#3e4150"/>
+    <rect x="103" y="61" width="9" height="11" rx="3" fill="#3e4150"/>
+    <rect x="57" y="79" width="13" height="7" rx="3" fill="#ef8f9b" opacity=".75"/>
+    <rect x="110" y="79" width="13" height="7" rx="3" fill="#ef8f9b" opacity=".75"/>
+    <path d="M83 82h14v4h-4v5h-6v-5h-4z" fill="#8f5961"/>
+    <!-- tiny hair-safe head guide, no actual hair -->
+    <path d="M51 44 Q55 19 90 17 Q125 19 129 44" fill="none" stroke="#59667d" stroke-width="3"/>
+  </g>
+</svg>

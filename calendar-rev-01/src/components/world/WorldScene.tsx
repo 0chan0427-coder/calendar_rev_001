@@ -12,6 +12,8 @@ interface Props {
   onRemoveItem?: (id: string) => void;
   onFrontItem?: (id: string) => void;
   onOpenInventory?: () => void;
+  decorate?: boolean;
+  onToggleDecorate?: () => void;
 }
 
 const assetRoot = '/world';
@@ -36,13 +38,13 @@ const furnitureAssets = [
 
 export default function WorldScene({ profile, isOwner, onToggleScene, roomItems = [], onMoveItem, onScaleItem, onRemoveItem, onFrontItem }: Props) {
   const now = new Date();
-  const [editMode, setEditMode] = useState(false);
+  const editMode = decorate;
   const [dragPositions, setDragPositions] = useState<Record<string,{x:number;y:number}>>({});
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const season = seasonByMonth(now.getMonth() + 1);
   const time = timeByHour(now.getHours());
   const scene: WorldSceneType = profile.scene_type;
-  const background = `${assetRoot}/backgrounds/empty/${season}_${time}.png`;
+  const background = `${assetRoot}/backgrounds/empty-gardenwindow/${season}_${time}.png`;
   const sceneClass = useMemo(() => `${scene} ${season} ${time}`, [scene, season, time]);
 
   const getMeta = (itemId:string) => furnitureAssets.find(x => x[0] === itemId) || furnitureAssets[0];
@@ -104,7 +106,7 @@ export default function WorldScene({ profile, isOwner, onToggleScene, roomItems 
       <div className="scene-info"><b>{seasonLabel[season]} · {timeLabel[time]}</b><span>{scene === 'interior' ? '나만의 방' : '나만의 정원'}</span></div>
 
       {isOwner && <div className="scene-tools">
-        <button onClick={() => {setEditMode(v=>!v);setSelectedId(null);}}>{editMode ? '✓ 꾸미기 완료' : '✏️ 방 꾸미기'}</button>
+        <button onClick={() => {setSelectedId(null); onToggleDecorate?.();}}>{editMode ? '✓ 꾸미기 완료' : '✏️ 방 꾸미기'}</button>
         {editMode && <button onClick={onOpenInventory}>📦 아이템 목록</button>}
         <button onClick={onToggleScene}>{scene === 'interior' ? '🌳 정원 보기' : '🏠 집 안 보기'}</button>
       </div>}

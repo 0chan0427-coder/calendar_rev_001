@@ -57,9 +57,7 @@ export default function WorldScene({ profile, isOwner, onToggleScene, roomItems 
 
   return <section className={`world-scene-real cyworld-room ${sceneClass}`}>
     {scene === 'interior' ? <>
-      <div className="cy-room-wall" aria-hidden="true">
-        <div className="cy-room-wall-art"/>
-      </div>
+      <div className="cy-room-wall" aria-hidden="true"/>
       <div className="cy-room-floor" aria-hidden="true"/>
       <div className="cy-room-overlay" aria-hidden="true" />
     </> : <div className="scene-garden-field" aria-label="비어 있는 정원" />}
@@ -72,7 +70,7 @@ export default function WorldScene({ profile, isOwner, onToggleScene, roomItems 
       </span>}
     </div>; })}
 
-    <div className="scene-character-wrap" title="내 미니미"><img className="scene-character scene-character-body" src={`${assetRoot}/characters/base/${avatarGender === 'female' ? 'female_body.svg' : 'male_body.svg'}`} alt="씩씩이 미니미" /><img className="scene-character scene-character-hair" src={`${assetRoot}/characters/base/${avatarGender === 'female' ? 'female_hair_default.svg' : 'male_hair_default.svg'}`} alt="" aria-hidden="true" /></div>
+    <div className="scene-character-wrap" title="내 미니미"><img className="scene-character" src={`${assetRoot}/characters/base/${avatarGender === 'female' ? 'minime_female_b.png' : 'minime_male_b.png'}`} alt="씩씩이 미니미" /></div>
     {scene === 'interior' && companion && <div className="scene-companion" title={companion.name}><span className="companion-emoji">🐾</span><span className="companion-nameplate">{companion.name}</span></div>}
     <div className="scene-info"><b>{seasonLabel[season]} · {timeLabel[time]}</b><span>{scene==='interior'?'나만의 미니룸':'나만의 정원'}</span></div>
 

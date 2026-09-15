@@ -46,7 +46,6 @@
 .cy-window-frame.frame-h{left:0;right:0;top:52%;height:5px;transform:translateY(-50%)}
 .cy-window-glass-shine{position:absolute;inset:8px;background:linear-gradient(115deg,#fff7 0 12%,transparent 12% 100%);pointer-events:none;z-index:4}
 .cy-window-sill{position:absolute;z-index:5;left:-2%;bottom:-11%;width:104%;height:15%;background:linear-gradient(#f8eee2,#d8c0a2);border:3px solid #a98b6b;border-radius:2px;box-shadow:0 4px 0 #8f765e44}
-.cy-room-wall-art{position:absolute;right:8%;top:22%;width:9%;height:18%;border:3px solid #b99069;background:#fffaf3;box-shadow:inset 0 0 0 5px #f3e2cf}
 .cy-room-overlay{position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,#fff4 0,#fff0 18%,#fff0 82%,#fff4 100%);z-index:4}
 .scene-character-wrap{left:52%;bottom:8%;z-index:20;transform:translateX(-50%);animation:characterBob 3s ease-in-out infinite}
 .scene-character{width:138px;height:auto;image-rendering:pixelated;filter:drop-shadow(0 10px 5px #493b4425)}
@@ -83,3 +82,20 @@
 .profile-photo.character-layer{position:relative}.profile-photo.character-layer img{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);height:164px;width:auto}.profile-photo.character-layer img:first-child{position:absolute}.profile-photo.character-layer img:last-child{position:absolute}
 .scene-character-wrap{width:190px;height:274px}.scene-character{width:190px;height:274px}.scene-character-body,.scene-character-hair{position:absolute;inset:0}.scene-character-hair{pointer-events:none}
 @media(max-width:650px){.avatar-gender-box{align-items:flex-start;flex-direction:column}.avatar-gender-buttons{width:100%}.avatar-gender-buttons button{flex:1}.profile-photo.character-layer img{height:92px}.scene-character-wrap{width:155px;height:224px}.scene-character{width:155px;height:224px}}
+
+/* 024: B-reference mini-me visual lock. The reference character is currently a single transparent visual asset; future clothing/hair will be re-layered on this exact base style. */
+.profile-photo.character-layer img{height:170px;width:auto;object-fit:contain}
+.scene-character{width:210px;height:auto;object-fit:contain;image-rendering:auto}
+.scene-character-wrap{width:210px;height:300px}
+@media(max-width:650px){.profile-photo.character-layer img{height:94px}.scene-character{width:160px;height:auto}.scene-character-wrap{width:160px;height:235px}}
+/* 024: guide-style item panel beside the MINIROOM */
+.cyworld-shell.with-items{grid-template-columns:220px minmax(0,1fr) 340px}
+.cyworld-shell.with-items .side-item-panel{min-width:0;max-height:640px;overflow:auto;border-top:0;border-left:1px solid #c1d7e0;background:#f7fbfc;padding:14px 12px}
+.cyworld-shell.with-items .side-item-panel .decorate-head{position:sticky;top:0;background:#f7fbfc;z-index:4;padding-bottom:10px}
+.cyworld-shell.with-items .side-item-panel .avatar-gender-box{display:flex;flex-direction:column;align-items:stretch}
+.cyworld-shell.with-items .side-item-panel .avatar-gender-buttons{width:100%}
+.cyworld-shell.with-items .side-item-panel .avatar-gender-buttons button{flex:1}
+.cyworld-shell.with-items .side-item-panel .decorate-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.cyworld-shell.with-items .side-item-panel .decorate-art{height:100px}
+@media(max-width:980px){.cyworld-shell.with-items{grid-template-columns:190px minmax(0,1fr) 290px}.cyworld-shell.with-items .side-item-panel .decorate-grid{grid-template-columns:1fr}}
+@media(max-width:760px){.cyworld-shell.with-items{display:block}.cyworld-shell.with-items .side-item-panel{border-left:0;border-top:1px solid #c1d7e0;max-height:none}.cyworld-shell.with-items .side-item-panel .decorate-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}

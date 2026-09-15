@@ -65,11 +65,11 @@ export const createWorldGuestbook = (ownerId: string, writerId: string, content:
 export const listWorldRoomItems = (userId: string) =>
   supabase.from('world_room_items').select('*').eq('user_id', userId).order('z_index', { ascending: true });
 
-export const addWorldRoomItem = (userId: string, itemId: string, x = 50, y = 65, scale = 0.42, zIndex = 6) =>
-  supabase.from('world_room_items').insert([{ user_id: userId, item_id: itemId, x, y, scale, z_index: zIndex }]).select('*').single();
+export const addWorldRoomItem = (userId: string, itemId: string, x = 25, y = 38, scale = 0.5, zIndex = 12) =>
+  supabase.rpc('place_world_room_item', { p_user_id: userId, p_item_id: itemId, p_x: x, p_y: y, p_scale: scale, p_z_index: zIndex });
 
 export const updateWorldRoomItem = (userId: string, id: string, values: { x?: number; y?: number; scale?: number; z_index?: number }) =>
   supabase.from('world_room_items').update(values).eq('id', id).eq('user_id', userId);
 
 export const deleteWorldRoomItem = (userId: string, id: string) =>
-  supabase.from('world_room_items').delete().eq('id', id).eq('user_id', userId);
+  supabase.rpc('remove_world_room_item', { p_user_id: userId, p_room_item_id: id });

@@ -14,7 +14,7 @@ export function avatarSvgMarkup(gender:'male'|'female',input:Equipment={},uid='a
  const image=(path:string,extra='')=>`<image href="${safe(resolve(path))}" width="1024" height="1536" ${extra}/>`;
  // Lift near-opaque interiors to full opacity while retaining the antialiased edge ramp.
  const base=image(clean.image,`filter="url(#${id('alpha')})"`);
- const asset=(key:RasterKey,box:[number,number,number,number],extra='')=>{const a=RASTER_ASSETS[key];if(!a)return '';return `<svg data-asset="${key}" x="${box[0]}" y="${box[1]}" width="${box[2]}" height="${box[3]}" viewBox="${a.crop.join(' ')}" preserveAspectRatio="none" overflow="hidden" ${extra}><image href="${safe(resolve(a.image))}" width="${a.width}" height="${a.height}" filter="url(#${id('alpha')})"/></svg>`;};
+ const asset=(key:RasterKey,box:[number,number,number,number],extra='',crop?:[number,number,number,number],imageExtra='')=>{const a=RASTER_ASSETS[key];if(!a)return '';return `<svg data-asset="${key}" x="${box[0]}" y="${box[1]}" width="${box[2]}" height="${box[3]}" viewBox="${(crop||a.crop).join(' ')}" preserveAspectRatio="none" overflow="hidden" ${extra}><image href="${safe(resolve(a.image))}" width="${a.width}" height="${a.height}" filter="url(#${id('alpha')})" ${imageExtra}/></svg>`;};
  const hair=e.hair==='hair-bob-brown'||(e.hair==='hair-chestnut'&&gender==='female')?'hair-bob':'hair-short';
  const hairBox:[number,number,number,number]=hair==='hair-bob'?[165,-5,690,610]:[180,-15,660,450];
  const showHair=e.hair!=='hair-none';
@@ -34,13 +34,26 @@ export function avatarSvgMarkup(gender:'male'|'female',input:Equipment={},uid='a
  const hasShoes=e.shoes!=='shoes-none';
  const top=e.top==='top-pink'?asset('sweater-peach',[148,595,728,435]):e.top==='top-shirt-blue'||e.top==='top-mint'?asset('shirt-blue',[203,595,618,390]):'';
  const bottom=e.bottom==='bottom-trousers'?asset('trousers-charcoal',[307,919,410,486]):e.bottom==='bottom-shorts-cream'?asset('shorts-cream',[315,919,397,215]):'';
- const shoes=e.shoes==='shoes-boots'?asset('boots-brown',[276,1307,472,195]):e.shoes==='shoes-cream'?asset('sneakers-white',[277,1350,470,153]):'';
+ // Fit each boot to its ankle independently. Both sexes share the art but not the foot baseline.
+ const bootY=gender==='male'?1293:1313;
+ const bootPair=(front:boolean)=>{
+  const mask=front?`mask="url(#${id('boot-front')})"`:'';
+  return asset('boots-brown',[268,bootY,219,195],'data-foot="left"',[368,280,481,413],mask)
+   +asset('boots-brown',[537,bootY,219,195],'data-foot="right"',[925,280,481,413],mask);
+ };
+ const shoesBack=e.shoes==='shoes-boots'?bootPair(false):'';
+ const shoesFront=e.shoes==='shoes-boots'?bootPair(true):e.shoes==='shoes-cream'?asset('sneakers-white',[277,1350,470,153]):'';
  const blush=e.makeup==='makeup-blush'||e.makeup==='makeup-rose'?`<g data-layer="makeup" opacity="${e.makeup==='makeup-rose'?0.7:0.4}"><ellipse cx="350" cy="503" rx="63" ry="33" fill="url(#${id('blush')})"/><ellipse cx="674" cy="503" rx="63" ry="33" fill="url(#${id('blush')})"/></g>`:'';
  const glasses=e.glasses==='glasses-round'||e.glasses==='glasses-gold'?`<g data-layer="glasses" fill="none" stroke="${e.glasses==='glasses-gold'?'#ad8860':'#6d4d3b'}" stroke-width="8" stroke-linejoin="round" transform="translate(0 ${eyeY})"><rect x="304" y="340" width="175" height="147" rx="57"/><rect x="547" y="340" width="175" height="147" rx="57"/><path d="M479 391 Q513 373 547 391 M304 385 L275 372 M722 385 L752 372"/><path d="M331 363 L350 354 M574 363 L593 354" stroke="#fff8ec" stroke-opacity=".7" stroke-width="5"/></g>`:'';
  const ribbon=e.accessory==='ribbon-avatar'?`<svg x="675" y="110" width="145" height="110" viewBox="0 0 1536 1024" preserveAspectRatio="xMidYMid meet"><image href="${safe(resolve('/world/wearables/shared/ribbon-red.png'))}" width="1536" height="1024" filter="url(#${id('alpha')})"/></svg>`:'';
  return `<svg class="raster-avatar-svg" viewBox="0 0 1024 1536" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
  <filter id="${id('alpha')}" color-interpolation-filters="sRGB"><feComponentTransfer><feFuncA type="linear" slope="1.045" intercept="-0.025"/></feComponentTransfer></filter>
  <filter id="${id('warm')}" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values=".96 0 0 0 0 0 .86 0 0 .015 0 0 .78 0 .025 0 0 0 1 0"/></filter>
+ <!-- Native-image coordinates: the rear cuff goes behind the shin, while the tongue/laces stay in front. -->
+ <mask id="${id('boot-front')}" maskUnits="userSpaceOnUse" x="0" y="0" width="1774" height="887">
+ <rect width="1774" height="887" fill="white"/>
+ <path d="M545 250H817V300Q735 306 681 329Q627 307 550 315Z M976 250H1238V315Q1167 307 1107 329Q1048 306 976 300Z" fill="black"/>
+ </mask>
  <!-- Equipment-specific occlusion uses the original body art, without repainting its silhouette. -->
  <path id="${id('tank-shape')}" d="M400 605L438 599Q431 676 510 676Q587 676 582 599L620 605L623 690L648 742L650 834L673 930Q512 968 346 932L370 833L369 742L395 688Z"/>
  <path id="${id('shorts-shape')}" d="${underwearCutout}"/>
@@ -56,9 +69,10 @@ export function avatarSvgMarkup(gender:'male'|'female',input:Equipment={},uid='a
  <radialGradient id="${id('blush')}"><stop offset="0" stop-color="#ee8492"/><stop offset="1" stop-color="#ee8492" stop-opacity="0"/></radialGradient>
  ${faceBody}</defs>
  ${showHair?asset(hair,hairBox,'data-layer="hair-back"'):''}
+ <g data-layer="shoes-back">${shoesBack}</g>
  <g mask="url(#${id('body-visible')})"><use href="#${id('body')}" data-layer="base"/>${skin}</g><g data-layer="eyes">${eyes}</g>${blush}
- <!-- Shoes sit under trouser hems; the fitted neck occludes only the rear collar. -->
- <g data-layer="shoes">${shoes}</g><g data-layer="bottom">${bottom}</g><g data-layer="top">${top}</g>${hasTop?`<use href="#${id('body')}" clip-path="url(#${id('neck')})" ${e.skin==='skin-warm'?`filter="url(#${id('warm')})"`:''} data-layer="neck-occlusion"/>`:''}
+ <!-- Current trousers are worn over shoes: back cuff → shin → front shoe → trouser hem. -->
+ <g data-layer="shoes-front">${shoesFront}</g><g data-layer="bottom">${bottom}</g><g data-layer="top">${top}</g>${hasTop?`<use href="#${id('body')}" clip-path="url(#${id('neck')})" ${e.skin==='skin-warm'?`filter="url(#${id('warm')})"`:''} data-layer="neck-occlusion"/>`:''}
 
  ${glasses}${showHair?`<g mask="url(#${id('hair-front')})" data-layer="hair-front">${asset(hair,hairBox)}</g>`:''}${ribbon}</svg>`;
 }

@@ -1,9 +1,13 @@
-export type WearSlot='hair'|'face'|'skin'|'makeup'|'glasses'|'hat'|'top'|'bottom'|'shoes'|'accessory'|'special'|'coat';
+import {COLLECTION_01} from './collection01';
+export type WearSlot='hair'|'face'|'skin'|'makeup'|'glasses'|'hat'|'outer'|'top'|'bottom'|'shoes'|'accessory'|'special'|'coat';
 export type Equipment=Partial<Record<WearSlot,string>>;
 export interface Wearable {id:string;name:string;target:'avatar'|'cat';slot:WearSlot;price:number;mode:'image'|'tint'|'base'|'feature';image?:string;color?:string;region?:[number,number,number,number];z?:number;renderKey?:string;hidden?:boolean;}
-export const WEAR_SLOTS:[WearSlot,string][]=[['hair','헤어'],['top','상의'],['bottom','하의'],['shoes','신발'],['face','눈'],['skin','피부'],['makeup','메이크업'],['glasses','안경'],['accessory','장식']];
+export const WEAR_SLOTS:[WearSlot,string][]=[['hair','헤어'],['hat','모자'],['top','상의'],['outer','겉옷'],['bottom','하의'],['shoes','신발'],['face','눈'],['skin','피부'],['makeup','메이크업'],['glasses','안경'],['accessory','장식']];
 const art='/world/avatar-v3';
 export const WEARABLES:Wearable[]=[
+ ...COLLECTION_01.map((item):Wearable=>({id:item.id,name:item.name,target:'avatar',slot:item.slot,price:item.price,mode:'image',image:item.image})),
+ {id:'outer-none',name:'겉옷 해제',target:'avatar',slot:'outer',price:0,mode:'base'},
+ {id:'hat-none',name:'모자 해제',target:'avatar',slot:'hat',price:0,mode:'base'},
  {id:'hair-chestnut',name:'기본 헤어',target:'avatar',slot:'hair',price:0,mode:'image',image:`${art}/hair-short.png`,renderKey:'hair-short'},
  {id:'hair-none',name:'헤어 해제 · 기본 몸체',target:'avatar',slot:'hair',price:0,mode:'base'},
  {id:'hair-short-chestnut',name:'밤색 숏컷',target:'avatar',slot:'hair',price:0,mode:'image',image:`${art}/hair-short.png`,renderKey:'hair-short'},
@@ -39,7 +43,7 @@ export const WEARABLES:Wearable[]=[
  {id:'cat-gray',name:'회색 고양이',target:'cat',slot:'coat',price:1500,mode:'tint',color:'#9b9ba8'},
  {id:'ribbon-cat',name:'고양이 빨간 리본',target:'cat',slot:'accessory',price:500,mode:'image',image:'/world/wearables/shared/ribbon-red.png',region:[30,59,40,18],z:35},
 ];
-export const AVATAR_DEFAULTS:Equipment={hair:'hair-chestnut',top:'top-base',bottom:'bottom-base',shoes:'shoes-none',face:'eyes-default',skin:'skin-default',makeup:'makeup-blush',glasses:'glasses-none'};
+export const AVATAR_DEFAULTS:Equipment={hair:'hair-chestnut',hat:'hat-none',outer:'outer-none',top:'top-base',bottom:'bottom-base',shoes:'shoes-none',face:'eyes-default',skin:'skin-default',makeup:'makeup-blush',glasses:'glasses-none'};
 export function normalizeAvatarEquipment(equipment:Equipment={}):Equipment{return {...AVATAR_DEFAULTS,...Object.fromEntries(Object.entries(equipment).filter(([slot,id])=>WEARABLES.some(i=>i.target==='avatar'&&i.slot===slot&&i.id===id)))};}
 export const selectedWearables=(equipment:Equipment={},target:'avatar'|'cat')=>{const merged=target==='avatar'?normalizeAvatarEquipment(equipment):equipment;return WEARABLES.filter(i=>i.target===target&&merged[i.slot]===i.id);};
 export const isCat=(id:string)=>/cat|고양/i.test(id);

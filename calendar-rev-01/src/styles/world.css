@@ -270,3 +270,6 @@
 
 /* 036: one SVG group moves all equipped layers; thumbnails stay still. */
 .wardrobe-motion{width:100%;margin-bottom:8px;font-size:12px}.wardrobe-motion[aria-pressed="true"]{background:#edf4ed;border-color:#8da98e}
+
+/* 037: separate outerwear and headwear, with the fixed preview retained. */
+.wardrobe-count{font-size:11px;color:#8b8176;margin:0 0 8px}.wardrobe-tabs button{white-space:nowrap}

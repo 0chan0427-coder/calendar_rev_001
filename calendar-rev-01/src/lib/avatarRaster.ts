@@ -26,6 +26,11 @@ export function avatarSvgMarkup(gender:'male'|'female',input:Equipment={},uid='a
  // Masks hide baked-in basics only where replacement clothing is equipped.
  const hasTop=e.top!=='top-base';
  const hasBottom=e.bottom!=='bottom-base';
+ // The baked underwear includes its dark outer stroke and soft edge pixels.
+ // Exclude the whole source garment, not just its approximate interior.
+ const underwearCutout=gender==='female'
+  ?'M345 912Q512 940 675 912L702 1080Q512 1115 315 1080Z'
+  :'M345 912Q512 940 675 912L702 1078Q512 1110 315 1078Z';
  const hasShoes=e.shoes!=='shoes-none';
  const top=e.top==='top-pink'?asset('sweater-peach',[148,595,728,435]):e.top==='top-shirt-blue'||e.top==='top-mint'?asset('shirt-blue',[203,595,618,390]):'';
  const bottom=e.bottom==='bottom-trousers'?asset('trousers-charcoal',[307,919,410,486]):e.bottom==='bottom-shorts-cream'?asset('shorts-cream',[315,919,397,215]):'';
@@ -38,10 +43,10 @@ export function avatarSvgMarkup(gender:'male'|'female',input:Equipment={},uid='a
  <filter id="${id('warm')}" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values=".96 0 0 0 0 0 .86 0 0 .015 0 0 .78 0 .025 0 0 0 1 0"/></filter>
  <!-- Equipment-specific occlusion uses the original body art, without repainting its silhouette. -->
  <path id="${id('tank-shape')}" d="M400 605L438 599Q431 676 510 676Q587 676 582 599L620 605L623 690L648 742L650 834L673 930Q512 968 346 932L370 833L369 742L395 688Z"/>
- <path id="${id('shorts-shape')}" d="M350 918Q512 946 669 918L690 1067Q607 1090 516 1079L506 1034L498 1079Q405 1090 328 1067Z"/>
+ <path id="${id('shorts-shape')}" d="${underwearCutout}"/>
  <mask id="${id('body-visible')}" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1536"><rect width="1024" height="1536" fill="white"/>
  ${hasTop?`<use href="#${id('tank-shape')}" fill="black"/>`:''}
- ${hasBottom?`<use href="#${id('shorts-shape')}" fill="black"/>`:''}
+ ${hasBottom?`<use href="#${id('shorts-shape')}" fill="black" stroke="black" stroke-width="12" stroke-linejoin="round" data-occlusion="underwear"/>`:''}
  ${hasShoes?'<path d="M285 1365H481V1510H285Z M540 1365H735V1510H540Z" fill="black"/>':''}
  </mask>
  <clipPath id="${id('neck')}"><path d="${e.top==='top-pink'?'M463 558H553V589Q555 602 583 608L582 619Q572 642 511 642Q450 642 439 619L438 608Q461 602 463 589Z':'M463 558H553V589Q555 602 583 608L583 631Q570 658 511 658Q453 658 438 631L438 608Q461 602 463 589Z'}"/></clipPath>

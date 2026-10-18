@@ -1,4 +1,4 @@
-import {HEADWEAR_FITS,fittedGarment,headwearDefs,fittedHeadwear} from './avatarFitting';
+import {GARMENT_FITS,HEADWEAR_FITS,fittedGarment,headwearDefs,fittedHeadwear} from './avatarFitting';
 import {collectionItem} from '../data/collection01';
 import {collectionAsset,collectionHair,collectionShoes,collectionCuffMask,hairLayerMasks} from './avatarCollection';
 import type { Equipment } from '../data/wardrobe';
@@ -20,6 +20,8 @@ export function avatarSvgMarkup(gender:'male'|'female',input:Equipment={},uid='a
  const stateClass=(state:'open'|'closed')=>blinking?`avatar-eye-${state}`:'';
  const c={hair:collectionItem(e.hair),hat:collectionItem(e.hat),top:collectionItem(e.top),outer:collectionItem(e.outer),bottom:collectionItem(e.bottom),shoes:collectionItem(e.shoes),accessory:collectionItem(e.accessory)};
  const newAsset=(item:typeof c.top)=>collectionAsset(item,resolve,id('alpha'));
+ const innerTopClip=c.outer?GARMENT_FITS[c.outer.id]?.innerTopClip:undefined;
+ const innerTopAttr=innerTopClip?`clip-path="url(#${id('inner-top')})"`:'';
  const hairArt=(layer:'front'|'back')=>c.hair?collectionHair(c.hair,resolve,id('alpha'),id('hair-'+layer),layer):asset(hair,hairBox,'',undefined,`mask="url(#${id('hair-'+layer)})"`);
  
  const hatClip=c.hat&&HEADWEAR_FITS[c.hat.id]?.headPath?`clip-path="url(#${id('head-visible')})"`:'';
@@ -84,7 +86,7 @@ export function avatarSvgMarkup(gender:'male'|'female',input:Equipment={},uid='a
  const capeSleeves=cape?(c.top?fittedGarment(c.top,uid+'-cape-sleeves',resolve,id('alpha'),'front',true,true):`<g clip-path="url(#${id('sleeves-only')})">${top}</g>`):'';
  const hat=fittedHeadwear(c.hat,uid,resolve,id('alpha'),'front');
  const hatBack=fittedHeadwear(c.hat,uid,resolve,id('alpha'),'back');
- const garmentBack=fittedGarment(c.top,uid,resolve,id('alpha'),'back',!c.outer||c.outer.id==='outer-wizard')+fittedGarment(c.outer,uid,resolve,id('alpha'),'back');
+ const garmentBack=`<g data-layer="inner-top-back" ${innerTopAttr}>${fittedGarment(c.top,uid,resolve,id('alpha'),'back',!c.outer||c.outer.id==='outer-wizard')}</g>`+fittedGarment(c.outer,uid,resolve,id('alpha'),'back');
  const scarf=c.accessory?.id==='acc-scarf';
  const accessoryBack=scarf?newAsset(c.accessory):'';
  const accessory=scarf?`<g mask="url(#${id('scarf-front')})">${newAsset(c.accessory)}</g>`:newAsset(c.accessory);
@@ -96,7 +98,7 @@ export function avatarSvgMarkup(gender:'male'|'female',input:Equipment={},uid='a
  <mask id="${id('scarf-front')}" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1536"><rect width="1024" height="1536" fill="white"/><path d="M463 558H553V589Q555 602 583 608L582 615Q571 632 511 632Q451 632 439 615L438 608Q461 602 463 589Z" fill="black"/></mask>
  <clipPath id="${id('bare-arms')}"><path d="M400 600Q335 610 290 710L140 980V1110H330L370 900L400 695Z M624 600Q689 610 734 710L884 980V1110H694L654 900L624 695Z"/></clipPath>
  <clipPath id="${id('sleeves-only')}"><path d="M0 600H400V1110H0Z M624 600H1024V1110H624Z"/></clipPath>
- <clipPath id="${id('inner-top')}"><path d="M390 560H634L690 1050H334Z"/></clipPath>
+ ${innerTopClip?`<clipPath id="${id('inner-top')}"><path d="${innerTopClip}"/></clipPath>`:''}
  <style>
  @keyframes minime-eye-open{0%,45%,48%,100%{visibility:visible}46%,47%{visibility:hidden}}
  @keyframes minime-eye-closed{0%,45%,48%,100%{visibility:hidden}46%,47%{visibility:visible}}
@@ -137,7 +139,7 @@ export function avatarSvgMarkup(gender:'male'|'female',input:Equipment={},uid='a
  <g data-layer="shoes-back">${shoesBack}</g>
  <g ${hatClip}><g mask="url(#${id('body-visible')})"><use href="#${id('body')}" data-layer="base"/>${skin}</g></g>${blush}<g data-layer="eyes">${eyes}</g>
  <!-- Current trousers are worn over shoes: back cuff → shin → front shoe → trouser hem. -->
- <g data-layer="shoes-front">${shoesFront}</g><g data-layer="bottom">${bottom}</g><g data-layer="top" ${c.outer&&c.outer.id!=='outer-wizard'&&!c.top?`clip-path="url(#${id('inner-top')})"`:''}>${top}</g>${!c.top&&hasTop?`<use href="#${id('body')}" clip-path="url(#${id('neck')})" ${e.skin==='skin-warm'?`filter="url(#${id('warm')})"`:''} data-layer="legacy-neck-occlusion"/>`:''}<g data-layer="outer">${outer}</g>${cape?`<use href="#${id('body')}" clip-path="url(#${id('bare-arms')})" ${e.skin==='skin-warm'?`filter="url(#${id('warm')})"`:''} data-layer="arms-over-cape"/>${capeSleeves}`:''}
+ <g data-layer="shoes-front">${shoesFront}</g><g data-layer="bottom">${bottom}</g><g data-layer="top" ${innerTopAttr}>${top}</g>${!c.top&&hasTop?`<use href="#${id('body')}" clip-path="url(#${id('neck')})" ${e.skin==='skin-warm'?`filter="url(#${id('warm')})"`:''} data-layer="legacy-neck-occlusion"/>`:''}<g data-layer="outer">${outer}</g>${cape?`<use href="#${id('body')}" clip-path="url(#${id('bare-arms')})" ${e.skin==='skin-warm'?`filter="url(#${id('warm')})"`:''} data-layer="arms-over-cape"/>${capeSleeves}`:''}
 
  ${glasses}<g data-layer="accessory">${accessory}</g>${showHair?`<g data-layer="hair-front" ${hatClip}>${hairArt('front')}</g>`:''}${hat}${ribbon}</g></svg>`;
 }

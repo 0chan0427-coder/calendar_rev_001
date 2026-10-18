@@ -25,6 +25,10 @@ for(const item of items){
  if(item.slot==='hair'&&!item.hairLayers?.backPath)fail(item.id,'register the original-image front/back hair split');
  if(item.slot==='top'&&!registered(garment,item.id))fail(item.id,'register neck, bodice, shoulder and cuff fitting before adding a top');
  if(item.slot==='outer'&&item.id!=='outer-wizard'&&!registered(garment,item.id))fail(item.id,'register the outer garment fitting before adding it');
+ if(item.slot==='outer'&&item.id!=='outer-wizard'){
+  const key="'"+item.id+"':";const entry=garment.slice(garment.indexOf(key)).split('},')[0];
+  if(!entry.includes('innerTopClip:'))fail(item.id,'register the outer shoulder envelope for inner clothing');
+ }
  if(item.slot==='hat'&&!registered(headwear||'',item.id))fail(item.id,'register head opening / front-back headwear fitting');
  if(item.slot==='shoes'&&(!item.feet||item.feet.length!==2||!item.feet.every(inSource)))fail(item.id,'register both feet in original-image coordinates');
  dirs.add(dirname(file));

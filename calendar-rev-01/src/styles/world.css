@@ -280,3 +280,65 @@
 .raster-avatar .raster-avatar-svg image {
   image-rendering: auto;
 }
+
+/* 044: one collection for wardrobe ownership, furniture stock and companions. */
+.cyworld-shell.with-items{grid-template-columns:minmax(0,1fr) 340px}
+.cyworld-shell.with-items>.cy-profile{display:none}
+.cyworld-shell.with-items .inventory-panel{box-sizing:border-box;max-height:820px;padding:18px 14px;background:#f8f7f2;border-color:#dedbd0;color:#4e544b}
+.inventory-panel *{box-sizing:border-box}
+.inventory-panel button,.inventory-panel select,.inventory-panel input{font:inherit}
+.inventory-panel button{border:1px solid #d5dbd0;background:#fff;color:#4e6659;border-radius:8px;padding:8px 10px;min-height:40px;cursor:pointer}
+.inventory-panel button:disabled{opacity:.55;cursor:default}
+.inventory-heading{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;padding-bottom:14px}
+.inventory-heading small{font-size:10px;letter-spacing:1.6px;color:#839080}
+.inventory-heading h3{margin:2px 0;font-size:23px;color:#405b4a}
+.inventory-heading p{font-size:12px;color:#84887d;margin:0}
+.inventory-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-bottom:14px}
+.inventory-tabs button{display:flex;align-items:center;justify-content:space-between;font-size:12px!important;font-weight:700!important}
+.inventory-tabs button[aria-pressed=true],.inventory-gender button[aria-pressed=true]{background:#527361;border-color:#527361;color:#fff}
+.inventory-tabs small{border-radius:99px;background:#edf0e8;color:#66775e;padding:0 6px;font-size:10px}
+.inventory-search{display:flex;flex-direction:column;gap:4px;font-size:11px;color:#79816f}
+.inventory-search input,.inventory-filters select,.wardrobe-filters>input{width:100%;min-width:0;min-height:40px;border:1px solid #d8ddd1;background:#fff;border-radius:8px;padding:8px;color:#475846}
+.inventory-filters{display:flex;align-items:center;gap:6px;margin:10px 0}
+.inventory-filters select{flex:1;font-size:12px}
+.inventory-caption{font-size:11px;color:#7d8476;line-height:1.7;margin:10px 0}
+.inventory-avatar-tools .wardrobe-open{margin:0 0 8px;background:#e8f0e6;width:100%;font-size:12px}
+.inventory-gender{display:flex;gap:5px}
+.inventory-gender button{flex:1;min-height:34px;font-size:12px}
+.inventory-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.inventory-grid article{min-width:0;display:flex;flex-direction:column;align-items:stretch;gap:6px;padding:10px;border:1px solid #e0e3d9;border-radius:12px;background:#fff;overflow:hidden}
+.inventory-grid article.in-use{border-color:#95b29b;background:#f5f9f1}
+.inventory-grid article>b{font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+.inventory-grid article>small{font-size:10px;color:#7d8375;line-height:1.6}
+.inventory-grid article>button{font-size:11px;margin-top:auto}
+.inventory-grid .wearable-thumbnail{align-self:center;width:100%;max-width:110px;height:95px}
+.inventory-badge{align-self:flex-start;background:#edf1e8;color:#617854;font-size:10px;border-radius:5px;padding:2px 6px}
+.inventory-art{height:90px;display:grid;place-items:center;background:#f7f7f1;border-radius:8px}
+.inventory-art img{width:100%;height:100%;max-height:90px;object-fit:contain}
+.inventory-art span{font-size:42px}
+.inventory-placement{display:flex;flex-direction:column;gap:4px;border-top:1px solid #eceee6;padding-top:6px}
+.inventory-placement button{font-size:10px;padding:6px 3px;min-height:34px}
+.inventory-placement button[aria-pressed=true]{background:#527361;color:white}
+.inventory-pet{height:100px;display:grid;place-items:center}
+.inventory-pet .companion-art{height:95px;width:100%}
+.inventory-wide{width:100%;margin:10px 0;font-size:12px!important}
+.inventory-empty{padding:22px 8px;text-align:center;font-size:12px;color:#818978;line-height:1.8}
+.inventory-empty button{font-size:12px;margin:4px}
+.inventory-error{padding:10px;margin:10px 0;border:1px solid #e7b8a5;background:#fff0e9;border-radius:8px;font-size:12px;line-height:1.7}
+.inventory-error button{display:block;font-size:12px;margin-top:6px}
+.inventory-save{flex:1;min-width:0;font-size:11px;color:#778672;text-align:right}
+.wardrobe-filters{display:flex;align-items:center;gap:10px;font-size:12px;margin:10px 0}
+.wardrobe-filters>input{flex:1;width:130px}.wardrobe-filters label{white-space:nowrap}
+.furniture-controls{width:420px;max-width:calc(100% - 24px);display:block;overflow:visible;white-space:normal;padding:10px;bottom:12px!important;top:auto!important;z-index:950;border:1px solid #bdcbbd;background:#fffffff5;border-radius:12px}
+.furniture-control-title{display:flex;align-items:center;gap:8px;font-size:12px;margin-bottom:8px}
+.furniture-control-title b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:45%}
+.furniture-control-title span{font-size:10px;color:#7a8976;margin-left:auto}
+.furniture-control-title button{min-width:32px!important;min-height:32px!important;padding:2px!important}
+.furniture-control-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+.furniture-control-actions button{min-width:0!important;min-height:42px!important;font-size:11px!important;padding:6px 3px!important}
+.furniture-control-actions .remove-item-btn{grid-column:1/-1}
+.scene-furniture.editing:focus-visible{outline:3px solid #4c8565!important;outline-offset:3px}
+@media(max-width:980px){.cyworld-shell.with-items{grid-template-columns:minmax(0,1fr) 300px}.cyworld-shell.with-items .inventory-panel{max-height:820px}}
+@media(max-width:760px){.cyworld-shell.with-items{display:block}.cyworld-shell.with-items .inventory-panel{max-height:none;padding:18px 14px}.inventory-tabs{grid-template-columns:repeat(4,minmax(0,1fr))}.inventory-tabs button{flex-direction:column;gap:3px;padding:7px 3px}.inventory-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.inventory-grid .wearable-thumbnail{height:110px}.furniture-controls{padding:8px}.inventory-panel button{min-height:44px}.furniture-control-actions button{min-height:44px!important}.wardrobe-filters{flex-wrap:wrap}}
+/* Keep adjustment controls below the room so they never cover the selected furniture. */
+.furniture-controls{position:relative;left:auto;top:auto!important;bottom:auto!important;transform:none;width:calc(100% - 24px);max-width:none;margin:12px auto;z-index:auto}

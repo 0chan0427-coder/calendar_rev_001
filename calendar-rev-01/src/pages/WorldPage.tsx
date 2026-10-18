@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import { getSession } from '../services/auth';
 import { supabase } from '../lib/supabase';
 import { WORLD_EARNING_ROWS, WORLD_ITEMS, WORLD_RANKING_BONUS, WORLD_WELCOME_POINTS } from '../constants/world';
@@ -14,11 +14,14 @@ import WorldScene from '../components/world/WorldScene';
 import WorldNavigation from '../components/world/WorldNavigation';
 import CharacterAvatar from '../components/world/CharacterAvatar';
 import '../styles/world.css';
+import InventoryPanel from '../components/world/InventoryPanel';
 import WardrobePanel from '../components/world/WardrobePanel';
 import CompanionAvatar from '../components/world/CompanionAvatar';
 import { isCat } from '../data/wardrobe';
-import type { Equipment } from '../data/wardrobe';
-import { listWorldAppearance } from '../services/world';
+import type { Equipment, WearSlot } from '../data/wardrobe';
+import { listWorldAppearance, listWorldWardrobe } from '../services/world';
+
+const normalizeCatalog=(rows:any[]):WorldItem[]=>rows.map(row=>{const id=row.item_id||row.id;const base=WORLD_ITEMS.find(i=>i.id===id);return {...base,...row,id,name:row.item_name||row.name||base?.name||id,type:row.item_type||row.type||base?.type||'props',image:row.image_url||row.image||base?.image||'✨',description:row.description||base?.description||'',price:Number(row.price||0)};});
 
 const weekStart = () => { const d = new Date(); const day = d.getDay(); const diff = day === 0 ? -6 : 1 - day; d.setDate(d.getDate()+diff); return d.toISOString().slice(0,10); };
 const lastWeekStart = () => { const d = new Date(weekStart()); d.setDate(d.getDate()-7); return d.toISOString().slice(0,10); };
@@ -39,6 +42,12 @@ export default function WorldPage() {
   const [winner,setWinner]=useState<WorldRankingRow|null>(null);
   const [currentWinner,setCurrentWinner]=useState<WorldRankingRow|null>(null);
   const [history,setHistory]=useState<any[]>([]);
+  const [ownedWearables,setOwnedWearables]=useState<string[]>([]);
+  const [inventoryError,setInventoryError]=useState('');
+  const [roomBusy,setRoomBusy]=useState(false);
+  const roomLock=useRef(false);
+  const [roomSaveState,setRoomSaveState]=useState('idle');
+  const [selectedRoomItemId,setSelectedRoomItemId]=useState<string|null>(null);
   const [inventory,setInventory]=useState<any[]>([]);
   const [guestbook,setGuestbook]=useState<Guest[]>([]);
   const [guestOwnerId,setGuestOwnerId]=useState('');
@@ -72,7 +81,7 @@ export default function WorldPage() {
   const [equipment,setEquipment]=useState<Record<string,Equipment>>({});
   const [friendEquipment,setFriendEquipment]=useState<Record<string,Equipment>>({});
   const [friendRoomItems,setFriendRoomItems]=useState<WorldRoomItem[]>([]);
-  const [wardrobeTarget,setWardrobeTarget]=useState<{id:string;itemId?:string}|null>(null);
+  const [wardrobeTarget,setWardrobeTarget]=useState<{id:string;itemId?:string;slot?:WearSlot;selectedItem?:string}|null>(null);
   const unpackAppearance=(rows:any[])=>rows.reduce((acc:Record<string,Equipment>,r:any)=>{(acc[r.target_id]??={})[r.slot as keyof Equipment]=r.item_id;return acc;},{});
   const [avatarGender,setAvatarGender]=useState<'male'|'female'>('male');
 
@@ -81,7 +90,10 @@ export default function WorldPage() {
     const bal=await getWorldPoints(userId); if(bal.data!==null)setPoints(bal.data);
     const appearance=await listWorldAppearance(userId); if(appearance.data)setEquipment(unpackAppearance(appearance.data));
     const pets=await listWorldCompanions(userId); if(pets.data)setCompanions(pets.data as WorldCompanion[]);
-    const inv=await listWorldInventory(userId); if(inv.data)setInventory(inv.data);
+    const [inv,wardrobe]=await Promise.all([listWorldInventory(userId),listWorldWardrobe(userId)]);
+    if(inv.data)setInventory(inv.data);
+    if(wardrobe.data)setOwnedWearables(wardrobe.data.map(i=>i.item_id));
+    setInventoryError(inv.error||wardrobe.error?'아이템 목록 일부를 불러오지 못했어요. 다시 불러와주세요.':'');
     const r=await listWorldRanking(weekStart()); if(r.data){const rows=r.data.map((x:any,i)=>({...x,rank:i+1}));setRanking(rows);setCurrentWinner(rows[0]||null);}
     const w=await listWorldRanking(lastWeekStart()); if(w.data?.[0])setWinner({...w.data[0],rank:1});
     const h=await listWorldRankingHistory(); if(h.data)setHistory(h.data);
@@ -89,7 +101,7 @@ export default function WorldPage() {
     const ri=await listWorldRoomItems(userId); if(ri.data)setRoomItems(ri.data as WorldRoomItem[]);
     const a=await listWorldTodayAttendance(); if(a.data)setAttendance(Array.isArray(a.data)?a.data:[]);
     const n=await listWorldNotifications(); if(n.data)setNotices(Array.isArray(n.data)?n.data:[]);
-    const c=await listWorldItemCatalog(); if(c.data){const normalized=(c.data as any[]).map(row=>{const base=WORLD_ITEMS.find(i=>i.id===row.item_id);return {...row,id:row.item_id,name:row.item_name,type:row.item_type,image:row.image_url||base?.image||'✨',description:row.description||base?.description||'',price:Number(row.price)};});setCatalog(normalized as WorldItem[]);}
+    const c=await listWorldItemCatalog(); if(c.data)setCatalog(normalizeCatalog(c.data));
   };
 
   useEffect(()=>{ getSession().then(async({data:{session}})=>{ if(!session?.user){window.location.href='/';return;} setSession(session); try { await ensureWorldProfile(session.user.id); await syncWorldProfiles(); await supabase.rpc('ensure_world_room_defaults',{p_user_id:session.user.id}); await awardWorldWeeklyBonuses(lastWeekStart()).catch(() => {}); await recordWorldActivity(session.user.id,'attendance'); await reload(session.user.id); const adm=await checkWorldAdmin(); setIsAdmin(Boolean(adm.data)); if(adm.data){const ai=await listWorldItemCatalogAdmin();if(ai.data)setAdminItems(ai.data);} } catch (error) { console.error('World initialization failed:', error); setMessage('씩씩이 월드를 불러오지 못했어요. Supabase 설정을 확인해주세요.'); } finally { setLoading(false); } }); },[]);
@@ -97,7 +109,6 @@ export default function WorldPage() {
 
   const myProfile=profile;
   const otherProfiles=useMemo(()=>profiles.filter(p=>p.user_id!==session?.user?.id),[profiles,session]);
-  const placedCount=(itemId:string)=>roomItems.filter(i=>i.item_id===itemId).length;
   const inventoryCount=(itemId:string)=>Number(inventory.find((x:any)=>x.item_id===itemId)?.quantity ?? 0);
   const unread=notices.filter(n=>!n.is_read).length;
   const activeCompanion=companions.find(c=>c.is_active)||null;
@@ -106,20 +117,76 @@ export default function WorldPage() {
   const visibleShopItems=shopItems.filter((i:any)=>shopCategory==='전체'||(i.category||'기타')===shopCategory);
   const resetAdminForm=()=>{setAdminEditing(false);setAdminFile(null);setAdminForm({item_id:'',item_name:'',item_type:'props',price:1000,category:'소품',subcategory:'',description:'',image_url:null,placement_type:'none',min_scale:0.5,max_scale:1.5,default_z_index:12,animation_type:'none',is_active:true,sort_order:0});};
   const editAdminItem=(item:any)=>{setAdminEditing(true);setAdminFile(null);setAdminForm({...item});setView('admin');};
-  const saveAdminItem=async()=>{if(!adminForm.item_id||!adminForm.item_name){setMessage('아이템 ID와 이름을 입력해주세요.');return;} if(Number(adminForm.price)%100!==0||Number(adminForm.price)<0){setMessage('가격은 100P 단위로 입력해주세요.');return;} setAdminSaving(true); try { let imageUrl=adminForm.image_url||null; if(adminFile){const up=await uploadWorldItemImage(adminFile,adminForm.item_id);if(up.error){setMessage('이미지 업로드에 실패했어요.');return;}imageUrl=up.data;} const r=await adminUpsertWorldItem({...adminForm,price:Number(adminForm.price),min_scale:Number(adminForm.min_scale),max_scale:Number(adminForm.max_scale),default_z_index:Number(adminForm.default_z_index),sort_order:Number(adminForm.sort_order),image_url:imageUrl}); if(r.error){setMessage(r.error.message||'아이템 저장에 실패했어요.');return;} const ai=await listWorldItemCatalogAdmin();if(ai.data)setAdminItems(ai.data);const c=await listWorldItemCatalog();if(c.data)setCatalog(c.data as WorldItem[]);setMessage('아이템을 저장했어요.');resetAdminForm(); } finally {setAdminSaving(false);} };
+  const saveAdminItem=async()=>{if(!adminForm.item_id||!adminForm.item_name){setMessage('아이템 ID와 이름을 입력해주세요.');return;} if(Number(adminForm.price)%100!==0||Number(adminForm.price)<0){setMessage('가격은 100P 단위로 입력해주세요.');return;} setAdminSaving(true); try { let imageUrl=adminForm.image_url||null; if(adminFile){const up=await uploadWorldItemImage(adminFile,adminForm.item_id);if(up.error){setMessage('이미지 업로드에 실패했어요.');return;}imageUrl=up.data;} const r=await adminUpsertWorldItem({...adminForm,price:Number(adminForm.price),min_scale:Number(adminForm.min_scale),max_scale:Number(adminForm.max_scale),default_z_index:Number(adminForm.default_z_index),sort_order:Number(adminForm.sort_order),image_url:imageUrl}); if(r.error){setMessage(r.error.message||'아이템 저장에 실패했어요.');return;} const ai=await listWorldItemCatalogAdmin();if(ai.data)setAdminItems(ai.data);const c=await listWorldItemCatalog();if(c.data)setCatalog(normalizeCatalog(c.data));setMessage('아이템을 저장했어요.');resetAdminForm(); } finally {setAdminSaving(false);} };
   const removeAdminItem=async(item:any)=>{if(!window.confirm(`'${item.item_name}' 아이템을 삭제할까요?`))return;const r=await adminDeleteWorldItem(item.item_id);if(r.error){setMessage('아이템 삭제에 실패했어요.');return;}setAdminItems(items=>items.filter(x=>x.item_id!==item.item_id));setCatalog(items=>items.filter(x=>x.id!==item.item_id));setMessage('아이템을 삭제했어요.');};
 
-  const addFurniture=async(item:any)=>{ if(item.placement_type && item.placement_type!=='room' && item.placement_type!=='garden'){setMessage('이 아이템은 현재 방에 배치할 수 없어요.');return;} const available=inventoryCount(item.id); if(available<=0){setMessage(`현재 ${item.name}을(를) 더 배치할 수 없어요.`);return;} if(item.placement_type==='garden'&&myProfile?.scene_type!=='exterior'){setMessage('정원 보기로 전환한 뒤 배치해주세요.');return;} if(item.placement_type==='room'&&myProfile?.scene_type==='exterior'){setMessage('집 안 보기로 전환한 뒤 배치해주세요.');return;} const isCurtain=(item.category==='커튼'||item.subcategory==='커튼'); if(isCurtain){const existingCurtain=roomItems.find(i=>{const m=shopItems.find((x:any)=>x.id===i.item_id);return m&&(m.category==='커튼'||m.subcategory==='커튼');}); if(existingCurtain){setMessage('창문에는 커튼을 한 종류만 걸 수 있어요. 기존 커튼을 먼저 수거해주세요.');return;}} const x=isCurtain?50:24+Math.random()*10; const y=isCurtain?24:34+Math.random()*10; const scale=Math.max(Number(item.min_scale??0.25),Math.min(1.2,Number(item.max_scale??1.1),isCurtain?1:0.5)); const z=isCurtain?18:Math.max(20,...roomItems.map(i=>i.z_index||0))+1; const r=await addWorldRoomItem(session.user.id,item.id,x,y,scale,z,myProfile?.scene_type||'interior'); if(r.error||!r.data?.success){setMessage('아이템을 배치하지 못했어요. 보유 수량과 013 SQL 적용 여부를 확인해주세요.');return;} await reload(session.user.id); setMessage(`${item.name}을(를) ${isCurtain?'창문에 걸었어요.':'방에 배치했어요.'}`); };
-  const moveFurniture=async(id:string,x:number,y:number)=>{setRoomItems(items=>items.map(i=>i.id===id?{...i,x,y}:i));const r=await updateWorldRoomItem(session.user.id,id,{x,y});if(r.error){setMessage("위치를 저장하지 못했어요. 다시 시도해주세요.");await reload(session.user.id);}};
-  const scaleFurniture=async(id:string,scale:number)=>{const room=roomItems.find(i=>i.id===id);const item=room?catalog.find((x:any)=>x.id===room.item_id):null;const min=Number(item?.min_scale??0.25);const max=Math.min(1.2,Number(item?.max_scale??1.1));const next=Math.max(min,Math.min(max,scale));setRoomItems(items=>items.map(i=>i.id===id?{...i,scale:next}:i));const r=await updateWorldRoomItem(session.user.id,id,{scale:next});if(r.error){setMessage("크기를 저장하지 못했어요.");await reload(session.user.id);}};
-  const frontFurniture=async(id:string)=>{const maxZ=Math.max(20,...roomItems.map(i=>Number(i.z_index)||0));setRoomItems(items=>items.map(i=>i.id===id?{...i,z_index:maxZ+1}:i));const r=await updateWorldRoomItem(session.user.id,id,{z_index:maxZ+1});if(r.error){setMessage("표시 순서를 저장하지 못했어요.");await reload(session.user.id);}};
-  const removeFurniture=async(id:string)=>{const r=await deleteWorldRoomItem(session.user.id,id);if(r.error){setMessage('가구를 아이템함으로 돌려놓지 못했어요.');return;}await reload(session.user.id);setMessage('아이템을 아이템함으로 돌려놓았어요.');};
+  const runRoomAction=async(action:()=>Promise<void>)=>{
+    if(roomLock.current)return false;
+    roomLock.current=true;setRoomBusy(true);setRoomSaveState('saving');
+    try{await action();setRoomSaveState('saved');return true;}
+    catch(error){setRoomSaveState('error');setMessage(error instanceof Error?error.message:'변경을 저장하지 못했어요. 다시 시도해주세요.');await reload(session.user.id);return false;}
+    finally{roomLock.current=false;setRoomBusy(false);}
+  };
+  const addFurniture=(item:WorldItem)=>runRoomAction(async()=>{
+    const scene=myProfile?.scene_type||'interior';
+    if(item.placement_type!==(scene==='exterior'?'garden':'room'))throw Error('아이템에 맞는 집 안 또는 정원으로 이동해주세요.');
+    if(inventoryCount(item.id)<=0)throw Error('모두 배치한 아이템이에요. 기존 항목을 수거한 뒤 배치해주세요.');
+    const curtain=item.category==='커튼'||item.subcategory==='커튼';
+    if(curtain&&roomItems.some(i=>{const m=catalog.find(x=>x.id===i.item_id);return (i.scene_type||'interior')===scene&&(m?.category==='커튼'||m?.subcategory==='커튼');}))throw Error('기존 커튼을 수거한 뒤 새 커튼을 걸어주세요.');
+    const min=Number(item.min_scale??.25),max=Math.min(1.2,Number(item.max_scale??1.1));
+    const scale=Math.max(min,Math.min(max,curtain?1:.6));
+    const z=curtain?18:Math.max(20,...roomItems.map(i=>Number(i.z_index)||0))+1;
+    const result=await addWorldRoomItem(session.user.id,item.id,curtain?50:30,curtain?24:74,scale,z,scene);
+    if(result.error||!result.data?.success)throw Error('아이템을 배치하지 못했어요. 보유 수량을 다시 확인해주세요.');
+    await reload(session.user.id);if(result.data.id)setSelectedRoomItemId(result.data.id);
+    setMessage(`${item.name}을(를) 배치했어요. 위치와 크기를 조절해보세요.`);
+  });
+  const changeFurniture=(id:string,values:{x?:number;y?:number;scale?:number;z_index?:number})=>runRoomAction(async()=>{
+    const previous=roomItems.find(i=>i.id===id);if(!previous)throw Error('선택한 가구를 찾지 못했어요.');
+    setRoomItems(items=>items.map(i=>i.id===id?{...i,...values}:i));
+    const result=await updateWorldRoomItem(session.user.id,id,values);
+    if(result.error)throw Error('가구 변경을 저장하지 못했어요. 다시 시도해주세요.');
+  });
+  const moveFurniture=(id:string,x:number,y:number)=>changeFurniture(id,{x,y});
+  const scaleFurniture=(id:string,scale:number)=>{
+    const room=roomItems.find(i=>i.id===id),item=catalog.find(i=>i.id===room?.item_id);
+    const min=Number(item?.min_scale??.25),max=Math.max(min,Math.min(1.2,Number(item?.max_scale??1.1)));
+    return changeFurniture(id,{scale:Math.max(min,Math.min(max,scale))});
+  };
+  const frontFurniture=(id:string)=>changeFurniture(id,{z_index:Math.max(20,...roomItems.map(i=>Number(i.z_index)||0))+1});
+  const backFurniture=(id:string)=>changeFurniture(id,{z_index:Math.max(4,Math.min(20,...roomItems.map(i=>Number(i.z_index)||20))-1)});
+  const removeFurniture=(id:string)=>runRoomAction(async()=>{
+    const result=await deleteWorldRoomItem(session.user.id,id);
+    if(result.error||result.data?.success===false)throw Error('수거하지 못했어요. 다시 시도해주세요.');
+    if(selectedRoomItemId===id)setSelectedRoomItemId(null);
+    await reload(session.user.id);setMessage('수거했어요. 남은 수량에 다시 추가됐어요.');
+  });
+  const goScene=async(scene:'interior'|'exterior')=>{
+    if(!myProfile||roomLock.current)return false;
+    if(scene===myProfile.scene_type)return true;
+    return runRoomAction(async()=>{
+      const result=await updateWorldProfile(session.user.id,{scene_type:scene});
+      if(result.error)throw Error('장소를 바꾸지 못했어요. 다시 시도해주세요.');
+      setProfile(p=>p?{...p,scene_type:scene}:p);
+    });
+  };
+  const selectFurniture=async(item:WorldRoomItem)=>{
+    if(!await goScene(item.scene_type||'interior'))return;
+    setSelectedRoomItemId(item.id);
+    document.querySelector('.cyworld-room')?.scrollIntoView({behavior:'smooth',block:'center'});
+  };
+  const applyBackground=(item:WorldItem)=>runRoomAction(async()=>{
+    if(!['wallpaper','floor'].includes(item.type)||(item.price>0&&inventoryCount(item.id)<=0))throw Error('보유한 벽지나 바닥만 적용할 수 있어요.');
+    const values={scene_type:'interior',[item.type==='wallpaper'?'wallpaper_id':'floor_id']:item.id};
+    const result=await updateWorldProfile(session.user.id,values);if(result.error)throw Error('배경을 저장하지 못했어요.');
+    await reload(session.user.id);setMessage(`${item.name}을(를) 적용했어요.`);
+  });
   const buy=async(item:any)=>{if(item.price===0){setMessage('기본 아이템은 아이템함에서 바로 배치할 수 있어요.');return;}if((item.category||'')==='동물'||item.type==='animal'){setPendingAnimal(item);setCompanionName('');return;}const r=await purchaseWorldItem(session.user.id,item.id,item.price);if(r.error){setMessage('구매에 실패했어요.');return;}if(r.data?.success){setMessage(`${item.name}을(를) 구매했어요!`);await reload(session.user.id);}else setMessage(r.data?.reason==='insufficient_points'?'포인트가 부족해요.':'구매에 실패했어요.');};
   const buyAnimal=async()=>{if(!pendingAnimal||!companionName.trim())return;const r=await purchaseWorldAnimal(session.user.id,pendingAnimal.id,companionName.trim());if(r.error){setMessage(r.error.message||'동물을 구매하지 못했어요.');return;}if(r.data?.success){setPendingAnimal(null);setCompanionName('');setMessage(`${r.data.name}에게 이름을 지어줬어요!`);await reload(session.user.id);setCompanionOpen(true);}else setMessage(r.data?.reason==='already_owned'?'이미 가지고 있는 동물이에요.':r.data?.reason==='insufficient_points'?'포인트가 부족해요.':'동물을 구매할 수 없어요.');};
-  const activateCompanion=async(id:string)=>{const r=await setWorldActiveCompanion(session.user.id,id);if(r.error){setMessage('동물을 꺼내지 못했어요.');return;}await reload(session.user.id);};
+  const activateCompanion=async(id:string)=>{const r=await setWorldActiveCompanion(session.user.id,id);if(r.error||r.data?.success===false){setMessage('동물을 꺼내지 못했어요.');return;}await reload(session.user.id);};
 
   const saveStatus=async()=>{await updateWorldProfile(session.user.id,{status_message:status});setEditingStatus(false);await reload(session.user.id);};
-  const toggleScene=async()=>{if(!myProfile)return;await updateWorldProfile(session.user.id,{scene_type:myProfile.scene_type==='interior'?'exterior':'interior'});await reload(session.user.id);};
+  const toggleScene=()=>goScene(myProfile?.scene_type==='interior'?'exterior':'interior');
   const like=async()=>{if(!selectedHome)return;const r=await toggleWorldLike(session.user.id,selectedHome.user_id);if(!r.error){setLiked(Boolean(r.data?.liked));setSelectedHome({...selectedHome,likes:selectedHome.likes+(r.data?.liked?1:-1)});}};
 
   const loadGuestbook=async(ownerId:string)=>{setGuestOwnerId(ownerId);const g=await listWorldGuestbookSecure(ownerId);if(g.data)setGuestbook(Array.isArray(g.data)?g.data:[]);};
@@ -149,10 +216,13 @@ export default function WorldPage() {
           <section className="cy-main"><div className="cy-title-row"><div><h1>{selectedHome.display_name||'씩씩이'}'s MINI HOME</h1><p>{selectedHome.status_message||'놀러오세요!'}</p></div><span>MINIROOM</span></div><div className="cy-news"><b>Updated news</b><span>친구의 미니홈피에 놀러왔어요. 방명록을 남겨보세요!</span></div><WorldScene profile={selectedHome} isOwner={false} roomItems={friendRoomItems} equipment={friendEquipment} catalog={catalog} companion={selectedCompanion} avatarGender={selectedHome.avatar_gender==='female'?'female':'male'}/><div className="cy-bottom-tabs"><button onClick={()=>openGuestbook(selectedHome.user_id)}>💌 방명록</button><button onClick={like}>{liked?'💗 좋아요 취소':'❤️ 좋아요'}</button></div></section>
         </div> : <div className={`cyworld-shell ${decorate ? 'with-items' : ''}`}>
           <aside className="cy-profile"><div className="profile-photo character-layer"><CharacterAvatar gender={avatarGender} equipment={equipment.avatar} blink={false} alt="씩씩이 미니미"/></div><h2>{myProfile.display_name||'씩씩이'}'s MINI</h2>{editingStatus?<div className="status-edit"><input value={status} onChange={e=>setStatus(e.target.value)} maxLength={60}/><button onClick={saveStatus}>저장</button></div>:<p className="profile-status editable" onClick={()=>setEditingStatus(true)}>💬 {myProfile.status_message||'나의 미니홈피'} <small>(눌러서 수정)</small></p>}<div className="profile-stats">TODAY <b>{myProfile.today_visits}</b> · TOTAL <b>{myProfile.total_visits}</b><br/>❤️ 좋아요 <b>{myProfile.likes}</b></div><div className="profile-bgm">🎵 MY BGM<br/><small>나만의 배경음악</small></div><button className="profile-pet-button" onClick={()=>setWardrobeTarget({id:"avatar"})}>👤 미니미 꾸미기</button><button className="profile-pet-button" onClick={()=>setCompanionOpen(true)}>🐾 내 동물 {activeCompanion?`· ${activeCompanion.name}`:'관리'}</button></aside>
-          <section className="cy-main"><div className="cy-title-row"><div><h1>{myProfile.display_name||'씩씩이'}'s MINI HOME</h1><p>나만의 작은 공간에 놀러오세요.</p></div><span>MINIROOM</span></div><div className="cy-news"><b>Updated news</b><span>오늘도 씩씩이 월드에 놀러왔어요. 내 방을 꾸며보세요!</span><span>현재 포인트 <strong>{points.toLocaleString()}P</strong> · 🟢 출석 {attendance.length}명</span></div><WorldScene profile={myProfile} isOwner equipment={equipment} roomItems={roomItems} onMoveItem={moveFurniture} onScaleItem={scaleFurniture} onRemoveItem={removeFurniture} onFrontItem={frontFurniture} onOpenInventory={()=>setDecorate(true)} decorate={decorate} onToggleDecorate={()=>setDecorate(v=>!v)} onToggleScene={toggleScene} catalog={catalog} companion={activeCompanion} avatarGender={avatarGender}/><div className="cy-bottom-tabs"><button onClick={()=>setDecorate(v=>!v)}>📦 내 아이템</button><button onClick={()=>setView('shop')}>🛍️ 포인트샵</button><button onClick={()=>openGuestbook(session.user.id)}>💌 방명록</button><button onClick={()=>setView('friends')}>👥 친구 만나기</button></div>
+          <section className="cy-main"><div className="cy-title-row"><div><h1>{myProfile.display_name||'씩씩이'}'s MINI HOME</h1><p>나만의 작은 공간에 놀러오세요.</p></div><span>MINIROOM</span></div><div className="cy-news"><b>Updated news</b><span>오늘도 씩씩이 월드에 놀러왔어요. 내 방을 꾸며보세요!</span><span>현재 포인트 <strong>{points.toLocaleString()}P</strong> · 🟢 출석 {attendance.length}명</span></div><WorldScene profile={myProfile} isOwner selectedItemId={selectedRoomItemId} onSelectItem={setSelectedRoomItemId} busy={roomBusy} saveState={roomSaveState} onBackItem={backFurniture} equipment={equipment} roomItems={roomItems} onMoveItem={moveFurniture} onScaleItem={scaleFurniture} onRemoveItem={removeFurniture} onFrontItem={frontFurniture} onOpenInventory={()=>setDecorate(true)} decorate={decorate} onToggleDecorate={()=>setDecorate(v=>!v)} onToggleScene={toggleScene} catalog={catalog} companion={activeCompanion} avatarGender={avatarGender}/><div className="cy-bottom-tabs"><button onClick={()=>setDecorate(v=>!v)}>📦 내 아이템</button><button onClick={()=>setView('shop')}>🛍️ 포인트샵</button><button onClick={()=>openGuestbook(session.user.id)}>💌 방명록</button><button onClick={()=>setView('friends')}>👥 친구 만나기</button></div>
 
           </section>
-                    {decorate && <aside className="decorate-panel side-item-panel"><div className="decorate-head"><div><h3>📦 내 아이템함</h3><p>내 아이템을 방에 놓고 이동·크기 조절·수거할 수 있어요.</p></div><button className="decorate-close" onClick={()=>setDecorate(false)}>닫기</button></div><div className="avatar-gender-box"><div><b>👤 미니미 성별</b><small>캐릭터의 기본 외형을 선택하세요.</small></div><div className="avatar-gender-buttons"><button className={avatarGender==='male'?'active':''} onClick={()=>changeAvatarGender('male')}>♂ 남성</button><button className={avatarGender==='female'?'active female':''} onClick={()=>changeAvatarGender('female')}>♀ 여성</button></div></div><button className="wardrobe-open" onClick={()=>setWardrobeTarget({id:"avatar"})}>👕 미니미 옷·헤어·장식 꾸미기</button><div className="decorate-grid">{inventory.filter((x:any)=>{const item=shopItems.find((i:any)=>i.id===x.item_id);return item?.placement_type===(myProfile.scene_type==='exterior'?'garden':'room');}).map((owned:any)=>{const item:any=shopItems.find((i:any)=>i.id===owned.item_id);if(!item)return null;const available=Number(owned.quantity??0);const placed=placedCount(item.id);const total=available+placed;return <div className="decorate-card" key={owned.item_id}><div className="decorate-art">{item.image_url?<img src={item.image_url} alt=""/>:<span>{item.image||'✨'}</span>}</div><b>{item.name}</b><small>보유 {total}개 · 배치 {placed}개 · 남음 {available}개</small><button disabled={available<=0} onClick={()=>addFurniture(item)}>{available>0?(item.category==='커튼'||item.subcategory==='커튼'?'창문에 걸기':'방에 놓기'):'배치 완료'}</button></div>})}</div></aside>}
+                    {decorate && <InventoryPanel inventory={inventory} owned={ownedWearables} catalog={[...new Map([...WORLD_ITEMS,...catalog].map(i=>[i.id,i])).values()]} roomItems={roomItems} companions={companions} equipment={equipment} profile={myProfile} gender={avatarGender} error={inventoryError} busy={roomBusy} saveState={roomSaveState} selectedId={selectedRoomItemId}
+                      onClose={()=>setDecorate(false)} onRefresh={()=>reload(session.user.id)} onShop={()=>setView('shop')} onGender={changeAvatarGender}
+                      onWear={item=>setWardrobeTarget({id:'avatar',slot:item?.slot,selectedItem:item?.id})} onPetWear={c=>setWardrobeTarget({id:c.id,itemId:c.item_id})} onPet={c=>activateCompanion(c.id)} onPets={()=>setCompanionOpen(true)}
+                      onPlace={addFurniture} onSelect={selectFurniture} onRemove={removeFurniture} onScene={goScene} onBackground={applyBackground}/>}
         </div>}
         <section className="attendance-panel cy-attendance"><div><h3>🟢 오늘 출석한 멤버 <b>{attendance.length}명</b></h3><p>오늘 씩씩이 월드에 처음 들어온 멤버예요.</p></div><div className="attendance-list">{attendance.length?attendance.map(a=><span key={a.user_id}>● {a.display_name}</span>):<span className="muted">아직 출석한 멤버가 없어요.</span>}</div></section>
       </div>}
@@ -165,10 +235,10 @@ export default function WorldPage() {
       {view==='guestbook' && <section className="world-panel"><div className="guestbook-title"><div><h2>💌 {guestOwnerId===session.user.id?'내':'친구'} 미니홈피 방명록</h2><p className="muted">{guestOwnerId===session.user.id?'누구나 방명록을 남길 수 있어요.':'방문한 미니홈피에 방명록을 남겨보세요.'}</p></div>{guestOwnerId!==session.user.id&&<button onClick={()=>{setSelectedHome(null);setView('home');}}>🏠 내 미니홈피</button>}</div><div className="guest-form"><input value={guestText} onChange={e=>setGuestText(e.target.value)} placeholder="방명록을 남겨보세요" maxLength={300}/><label className="secret-check"><input type="checkbox" checked={guestSecret} onChange={e=>setGuestSecret(e.target.checked)}/> 🔒 비밀글</label><button onClick={postGuest}>남기기</button></div>{guestbook.length===0?<p className="muted">아직 방명록이 없어요. 첫 글을 남겨보세요!</p>:guestbook.map(g=><div className={`guest-thread ${g.is_secret?'secret':''}`} key={g.id}><div className="guest-row"><span>{g.is_secret?'🔒':'💌'}</span><b>{g.writer_name}</b><span>{g.content}</span><small>{new Date(g.created_at).toLocaleString('ko-KR')}</small></div><button className="reply-button" onClick={()=>setReplyOpen(replyOpen===g.id?null:g.id)}>↳ 답글</button>{replyOpen===g.id&&<div className="reply-form"><input value={replyText} onChange={e=>setReplyText(e.target.value)} placeholder={g.is_secret?'🔒 비밀 답글을 남겨보세요':'답글을 남겨보세요'} maxLength={300}/><button onClick={()=>postReply(g.id)}>등록</button></div>}{g.replies?.map((r:any)=><div className="reply-row" key={r.id}><span>↳ {g.is_secret?'🔒':'💬'}</span><b>{r.writer_name}</b><span>{r.content}</span><small>{new Date(r.created_at).toLocaleString('ko-KR')}</small></div>)}</div>)}</section>}
       {view==='notifications' && <section className="world-panel"><div className="notification-head"><h2>🔔 알림함</h2><button onClick={async()=>{await markWorldNotificationsRead();setNotices(ns=>ns.map(n=>({...n,is_read:true})));}}>모두 읽음</button></div>{notices.length===0?<p className="muted">아직 알림이 없어요.</p>:notices.map(n=><div className={`notice-row ${n.is_read?'read':'unread'}`} key={n.id}><span className="notice-icon">{n.notification_type==='gift'?'🎁':n.notification_type==='ranking'?'🏆':n.notification_type==='points'?'💰':n.notification_type==='guestbook_reply'?'💬':'💌'}</span><div><b>{n.title}</b><p>{n.body}</p><small>{new Date(n.created_at).toLocaleString('ko-KR')}</small></div></div>)}</section>}
     </main><WorldNavigation view={view} onChange={v=>{setView(v);if(v==='guestbook')openGuestbook();}} onCalendar={()=>{window.location.href=window.location.pathname;}} /></div>
-    {wardrobeTarget&&<WardrobePanel key={wardrobeTarget.id} userId={session.user.id} targetId={wardrobeTarget.id} itemId={wardrobeTarget.itemId} gender={avatarGender} initial={equipment[wardrobeTarget.id]} onClose={()=>setWardrobeTarget(null)} onSaved={()=>reload(session.user.id)}/>}
+    {wardrobeTarget&&<WardrobePanel key={wardrobeTarget.id} userId={session.user.id} targetId={wardrobeTarget.id} itemId={wardrobeTarget.itemId} initialSlot={wardrobeTarget.slot} initialItemId={wardrobeTarget.selectedItem} gender={avatarGender} initial={equipment[wardrobeTarget.id]} onClose={()=>setWardrobeTarget(null)} onSaved={()=>reload(session.user.id)}/>}
     {pendingAnimal&&<div className="modal-backdrop" onClick={()=>setPendingAnimal(null)}><div className="animal-name-modal" onClick={e=>e.stopPropagation()}><h3>🐾 {pendingAnimal.name}</h3><p>{Number(pendingAnimal.price).toLocaleString()}P · 함께 지낼 동물의 이름을 지어주세요.</p><input autoFocus value={companionName} onChange={e=>setCompanionName(e.target.value)} maxLength={20} placeholder="예: 초코, 나비, 콩이"/><div className="modal-actions"><button onClick={()=>setPendingAnimal(null)}>취소</button><button disabled={!companionName.trim()} onClick={buyAnimal}>구매하고 이름 짓기</button></div></div></div>}
     {companionOpen&&<div className="modal-backdrop" onClick={()=>setCompanionOpen(false)}><div className="companion-modal" onClick={e=>e.stopPropagation()}><div className="companion-head"><div><h3>🐾 내 동물</h3><p>한 번에 한 마리만 미니룸에 함께 있을 수 있어요.</p></div><button onClick={()=>setCompanionOpen(false)}>닫기</button></div>{companions.length===0?<div className="companion-empty">아직 함께할 동물이 없어요.<br/><button onClick={()=>{setCompanionOpen(false);setView('shop');setShopCategory('동물');}}>🛍️ 포인트샵에서 동물 만나기</button></div>:<div className="companion-list">{companions.map(c=><div className={`companion-row ${c.is_active?'active':''}`} key={c.id}><span className="companion-preview"><CompanionAvatar itemId={c.item_id} equipment={equipment[c.id]} name={c.name}/></span><div><b>{c.name}</b><small>{c.item_id}</small></div>{isCat(c.item_id)&&<button onClick={()=>setWardrobeTarget({id:c.id,itemId:c.item_id})}>꾸미기</button>}<button onClick={()=>activateCompanion(c.id)}>{c.is_active?'현재 함께함':'꺼내기'}</button><button onClick={()=>{setCompanionName(c.name);const n=window.prompt('동물의 새 이름을 입력하세요.',c.name);if(n?.trim()){renameWorldCompanion(session.user.id,c.id,n.trim()).then(()=>reload(session.user.id));}}}>이름 변경</button></div>)}</div>}</div></div>}
     {giftItem&&<div className="modal-backdrop" onClick={()=>setGiftItem(null)}><div className="gift-modal" onClick={e=>e.stopPropagation()}><h3>🎁 {giftItem.name} 선물하기</h3><p>{giftItem.price.toLocaleString()}P · 누구에게 보낼까요?</p><div className="gift-recipient-list">{otherProfiles.map(p=><button key={p.user_id} onClick={()=>sendGift(p.user_id)}><b>{p.display_name||'씩씩이'}</b><small>{p.status_message||'놀러오세요!'}</small></button>)}</div><button className="modal-close" onClick={()=>setGiftItem(null)}>닫기</button></div></div>}
-    {message&&<div className="world-toast" onClick={()=>setMessage('')}>{message}</div>}
+    {message&&<div className="world-toast" role="status" onClick={()=>setMessage('')}>{message}</div>}
   </div>;
 }

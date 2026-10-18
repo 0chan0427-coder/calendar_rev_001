@@ -103,7 +103,7 @@ export const listWorldRankingHistory = () =>
   supabase.from('world_weekly_scores').select('*').order('week_start', { ascending: false }).order('weekly_score', { ascending: false }).limit(1000);
 
 export const listWorldItemCatalog = () =>
-  supabase.from('world_item_catalog').select('*').eq('is_active', true).order('sort_order', { ascending: true }).order('item_name', { ascending: true });
+  supabase.from('world_item_catalog').select('*').order('sort_order', { ascending: true }).order('item_name', { ascending: true });
 
 export const listWorldItemCatalogAdmin = () =>
   supabase.from('world_item_catalog').select('*').order('sort_order', { ascending: true }).order('item_name', { ascending: true });

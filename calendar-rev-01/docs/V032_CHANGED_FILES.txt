@@ -1,0 +1,26 @@
+V032 변경 파일 목록 (V030 기준)
+V031 및 014 SQL 불필요 / 기존 파일 삭제 불필요
+
+README_V032.txt
+docs/V032_ART_AND_LAYERS.md
+public/world/avatar-v3/boots-brown.png
+public/world/avatar-v3/eyes-open.png
+public/world/avatar-v3/female-clean.png
+public/world/avatar-v3/hair-bob.png
+public/world/avatar-v3/hair-short.png
+public/world/avatar-v3/male-clean.png
+public/world/avatar-v3/shirt-blue.png
+public/world/avatar-v3/shorts-cream.png
+public/world/avatar-v3/sneakers-white.png
+public/world/avatar-v3/sweater-peach.png
+public/world/avatar-v3/trousers-charcoal.png
+src/components/world/AppearanceArt.tsx
+src/components/world/CharacterAvatar.tsx
+src/components/world/WardrobePanel.tsx
+src/components/world/WearableThumbnail.tsx
+src/data/avatarRaster.ts
+src/data/wardrobe.ts
+src/lib/avatarRaster.ts
+src/pages/WorldPage.tsx
+src/styles/world.css
+supabase/015_approved_raster_avatar.sql

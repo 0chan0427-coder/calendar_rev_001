@@ -1,10 +1,7 @@
-import type { Equipment } from '../../data/wardrobe';
-import { selectedWearables } from '../../data/wardrobe';
-// Companion artwork uses genuine coat variants, with an independent accessory layer.
+import {useId} from 'react';
+import type {Equipment} from '../../data/wardrobe';
+import {selectedWearables} from '../../data/wardrobe';
 export default function AppearanceArt({src,target='cat',equipment={},alt=''}:{src:string;gender?:'male'|'female';target?:'avatar'|'cat';equipment?:Equipment;alt?:string}){
- const items=selectedWearables(equipment,target);const coat=items.find(i=>i.slot==='coat');
- return <svg className="appearance-art" viewBox="0 0 256 256" role={alt?'img':undefined} aria-label={alt||undefined} aria-hidden={!alt}>
- <image href={coat?.image||src} width="256" height="256"/>
- {items.filter(i=>i.slot!=='coat').map(i=><image key={i.id} href={i.image} width="256" height="256"/>)}
- </svg>;
+ const id=useId().replace(/[^a-z0-9]/gi,'');const items=selectedWearables(equipment,target);const coat=items.find(i=>i.slot==='coat');
+ return <svg className="appearance-art" viewBox="0 0 100 100" preserveAspectRatio="none" role={alt?'img':undefined} aria-label={alt||undefined} aria-hidden={!alt}><defs>{coat&&<filter id={id} colorInterpolationFilters="sRGB"><feFlood floodColor={coat.color} result="color"/><feBlend in="SourceGraphic" in2="color" mode="multiply" result="tinted"/><feComposite in="tinted" in2="SourceGraphic" operator="in"/></filter>}</defs><image href={src} width="100" height="100" preserveAspectRatio="none" filter={coat?`url(#${id})`:undefined}/>{items.filter(i=>i.mode==='image').map(i=><image key={i.id} href={i.image} x={i.region?.[0]||0} y={i.region?.[1]||0} width={i.region?.[2]||100} height={i.region?.[3]||100} preserveAspectRatio="xMidYMid meet"/>)}</svg>;
 }

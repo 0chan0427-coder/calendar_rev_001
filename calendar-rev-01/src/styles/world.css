@@ -260,3 +260,10 @@
 .wardrobe-preview>.modular-avatar{width:190px;height:290px}.wardrobe-grid .wearable-select{min-height:125px}.wardrobe-grid .wearable-select .wearable-thumbnail{height:70px}
 @media(max-width:650px){.wardrobe-preview>.modular-avatar{width:115px;height:175px}.wardrobe-preview{height:215px}}
 .wearable-thumbnail{overflow:hidden;pointer-events:none}
+/* 032: approved raster artwork; no geometry substitutes and no blink overlay. */
+.raster-avatar .character-artboard{position:relative;width:auto;height:100%;aspect-ratio:2/3;max-width:100%}.raster-avatar-svg{width:100%;height:100%;display:block;overflow:visible}.raster-avatar:after{display:none}.scene-character-wrap .raster-avatar{animation:none!important}
+.wardrobe-preview>.raster-avatar{width:190px;height:290px}.wearable-thumbnail .raster-avatar-svg{width:100%;height:100%}.wearable-thumbnail{display:grid;place-items:center;overflow:hidden}.wardrobe-tabs{max-width:100%}
+@media(max-width:650px){.wardrobe-preview>.raster-avatar{width:120px;height:180px}}
+/* Keep the fitted character visible while scrolling the item choices. */
+.wardrobe-layout{flex:1 1 auto;min-height:0;overflow:hidden}.wardrobe-choices{min-height:0;overflow:auto;padding-right:2px}
+@media(max-width:650px){.wardrobe-layout{grid-template-rows:215px minmax(0,1fr)}.wardrobe-preview{height:215px;padding:8px 16px 26px}.wardrobe-preview>.raster-avatar{width:113px;height:170px}.wardrobe-choices{overflow:auto}}

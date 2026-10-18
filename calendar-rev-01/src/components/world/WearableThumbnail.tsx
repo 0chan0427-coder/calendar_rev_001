@@ -1,7 +1,16 @@
-import type { Wearable } from '../../data/wardrobe';
-const crops:Record<string,string>={hair:'42 10 172 225',top:'65 173 126 88',bottom:'85 235 86 102',shoes:'84 304 90 53',accessory:'149 34 62 56'};
+import {useId} from 'react';
+import type {Wearable,Equipment} from '../../data/wardrobe';
+import {RASTER_ASSETS} from '../../data/avatarRaster';
+import type {RasterKey} from '../../data/avatarRaster';
+import {avatarSvgMarkup} from '../../lib/avatarRaster';
 export default function WearableThumbnail({item,gender}:{item:Wearable;gender:'male'|'female'}){
- const isCat=item.target==='cat';const back=item.backImageByGender?.[gender]||item.backImage;
- return <svg className="wearable-thumbnail" viewBox={isCat?'35 10 190 230':crops[item.slot]||'0 0 256 384'} aria-hidden="true">
- {back&&<image href={back} width="256" height="384"/>}<image href={item.imageByGender?.[gender]||item.image} width="256" height={isCat?256:384}/></svg>;
+ const uid=useId().replace(/[^a-z0-9]/gi,'');
+ const key=item.id==='hair-chestnut'&&gender==='female'?'hair-bob':item.renderKey;
+ if(key){const a=RASTER_ASSETS[key as RasterKey];return <svg className="wearable-thumbnail" viewBox={a.crop.join(' ')} aria-hidden="true"><defs><filter id={`thumb${uid}`}><feComponentTransfer><feFuncA type="discrete" tableValues="0 0 0 0 0 0 0 0 0 1"/></feComponentTransfer></filter></defs><image href={a.image} width={a.width} height={a.height} filter={`url(#thumb${uid})`}/></svg>;}
+ if(item.target==='cat')return item.mode==='tint'?<span className="wearable-swatch" style={{background:item.color}}/>:<img src={item.image} alt=""/>;
+ if(item.slot==='accessory')return <img src={item.image} alt=""/>;
+ const equipment:Equipment={hair:'hair-none',[item.slot]:item.id};
+ const viewBox=['face','skin','makeup','glasses'].includes(item.slot)?'235 235 550 360':'100 0 824 1536';
+ const markup=avatarSvgMarkup(gender,equipment,`thumb${uid}`).replace('viewBox="0 0 1024 1536"',`viewBox="${viewBox}"`);
+ return <span className="wearable-thumbnail" dangerouslySetInnerHTML={{__html:markup}}/>;
 }

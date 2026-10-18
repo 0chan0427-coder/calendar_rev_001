@@ -1,4 +1,4 @@
-import {GARMENT_FITS,HEADWEAR_FITS,fittedGarment,headwearDefs,fittedHeadwear} from './avatarFitting';
+import {CAPE_FIT,GARMENT_FITS,HEADWEAR_FITS,fittedGarment,headwearDefs,fittedHeadwear} from './avatarFitting';
 import {collectionItem} from '../data/collection01';
 import {collectionAsset,collectionHair,collectionShoes,collectionCuffMask,hairLayerMasks} from './avatarCollection';
 import type { Equipment } from '../data/wardrobe';
@@ -81,8 +81,8 @@ export function avatarSvgMarkup(gender:'male'|'female',input:Equipment={},uid='a
  const lenses=frame?.shape==='oval'?'<ellipse cx="391" cy="411" rx="93" ry="66"/><ellipse cx="635" cy="411" rx="93" ry="66"/>':`<rect x="304" y="340" width="175" height="147" rx="${frame?.shape==='rect'?32:57}"/><rect x="547" y="340" width="175" height="147" rx="${frame?.shape==='rect'?32:57}"/>`;
  const glasses=frame?`<g data-layer="glasses" fill="none" stroke="${frame.color}" stroke-width="${frame.width}" stroke-linejoin="round" transform="translate(0 ${eyeY})">${lenses}<path d="M${frame.shape==='oval'?484:479} 391 Q513 373 ${frame.shape==='oval'?542:547} 391 M304 385 L275 372 M722 385 L752 372"/><path d="M331 363 L350 354 M574 363 L593 354" stroke="#fff8ec" stroke-opacity=".7" stroke-width="5"/></g>`:'';
  const cape=c.outer?.id==='outer-wizard';
- const outerBack=cape?newAsset(c.outer):'';
- const outer=cape?collectionAsset(c.outer,resolve,id('alpha'),undefined,undefined,`mask="url(#${id('cape-front')})"`):fittedGarment(c.outer,uid,resolve,id('alpha'),'front')||newAsset(c.outer);
+ const outerBack=cape?collectionAsset(c.outer,resolve,id('alpha'),CAPE_FIT.box):'';
+ const outer=cape?collectionAsset(c.outer,resolve,id('alpha'),CAPE_FIT.box,undefined,`mask="url(#${id('cape-front')})"`):fittedGarment(c.outer,uid,resolve,id('alpha'),'front')||newAsset(c.outer);
  const capeSleeves=cape?(c.top?fittedGarment(c.top,uid+'-cape-sleeves',resolve,id('alpha'),'front',true,true):`<g clip-path="url(#${id('sleeves-only')})">${top}</g>`):'';
  const hat=fittedHeadwear(c.hat,uid,resolve,id('alpha'),'front');
  const hatBack=fittedHeadwear(c.hat,uid,resolve,id('alpha'),'back');
@@ -93,10 +93,10 @@ export function avatarSvgMarkup(gender:'male'|'female',input:Equipment={},uid='a
  const ribbon=e.accessory==='ribbon-avatar'?`<svg x="675" y="110" width="145" height="110" viewBox="0 0 1536 1024" preserveAspectRatio="xMidYMid meet"><image href="${safe(resolve('/world/wearables/shared/ribbon-red.png'))}" width="1536" height="1024" filter="url(#${id('alpha')})"/></svg>`:'';
  return `<svg class="raster-avatar-svg" viewBox="0 0 1024 1536" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="--avatar-phase:${phase}s"><defs>
  ${collectionCuffMask(c.shoes,id('collection-cuff'))}
- ${cape?hairLayerMasks(c.outer!.width,c.outer!.height,'M545 0H770V150H545Z',id('cape-rear'),id('cape-front')):''}
+ ${cape?hairLayerMasks(c.outer!.width,c.outer!.height,CAPE_FIT.backPath,id('cape-rear'),id('cape-front')):''}
  ${headwearDefs(c.hat,uid)}
  <mask id="${id('scarf-front')}" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1536"><rect width="1024" height="1536" fill="white"/><path d="M463 558H553V589Q555 602 583 608L582 615Q571 632 511 632Q451 632 439 615L438 608Q461 602 463 589Z" fill="black"/></mask>
- <clipPath id="${id('bare-arms')}"><path d="M400 600Q335 610 290 710L140 980V1110H330L370 900L400 695Z M624 600Q689 610 734 710L884 980V1110H694L654 900L624 695Z"/></clipPath>
+ <clipPath id="${id('bare-arms')}"><path d="M394 622Q335 630 290 710L140 980V1110H330L370 900L398 695Z M630 622Q689 630 734 710L884 980V1110H694L654 900L626 695Z"/></clipPath>
  <clipPath id="${id('sleeves-only')}"><path d="M0 600H400V1110H0Z M624 600H1024V1110H624Z"/></clipPath>
  ${innerTopClip?`<clipPath id="${id('inner-top')}"><path d="${innerTopClip}"/></clipPath>`:''}
  <style>
@@ -124,6 +124,7 @@ export function avatarSvgMarkup(gender:'male'|'female',input:Equipment={},uid='a
  ${hasShoes&&(!c.shoes||c.shoes.kind==='boot')?(c.shoes?`<rect x="250" y="${bootFootTop}" width="530" height="${1515-bootFootTop}" fill="black"/>`:'<path d="M285 1365H481V1510H285Z M540 1365H735V1510H540Z" fill="black"/>'):''}
  </mask>
  <clipPath id="${id('neck')}"><path d="${e.top==='top-pink'||c.top||c.outer?'M463 558H553V589Q555 602 583 608L582 619Q572 642 511 642Q450 642 439 619L438 608Q461 602 463 589Z':'M463 558H553V589Q555 602 583 608L583 631Q570 658 511 658Q453 658 438 631L438 608Q461 602 463 589Z'}"/></clipPath>
+ <clipPath id="${id('collar-skin')}"><path d="M250 530H775V574H553V589Q555 602 566 607H450Q461 602 463 589V574H250Z"/></clipPath>
  <clipPath id="${id('brows')}"><rect x="300" y="272" width="425" height="61"/></clipPath>
  <clipPath id="${id('skin')}"><rect x="150" width="725" height="610"/><path d="M443 575H580V617Q580 675 510 675Q443 675 443 617Z M399 608Q337 614 297 705L140 1000V1080H305L380 850L405 695Z M625 608Q687 614 727 705L884 1000V1080H719L644 850L619 695Z"/><rect x="270" y="1075" width="470" height="440"/></clipPath>
  ${hairLayerMasks(hairSource.width,hairSource.height,hairBackPath,id('hair-back'),id('hair-front'))}
@@ -141,5 +142,6 @@ export function avatarSvgMarkup(gender:'male'|'female',input:Equipment={},uid='a
  <!-- Current trousers are worn over shoes: back cuff → shin → front shoe → trouser hem. -->
  <g data-layer="shoes-front">${shoesFront}</g><g data-layer="bottom">${bottom}</g><g data-layer="top" ${innerTopAttr}>${top}</g>${!c.top&&hasTop?`<use href="#${id('body')}" clip-path="url(#${id('neck')})" ${e.skin==='skin-warm'?`filter="url(#${id('warm')})"`:''} data-layer="legacy-neck-occlusion"/>`:''}<g data-layer="outer">${outer}</g>${cape?`<use href="#${id('body')}" clip-path="url(#${id('bare-arms')})" ${e.skin==='skin-warm'?`filter="url(#${id('warm')})"`:''} data-layer="arms-over-cape"/>${capeSleeves}`:''}
 
+ ${c.outer?`<use href="#${id('body')}" clip-path="url(#${id('collar-skin')})" ${e.skin==='skin-warm'?`filter="url(#${id('warm')})"`:''} data-layer="skin-over-rear-collar"/>`:''}
  ${glasses}<g data-layer="accessory">${accessory}</g>${showHair?`<g data-layer="hair-front" ${hatClip}>${hairArt('front')}</g>`:''}${hat}${ribbon}</g></svg>`;
 }

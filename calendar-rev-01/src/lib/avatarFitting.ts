@@ -44,7 +44,7 @@ export const GARMENT_FITS: Record<string, GarmentFit> = {
     'top-rugby': { center: 768, scaleX: .46, bodyPath: body, bands: [[140, 585], [310, 651], [775, 970]], sleevePath: sleeve, shoulder: [470, 300], cuff: [185, 820], targetCuff: [244, 962], backPath: neck(635, 900, 147, 307) },
     'outer-cardigan': { center: 768, scaleX: .48, bodyPath: body, bands: [[140, 583], [320, 662], [870, 1000]], sleevePath: sleeve, shoulder: [490, 300], cuff: [200, 800], targetCuff: [244, 962], backPath: neck(640, 895, 214, 232), innerTopClip: 'M458 540H566V620Q606 630 636 665L690 800V1100H334V800L388 665Q418 630 458 620Z', sleeveJoinX: 480 },
     'outer-denim': { center: 768, scaleX: .48, bodyPath: body, bands: [[126, 580], [330, 659], [775, 988]], sleevePath: sleeve, shoulder: [480, 270], cuff: [180, 830], targetCuff: [244, 962], backPath: neck(640, 895, 230, 244), innerTopClip: 'M454 540H570V620Q610 635 640 670L690 800V1100H334V800L384 670Q414 635 454 620Z', sleeveJoinX: 480 },
-    'outer-detective': { center: 600, scaleX: .51, bodyPath: 'M345 0H855V390Q825 500 850 650L1040 1312H160L350 650Q375 500 345 390Z', bands: [[70, 583], [260, 677], [1171, 1235]], sleevePath: 'M0 0H380V400L380 580L310 1312H0Z', shoulder: [360, 250], cuff: [120, 820], targetCuff: [244, 962], backPath: 'M490 0H714V140H490Z', innerTopClip: 'M456 540H568V622Q610 642 636 680L690 820V1250H334V820L388 680Q414 642 456 622Z', sleeveJoinX: 380 },
+    'outer-detective': { center: 600, scaleX: .51, bodyPath: 'M345 0H855V390Q825 500 850 650L1040 1312H160L350 650Q375 500 345 390Z', bands: [[70, 563], [260, 657], [1171, 1235]], sleevePath: 'M0 0H380V400L380 580L310 1312H0Z', shoulder: [360, 250], cuff: [120, 820], targetCuff: [244, 962], backPath: 'M490 0H714V140H490Z', innerTopClip: 'M456 540H568V622Q610 642 636 680L690 820V1250H334V820L388 680Q414 642 456 622Z', sleeveJoinX: 380 },
 };
 function mappedY(f: GarmentFit, y: number) { let i = 0; while (i < f.bands.length - 2 && y > f.bands[i + 1][0])
     i++; const [a, b] = f.bands[i], [c, d] = f.bands[i + 1]; return b + (y - a) * (d - b) / (c - a); }
@@ -132,3 +132,6 @@ export function headwearDefs(item: CollectionItem | undefined, uid: string) { if
     return ''; const [x, y, w, h] = f.box || item.box, [cx, cy, cw, ch] = item.crop; return hairLayerMasks(item.width, item.height, f.backPath, uid + '-hat-back', uid + '-hat-front', f.frontKeepPath) + (f.headPath ? `<clipPath id="${uid}-head-visible"><path d="${f.headPath}" transform="matrix(${w / cw} 0 0 ${h / ch} ${x - cx * w / cw} ${y - cy * h / ch})"/></clipPath>` : ''); }
 export function fittedHeadwear(item: CollectionItem | undefined, uid: string, resolve: AssetResolver, alphaId: string, layer: 'front' | 'back') { if (!item)
     return ''; const f = HEADWEAR_FITS[item.id]; return collectionAsset(item, resolve, alphaId, f?.box, undefined, f ? `mask="url(#${uid}-hat-${layer})"` : ''); }
+
+/** High collar is seated at the actual shoulder/neck, not below the baked tank straps. */
+export const CAPE_FIT={box:[150,550,724,705] as Box,backPath:'M552 70Q655 62 762 70L756 94Q736 105 718 114L715 147H597L594 114Q575 105 557 94Z'};

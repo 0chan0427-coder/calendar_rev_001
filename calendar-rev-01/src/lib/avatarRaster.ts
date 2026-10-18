@@ -124,7 +124,7 @@ export function avatarSvgMarkup(gender:'male'|'female',input:Equipment={},uid='a
  ${hasShoes&&(!c.shoes||c.shoes.kind==='boot')?(c.shoes?`<rect x="250" y="${bootFootTop}" width="530" height="${1515-bootFootTop}" fill="black"/>`:'<path d="M285 1365H481V1510H285Z M540 1365H735V1510H540Z" fill="black"/>'):''}
  </mask>
  <clipPath id="${id('neck')}"><path d="${e.top==='top-pink'||c.top||c.outer?'M463 558H553V589Q555 602 583 608L582 619Q572 642 511 642Q450 642 439 619L438 608Q461 602 463 589Z':'M463 558H553V589Q555 602 583 608L583 631Q570 658 511 658Q453 658 438 631L438 608Q461 602 463 589Z'}"/></clipPath>
- <clipPath id="${id('collar-skin')}"><path d="M250 530H775V574H553V589Q555 602 566 607H450Q461 602 463 589V574H250Z"/></clipPath>
+ <clipPath id="${id('collar-skin')}"><path d="M250 530H775V574H250Z"/></clipPath>
  <clipPath id="${id('brows')}"><rect x="300" y="272" width="425" height="61"/></clipPath>
  <clipPath id="${id('skin')}"><rect x="150" width="725" height="610"/><path d="M443 575H580V617Q580 675 510 675Q443 675 443 617Z M399 608Q337 614 297 705L140 1000V1080H305L380 850L405 695Z M625 608Q687 614 727 705L884 1000V1080H719L644 850L619 695Z"/><rect x="270" y="1075" width="470" height="440"/></clipPath>
  ${hairLayerMasks(hairSource.width,hairSource.height,hairBackPath,id('hair-back'),id('hair-front'))}

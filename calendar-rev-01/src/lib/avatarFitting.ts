@@ -14,8 +14,12 @@ type Matrix = [
     number
 ];
 export interface GarmentFit {
+    /** Outer silhouette category; checked against the fixed body shoulder span. */
+    wearingClass?: 'coat' | 'jacket' | 'cardigan';
     center: number;
     scaleX: number;
+    /** Source-height-specific width: neck stays seated while waist/hem provide outer ease. */
+    widthBands?: [number, number][];
     bodyPath: string;
     bands: [
         number,
@@ -42,12 +46,18 @@ export const GARMENT_FITS: Record<string, GarmentFit> = {
     'top-hoodie': { center: 768, scaleX: .46, bodyPath: body, bands: [[143, 565], [330, 646], [840, 975]], sleevePath: sleeve, shoulder: [480, 340], cuff: [205, 855], targetCuff: [244, 962], backPath: 'M480 0H1056V150Q1010 240 768 328Q526 240 480 150Z' },
     'top-vest': { center: 768, scaleX: .46, bodyPath: body, bands: [[144, 582], [350, 654], [780, 969]], sleevePath: sleeve, shoulder: [480, 270], cuff: [185, 810], targetCuff: [244, 962], backPath: neck(620, 915, 150, 347) },
     'top-rugby': { center: 768, scaleX: .46, bodyPath: body, bands: [[140, 585], [310, 651], [775, 970]], sleevePath: sleeve, shoulder: [470, 300], cuff: [185, 820], targetCuff: [244, 962], backPath: neck(635, 900, 147, 307) },
-    'outer-cardigan': { center: 768, scaleX: .48, bodyPath: body, bands: [[140, 583], [320, 662], [870, 1000]], sleevePath: sleeve, shoulder: [490, 300], cuff: [200, 800], targetCuff: [244, 962], backPath: neck(640, 895, 214, 232), innerTopClip: 'M458 540H566V620Q606 630 636 665L690 800V1100H334V800L388 665Q418 630 458 620Z', sleeveJoinX: 480 },
-    'outer-denim': { center: 768, scaleX: .48, bodyPath: body, bands: [[126, 580], [330, 659], [775, 988]], sleevePath: sleeve, shoulder: [480, 270], cuff: [180, 830], targetCuff: [244, 962], backPath: neck(640, 895, 230, 244), innerTopClip: 'M454 540H570V620Q610 635 640 670L690 800V1100H334V800L384 670Q414 635 454 620Z', sleeveJoinX: 480 },
-    'outer-detective': { center: 600, scaleX: .51, bodyPath: 'M345 0H855V390Q825 500 850 650L1040 1312H160L350 650Q375 500 345 390Z', bands: [[70, 563], [260, 657], [1171, 1235]], sleevePath: 'M0 0H380V400L380 580L310 1312H0Z', shoulder: [360, 250], cuff: [120, 820], targetCuff: [244, 962], backPath: 'M490 0H714V140H490Z', innerTopClip: 'M456 540H568V622Q610 642 636 680L690 820V1250H334V820L388 680Q414 642 456 622Z', sleeveJoinX: 380 },
+    'outer-cardigan': { wearingClass: 'cardigan', center: 768, scaleX: .52, bodyPath: body, bands: [[140, 583], [320, 662], [870, 1000]], sleevePath: sleeve, shoulder: [490, 300], cuff: [200, 800], targetCuff: [244, 962], backPath: neck(640, 895, 214, 232), innerTopClip: 'M458 540H566V620Q606 630 636 665L690 800V1100H334V800L388 665Q418 630 458 620Z', sleeveJoinX: 480 },
+    'outer-denim': { wearingClass: 'jacket', center: 768, scaleX: .54, bodyPath: body, bands: [[126, 580], [330, 659], [775, 988]], sleevePath: sleeve, shoulder: [480, 270], cuff: [180, 830], targetCuff: [244, 962], backPath: neck(640, 895, 230, 244), innerTopClip: 'M454 540H570V620Q610 635 640 670L690 800V1100H334V800L384 670Q414 635 454 620Z', sleeveJoinX: 480 },
+    'outer-detective': { wearingClass: 'coat', center: 600, scaleX: .62, widthBands: [[70,.51],[260,.62],[650,.74],[1171,.68]], bodyPath: 'M345 0H855V390Q825 500 850 650L1040 1312H160L350 650Q375 500 345 390Z', bands: [[70, 563], [260, 657], [1171, 1285]], sleevePath: 'M0 0H380V400L380 580L310 1312H0Z', shoulder: [360, 250], cuff: [120, 820], targetCuff: [244, 962], backPath: 'M490 0H714V140H490Z', innerTopClip: 'M456 540H568V622Q610 642 636 680L690 820V1250H334V820L388 680Q414 642 456 622Z', sleeveJoinX: 380 },
 };
 function mappedY(f: GarmentFit, y: number) { let i = 0; while (i < f.bands.length - 2 && y > f.bands[i + 1][0])
     i++; const [a, b] = f.bands[i], [c, d] = f.bands[i + 1]; return b + (y - a) * (d - b) / (c - a); }
+function mappedWidth(f:GarmentFit,y:number){
+ const bands=f.widthBands;if(!bands)return f.scaleX;
+ if(y<=bands[0][0])return bands[0][1];
+ if(y>=bands[bands.length-1][0])return bands[bands.length-1][1];
+ let i=0;while(y>bands[i+1][0])i++;const [a,b]=bands[i],[c,d]=bands[i+1];return b+(y-a)*(d-b)/(c-a);
+}
 function similarity(a: Point, b: Point, c: Point, d: Point): Matrix { const x = b[0] - a[0], y = b[1] - a[1], u = d[0] - c[0], v = d[1] - c[1], den = x * x + y * y, p = (x * u + y * v) / den, q = (x * v - y * u) / den; return [p, q, -q, p, c[0] - p * a[0] + q * a[1], c[1] - q * a[0] - p * a[1]]; }
 /** Affine triangles share vertices, so sleeve/bodice joins have no transform jump. */
 function triangleTransform(src:Point[],dst:Point[]):Matrix{
@@ -68,7 +78,7 @@ export function fittedGarment(item: CollectionItem | undefined, uid: string, res
     const img=(extra='')=>`<use href="#${textureId}" ${extra}/>`;
     const layerMask = prefix + '-layer', bodyClip = prefix + '-body', sleeveClip = prefix + '-sleeve';
     let defs = `<image id="${textureId}" href="${safe(resolve(item.image))}" width="${item.width}" height="${item.height}"/><mask id="${layerMask}" maskUnits="userSpaceOnUse" x="0" y="0" width="${item.width}" height="${item.height}">${layer === 'front' ? `<rect width="${item.width}" height="${item.height}" fill="white"/><path d="${f.backPath}" fill="black"/>` : `<path d="${f.backPath}" fill="white"/>`}</mask><clipPath id="${bodyClip}"><path d="${f.bodyPath}"/></clipPath><clipPath id="${sleeveClip}"><path d="${f.sleevePath}"/></clipPath>`;
-    const shoulder: Point = [512 + (f.shoulder[0] - f.center) * f.scaleX, mappedY(f, f.shoulder[1])];
+    const shoulder: Point = [512 + (f.shoulder[0] - f.center) * mappedWidth(f,f.shoulder[1]), mappedY(f, f.shoulder[1])];
     const left = similarity(f.shoulder, f.cuff, shoulder, f.targetCuff);
     const right: Matrix = [left[0], -left[1], -left[2], left[3], 1024 - left[4] - item.width * left[0], left[5] + item.width * left[1]];
     // The reflected source coordinates are used only for clipping; the right sleeve retains its original texture.
@@ -77,9 +87,9 @@ export function fittedGarment(item: CollectionItem | undefined, uid: string, res
     let sleeves = `<g data-fit-part="sleeve-left" transform="${matrix(left)}"><g clip-path="url(#${sleeveClip})">${img(`mask="url(#${layerMask})"`)}</g></g><g data-fit-part="sleeve-right" transform="${matrix(right)}"><g clip-path="url(#${rightClip})">${img(`mask="url(#${layerMask})"`)}</g></g>`;
     if(f.sleeveJoinX){
         const join=f.sleeveJoinX;
-        const xs=[0,f.cuff[0],join,join+32],ys=[0,f.bands[1][0],f.cuff[1],item.height];
+        const xs=[0,f.cuff[0],join,join+32],ys=[...new Set([0,f.bands[1][0],...(f.widthBands?.map(p=>p[0])||[]),f.cuff[1],item.height])].sort((a,b)=>a-b);
         const target=(x:number,y:number):Point=>{
-            const bx=512+(x-f.center)*f.scaleX,by=mappedY(f,y);
+            const bx=512+(x-f.center)*mappedWidth(f,y),by=mappedY(f,y);
             const sx=left[0]*x+left[2]*y+left[4],sy=left[1]*x+left[3]*y+left[5];
             const wy=Math.max(0,Math.min(1,(y-f.bands[1][0])/(f.cuff[1]-f.bands[1][0])));
             const wx=Math.max(0,Math.min(1,(join-x)/(join-f.cuff[0]))),w=wx*wy;
@@ -97,7 +107,7 @@ export function fittedGarment(item: CollectionItem | undefined, uid: string, res
                 const dst=triangle.dst.map(([x,y]):Point=>[side==='left'?x:1024-x,y]);
                 const key=prefix+'-'+side+'-mesh'+i;
                 const cx=src.reduce((n,p)=>n+p[0],0)/3,cy=src.reduce((n,p)=>n+p[1],0)/3;
-                const points=src.map(([x,y])=>[cx+(x-cx)*1.0015,cy+(y-cy)*1.0015].join(',')).join(' ');
+                const points=src.map(([x,y])=>[cx+(x-cx)*1.003,cy+(y-cy)*1.003].join(',')).join(' ');
                 defs+=`<clipPath id="${key}"><polygon points="${points}"/></clipPath>`;
                 return `<g transform="${matrix(triangleTransform(src,dst))}"><g clip-path="url(#${clip})"><g clip-path="url(#${key})">${img(`mask="url(#${layerMask})"`)}</g></g></g>`;
             }).join('');
@@ -108,8 +118,24 @@ export function fittedGarment(item: CollectionItem | undefined, uid: string, res
     for (let i = 0; i < f.bands.length - 1; i++) {
         const [src0, dst0] = f.bands[i], [src1, dst1] = f.bands[i + 1], sy = (dst1 - dst0) / (src1 - src0), y0 = i === 0 ? 0 : src0, y1 = i === f.bands.length - 2 ? item.height : src1;
         const clip = prefix + '-band' + i;
-        defs += `<clipPath id="${clip}"><rect x="0" y="${y0 - .2}" width="${item.width}" height="${y1 - y0 + .4}"/></clipPath>`;
+        defs += `<clipPath id="${clip}"><rect x="0" y="${y0 - .8}" width="${item.width}" height="${y1 - y0 + 1.6}"/></clipPath>`;
         bodice += `<g data-fit-part="bodice" transform="matrix(${f.scaleX} 0 0 ${sy} ${512 - f.center * f.scaleX} ${dst0 - src0 * sy})"><g clip-path="url(#${bodyClip})"><g clip-path="url(#${clip})">${img(`mask="url(#${layerMask})"`)}</g></g></g>`;
+    }
+    if(f.widthBands){
+        bodice='';
+        const ys=[...new Set([0,...f.bands.map(p=>p[0]),...f.widthBands.map(p=>p[0]),item.height])].sort((a,b)=>a-b);
+        const xs=[0,f.center,item.width];
+        for(let row=0;row<ys.length-1;row++)for(let col=0;col<xs.length-1;col++){
+            const a:Point=[xs[col],ys[row]],b:Point=[xs[col+1],ys[row]],c:Point=[xs[col+1],ys[row+1]],d:Point=[xs[col],ys[row+1]];
+            for(const [i,src] of [[a,b,c],[a,c,d]].entries()){
+                const dst=src.map(([x,y]):Point=>[512+(x-f.center)*mappedWidth(f,y),mappedY(f,y)]);
+                const key=prefix+'-bodice-'+row+'-'+col+'-'+i;
+                const cx=src.reduce((n,p)=>n+p[0],0)/3,cy=src.reduce((n,p)=>n+p[1],0)/3;
+                const points=src.map(([x,y])=>[cx+(x-cx)*1.003,cy+(y-cy)*1.003].join(',')).join(' ');
+                defs+=`<clipPath id="${key}"><polygon points="${points}"/></clipPath>`;
+                bodice+=`<g data-fit-part="bodice" transform="${matrix(triangleTransform(src,dst))}"><g clip-path="url(#${bodyClip})"><g clip-path="url(#${key})">${img(`mask="url(#${layerMask})"`)}</g></g></g>`;
+            }
+        }
     }
     return `<g data-collection="${item.id}" data-garment-layer="${layer}" filter="url(#${alphaId})"><defs>${defs}</defs>${showSleeves ? sleeves : ''}${onlySleeves ? '' : bodice}</g>`;
 }
@@ -134,4 +160,4 @@ export function fittedHeadwear(item: CollectionItem | undefined, uid: string, re
     return ''; const f = HEADWEAR_FITS[item.id]; return collectionAsset(item, resolve, alphaId, f?.box, undefined, f ? `mask="url(#${uid}-hat-${layer})"` : ''); }
 
 /** High collar is seated at the actual shoulder/neck, not below the baked tank straps. */
-export const CAPE_FIT={box:[150,550,724,705] as Box,backPath:'M552 70Q655 62 762 70L756 94Q736 105 718 114L715 147H597L594 114Q575 105 557 94Z'};
+export const CAPE_FIT={box:[150,550,724,705] as Box,backPath:'M552 70Q655 62 762 70L756 94Q736 105 718 114L715 158H597L594 114Q575 105 557 94Z'};

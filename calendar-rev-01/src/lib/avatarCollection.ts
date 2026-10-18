@@ -6,13 +6,14 @@ export function collectionAsset(item:CollectionItem|undefined,resolve:AssetResol
  const b=box||item.box;
  return `<svg data-collection="${item.id}" x="${b[0]}" y="${b[1]}" width="${b[2]}" height="${b[3]}" viewBox="${(crop||item.crop).join(' ')}" preserveAspectRatio="none" overflow="hidden"><image href="${safe(resolve(item.image))}" width="${item.width}" height="${item.height}" filter="url(#${alphaId})" ${imageExtra}/></svg>`;
 }
-/** Keep the crown/fringe fixed and extend only the lower locks. */
-export function collectionHair(item:CollectionItem|undefined,resolve:AssetResolver,alphaId:string){
- if(!item)return '';
- if(!['hair-long','hair-twintail','hair-pony'].includes(item.id))return collectionAsset(item,resolve,alphaId);
- const [x,y,w,h]=item.box,[cx,cy,cw,ch]=item.crop;
- const split=Math.round(ch*.55),top=360;
- return collectionAsset(item,resolve,alphaId,[x,y,w,top],[cx,cy,cw,split])+collectionAsset(item,resolve,alphaId,[x,y+top,w,h-top],[cx,cy+split,cw,ch-split]);
+/** Complementary masks split source art without cutting a generic hole around the face. */
+export function hairLayerMasks(width:number,height:number,backPath:string,backId:string,frontId:string){
+ return `<mask id="${backId}" maskUnits="userSpaceOnUse" x="0" y="0" width="${width}" height="${height}"><path d="${backPath}" fill="white"/></mask><mask id="${frontId}" maskUnits="userSpaceOnUse" x="0" y="0" width="${width}" height="${height}"><rect width="${width}" height="${height}" fill="white"/><path d="${backPath}" fill="black"/></mask>`;
+}
+/** One transform for the whole hairstyle keeps the crown, part and tie aligned. */
+export function collectionHair(item:CollectionItem|undefined,resolve:AssetResolver,alphaId:string,maskId:string,layer:'front'|'back'){
+ if(!item||(!item.hairLayers&&layer==='back'))return '';
+ return collectionAsset(item,resolve,alphaId,undefined,undefined,item.hairLayers?`mask="url(#${maskId})"`:'');
 }
 export function collectionShoes(item:CollectionItem|undefined,gender:'male'|'female',resolve:AssetResolver,alphaId:string,frontMaskId:string,front:boolean){
  if(!item?.feet)return '';

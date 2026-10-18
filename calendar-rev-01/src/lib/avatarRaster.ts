@@ -1,5 +1,5 @@
 import {collectionItem} from '../data/collection01';
-import {collectionAsset,collectionHair,collectionShoes,collectionCuffMask} from './avatarCollection';
+import {collectionAsset,collectionHair,collectionShoes,collectionCuffMask,hairLayerMasks} from './avatarCollection';
 import type { Equipment } from '../data/wardrobe';
 import { AVATAR_DEFAULTS, WEARABLES } from '../data/wardrobe';
 import { RASTER_ASSETS } from '../data/avatarRaster';
@@ -19,7 +19,7 @@ export function avatarSvgMarkup(gender:'male'|'female',input:Equipment={},uid='a
  const stateClass=(state:'open'|'closed')=>blinking?`avatar-eye-${state}`:'';
  const c={hair:collectionItem(e.hair),hat:collectionItem(e.hat),top:collectionItem(e.top),outer:collectionItem(e.outer),bottom:collectionItem(e.bottom),shoes:collectionItem(e.shoes),accessory:collectionItem(e.accessory)};
  const newAsset=(item:typeof c.top)=>collectionAsset(item,resolve,id('alpha'));
- const hairArt=()=>c.hair?collectionHair(c.hair,resolve,id('alpha')):asset(hair,hairBox);
+ const hairArt=(layer:'front'|'back')=>c.hair?collectionHair(c.hair,resolve,id('alpha'),id('hair-'+layer),layer):asset(hair,hairBox,'',undefined,`mask="url(#${id('hair-'+layer)})"`);
  const hatHairLine=c.hat?.id==='hat-wizard'?260:c.hat?.id==='hat-straw'?230:160;
  const hatClip=c.hat&&c.hat.kind!=='headband'?`clip-path="url(#${id('hat-hair')})"`:'';
  const clean=RASTER_ASSETS[`${gender}-clean`];
@@ -30,6 +30,8 @@ export function avatarSvgMarkup(gender:'male'|'female',input:Equipment={},uid='a
  const hair=e.hair==='hair-bob-brown'||(e.hair==='hair-chestnut'&&gender==='female')?'hair-bob':'hair-short';
  const hairBox:[number,number,number,number]=hair==='hair-bob'?[165,-5,690,610]:[180,-15,660,450];
  const showHair=e.hair!=='hair-none';
+ const hairSource=c.hair||RASTER_ASSETS[hair];
+ const hairBackPath=c.hair?.hairLayers?.backPath||(hair==='hair-bob'?'M550 750 Q768 875 1000 750 L1000 1024 H550Z':'M420 795 Q700 1030 1000 795 L1000 1143 H420Z');
  const eyeY=gender==='female'?-6:0;
  const eyeSprite=asset('eyes-open',[305,293,414,176]);
  const brows=`<g clip-path="url(#${id('brows')})">${eyeSprite}</g>`;
@@ -116,12 +118,12 @@ export function avatarSvgMarkup(gender:'male'|'female',input:Equipment={},uid='a
  <clipPath id="${id('neck')}"><path d="${e.top==='top-pink'||c.top||c.outer?'M463 558H553V589Q555 602 583 608L582 619Q572 642 511 642Q450 642 439 619L438 608Q461 602 463 589Z':'M463 558H553V589Q555 602 583 608L583 631Q570 658 511 658Q453 658 438 631L438 608Q461 602 463 589Z'}"/></clipPath>
  <clipPath id="${id('brows')}"><rect x="300" y="272" width="425" height="61"/></clipPath>
  <clipPath id="${id('skin')}"><rect x="150" width="725" height="610"/><path d="M443 575H580V617Q580 675 510 675Q443 675 443 617Z M399 608Q337 614 297 705L140 1000V1080H305L380 850L405 695Z M625 608Q687 614 727 705L884 1000V1080H719L644 850L619 695Z"/><rect x="270" y="1075" width="470" height="440"/></clipPath>
- <mask id="${id('hair-front')}"><rect width="1024" height="1536" fill="white"/><ellipse cx="512" cy="448" rx="235" ry="149" fill="black"/></mask>
+ ${hairLayerMasks(hairSource.width,hairSource.height,hairBackPath,id('hair-back'),id('hair-front'))}
  <radialGradient id="${id('blush')}"><stop offset="0" stop-color="${peach?'#eaa070':'#ee8492'}"/><stop offset="1" stop-color="${peach?'#eaa070':'#ee8492'}" stop-opacity="0"/></radialGradient>
  <radialGradient id="${id('shadow')}"><stop stop-color="#b68a9e"/><stop offset="1" stop-color="#b68a9e" stop-opacity="0"/></radialGradient>
  ${faceBody}</defs>
  <g data-layer="avatar-motion" class="${animate?'avatar-breathe':''}">
- ${showHair?`<g data-layer="hair-back" ${hatClip}>${hairArt()}</g>`:''}
+ ${showHair?`<g data-layer="hair-back" ${hatClip}>${hairArt('back')}</g>`:''}
  <g data-layer="accessory-back">${accessoryBack}</g>
  <g data-layer="outer-back">${outerBack}</g>
  <g data-layer="shoes-back">${shoesBack}</g>
@@ -129,5 +131,5 @@ export function avatarSvgMarkup(gender:'male'|'female',input:Equipment={},uid='a
  <!-- Current trousers are worn over shoes: back cuff → shin → front shoe → trouser hem. -->
  <g data-layer="shoes-front">${shoesFront}</g><g data-layer="bottom">${bottom}</g><g data-layer="top" ${c.outer&&c.outer.id!=='outer-wizard'?`clip-path="url(#${id('inner-top')})"`:''}>${top}</g><g data-layer="outer">${outer}</g>${hasTop||c.outer?`<use href="#${id('body')}" clip-path="url(#${id('neck')})" ${e.skin==='skin-warm'?`filter="url(#${id('warm')})"`:''} data-layer="neck-occlusion"/>`:''}
 
- ${glasses}<g data-layer="accessory">${accessory}</g>${showHair?`<g mask="url(#${id('hair-front')})" data-layer="hair-front" ${hatClip}>${hairArt()}</g>`:''}${hat}${ribbon}</g></svg>`;
+ ${glasses}<g data-layer="accessory">${accessory}</g>${showHair?`<g data-layer="hair-front" ${hatClip}>${hairArt('front')}</g>`:''}${hat}${ribbon}</g></svg>`;
 }

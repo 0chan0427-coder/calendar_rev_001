@@ -1,6 +1,8 @@
 import type {WearSlot} from './wardrobe';
 export type Box=[number,number,number,number];
-export interface CollectionItem {id:string;slot:WearSlot;name:string;price:number;kind:string;box:Box;image:string;width:number;height:number;crop:Box;feet?:[Box,Box]}
+/** Source-image coordinates. Back paths identify rear locks only, never a face cutout. */
+export interface HairLayers {backPath:string}
+export interface CollectionItem {id:string;slot:WearSlot;name:string;price:number;kind:string;box:Box;image:string;width:number;height:number;crop:Box;feet?:[Box,Box];hairLayers?:HairLayers}
 // One entry per original design. Source PNGs are unmodified; crops describe their alpha bounds.
 export const COLLECTION_01:CollectionItem[]=[
   {
@@ -23,7 +25,10 @@ export const COLLECTION_01:CollectionItem[]=[
       40,
       1149,
       872
-    ]
+    ],
+    "hairLayers": {
+      "backPath": "M560 750 Q768 860 1000 750 L1000 1024 H560Z"
+    }
   },
   {
     "id": "hair-sidepart",
@@ -45,7 +50,10 @@ export const COLLECTION_01:CollectionItem[]=[
       24,
       1074,
       943
-    ]
+    ],
+    "hairLayers": {
+      "backPath": "M475 800 Q768 990 1100 800 L1100 1024 H475Z"
+    }
   },
   {
     "id": "hair-curls",
@@ -67,7 +75,10 @@ export const COLLECTION_01:CollectionItem[]=[
       45,
       1244,
       895
-    ]
+    ],
+    "hairLayers": {
+      "backPath": "M570 800 Q768 1000 990 800 L990 1024 H570Z"
+    }
   },
   {
     "id": "hair-long",
@@ -79,7 +90,7 @@ export const COLLECTION_01:CollectionItem[]=[
       155,
       -10,
       710,
-      850
+      780
     ],
     "image": "/world/wardrobe-01/hair-long.png",
     "width": 1536,
@@ -89,7 +100,10 @@ export const COLLECTION_01:CollectionItem[]=[
       15,
       1007,
       964
-    ]
+    ],
+    "hairLayers": {
+      "backPath": "M550 625 Q768 740 990 625 L990 1024 H550Z"
+    }
   },
   {
     "id": "hair-twintail",
@@ -98,10 +112,10 @@ export const COLLECTION_01:CollectionItem[]=[
     "price": 3000,
     "kind": "hair",
     "box": [
-      105,
+      75,
       -15,
-      810,
-      750
+      870,
+      700
     ],
     "image": "/world/wardrobe-01/hair-twintail.png",
     "width": 1536,
@@ -111,7 +125,10 @@ export const COLLECTION_01:CollectionItem[]=[
       27,
       1362,
       971
-    ]
+    ],
+    "hairLayers": {
+      "backPath": "M0 500 H330 Q390 620 400 760 L400 1024 H0Z M1536 500 H1206 Q1146 620 1136 760 L1136 1024 H1536Z"
+    }
   },
   {
     "id": "hair-pony",
@@ -120,10 +137,10 @@ export const COLLECTION_01:CollectionItem[]=[
     "price": 3000,
     "kind": "hair",
     "box": [
-      155,
+      203,
       -10,
-      760,
-      700
+      792,
+      675
     ],
     "image": "/world/wardrobe-01/hair-pony.png",
     "width": 1536,
@@ -133,7 +150,10 @@ export const COLLECTION_01:CollectionItem[]=[
       29,
       1131,
       964
-    ]
+    ],
+    "hairLayers": {
+      "backPath": "M1536 390 H1120 L1050 480 Q1020 570 970 620 L970 1024 H1536Z M550 720 Q680 850 820 730 L820 1024 H550Z"
+    }
   },
   {
     "id": "top-cable",

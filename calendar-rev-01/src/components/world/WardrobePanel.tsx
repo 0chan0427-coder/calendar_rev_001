@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react';
 import { WEARABLES, WEAR_SLOTS, AVATAR_DEFAULTS, normalizeAvatarEquipment, isCat } from '../../data/wardrobe';
 import type { Equipment, WearSlot } from '../../data/wardrobe';
 import { listWorldWardrobe, buyWorldWearable, saveWorldAppearance } from '../../services/world';
+import {useAvatarMotionEnabled,setAvatarMotionEnabled} from '../../lib/avatarMotion';
 import CharacterAvatar from './CharacterAvatar';
 import WearableThumbnail from './WearableThumbnail';
 import CompanionAvatar from './CompanionAvatar';
 
 export default function WardrobePanel({userId,targetId='avatar',itemId='',gender='male',initial={},onClose,onSaved}:{userId:string;targetId?:string;itemId?:string;gender?:'male'|'female';initial?:Equipment;onClose:()=>void;onSaved:()=>Promise<void>}){
+ const motion=useAvatarMotionEnabled();
  const target=targetId==='avatar'?'avatar':'cat';
  const slots=target==='avatar'?WEAR_SLOTS:[['coat','털색·무늬'],['accessory','액세서리']] as [WearSlot,string][];
  const [draft,setDraft]=useState<Equipment>(target==='avatar'?normalizeAvatarEquipment(initial):{...initial});
@@ -20,6 +22,7 @@ export default function WardrobePanel({userId,targetId='avatar',itemId='',gender
  if(target==='cat'&&!isCat(itemId))return null;
  return <div className="modal-backdrop"><section className="wardrobe-modal" role="dialog" aria-modal="true" aria-label={target==='avatar'?'미니미 꾸미기':'동물 꾸미기'}><div className="wardrobe-heading"><div><small>DRESS ROOM</small><h2>{target==='avatar'?'미니미 꾸미기':'고양이 꾸미기'}</h2><p>{target==='avatar'?'승인한 베이스에 의상·눈·피부·메이크업·안경을 따로 착용해요.':'털색과 장식을 조합해요.'}</p></div><button disabled={busy} onClick={onClose} aria-label="닫기">닫기</button></div>
  <div className="wardrobe-layout"><div className="wardrobe-preview">{target==='avatar'?<CharacterAvatar gender={gender} equipment={draft}/>:<CompanionAvatar itemId={itemId} equipment={draft}/>}<span>미리보기</span></div><div className="wardrobe-choices"><div className="wardrobe-tabs" role="group" aria-label="꾸미기 부위">{slots.map(([id,label])=><button key={id} aria-pressed={slot===id} className={slot===id?'active':''} onClick={()=>setSlot(id)}>{label}</button>)}</div>
+ {target==='avatar'&&<button className="wardrobe-motion" aria-pressed={motion} onClick={()=>setAvatarMotionEnabled(!motion)}>움직임 {motion?'켜짐':'꺼짐'}</button>}
  <button className="wardrobe-reset" disabled={busy} onClick={remove}>이 부위 기본 모습 / 해제</button><div className="wardrobe-grid">{items.map(i=>{const has=i.price===0||owned.includes(i.id);return <article key={i.id} className={draft[i.slot]===i.id?'selected':''}><button className="wearable-select" disabled={busy||!ready} onClick={()=>{setDraft(p=>({...p,[i.slot]:i.id}));setNotice(has?'미리 착용했어요. 저장하면 적용돼요.':'구매 전 미리보기예요. 구매하면 저장할 수 있어요.');}}><WearableThumbnail item={i} gender={gender}/><b>{i.name}</b><small>{draft[i.slot]===i.id?'선택됨':has?'보유':`${i.price.toLocaleString()}P`}</small></button>{!has&&<button disabled={busy||!ready} onClick={()=>purchase(i.id)}>구매 {i.price.toLocaleString()}P</button>}</article>;})}</div>{!items.length&&<p className="wardrobe-empty">이 부위는 새 아이템을 준비 중이에요. 기본 외형으로 이용할 수 있어요.</p>}</div></div>
  {error&&<p className="wardrobe-error" role="alert">{error}</p>}{notice&&<p className="wardrobe-notice" role="status">{notice}</p>}<footer><button disabled={busy} onClick={onClose}>취소</button><button disabled={busy||!ready||Object.values(draft).some(id=>{const i=WEARABLES.find(w=>w.id===id);return !i||(i.price>0&&!owned.includes(id!));})} onClick={save}>{busy?'처리 중…':'착용 저장'}</button></footer></section></div>;
 }

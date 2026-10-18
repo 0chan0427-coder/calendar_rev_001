@@ -267,3 +267,6 @@
 /* Keep the fitted character visible while scrolling the item choices. */
 .wardrobe-layout{flex:1 1 auto;min-height:0;overflow:hidden}.wardrobe-choices{min-height:0;overflow:auto;padding-right:2px}
 @media(max-width:650px){.wardrobe-layout{grid-template-rows:215px minmax(0,1fr)}.wardrobe-preview{height:215px;padding:8px 16px 26px}.wardrobe-preview>.raster-avatar{width:113px;height:170px}.wardrobe-choices{overflow:auto}}
+
+/* 036: one SVG group moves all equipped layers; thumbnails stay still. */
+.wardrobe-motion{width:100%;margin-bottom:8px;font-size:12px}.wardrobe-motion[aria-pressed="true"]{background:#edf4ed;border-color:#8da98e}

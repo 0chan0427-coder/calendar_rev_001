@@ -252,3 +252,11 @@
 .wardrobe-modal,.wardrobe-modal *{box-sizing:border-box}.wardrobe-heading,.wardrobe-choices{min-width:0}.wardrobe-modal{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 .scene-tools{top:14px;bottom:auto!important;right:14px;max-width:calc(100% - 130px);justify-content:flex-end;flex-wrap:wrap}.furniture-controls{top:auto;bottom:14px;left:50%;transform:translateX(-50%);z-index:950;box-sizing:border-box;max-width:calc(100% - 24px)}
 .wardrobe-modal{display:flex;flex-direction:column;overflow:hidden}.wardrobe-layout{overflow:auto;min-height:0}.wardrobe-heading,.wardrobe-modal footer,.wardrobe-error,.wardrobe-notice{flex-shrink:0}.wardrobe-heading>button{white-space:nowrap;flex-shrink:0}.wardrobe-modal footer{padding-top:8px}
+
+/* 031: immutable 256×384 body; all wardrobe files share the exact artboard. */
+.modular-avatar .character-artboard{width:auto;height:100%;aspect-ratio:256/384;max-width:100%;position:relative}
+.modular-avatar .modular-avatar-layer,.profile-photo.character-layer .modular-avatar .modular-avatar-layer{position:absolute;inset:0;left:0;top:0;transform:none;width:100%;height:100%;max-width:none;max-height:none;object-fit:contain;pointer-events:none;user-select:none}
+.scene-character-wrap .modular-avatar{animation:none!important}.modular-avatar:after{display:none}.wearable-thumbnail{width:84px;height:70px;display:block;overflow:visible}
+.wardrobe-preview>.modular-avatar{width:190px;height:290px}.wardrobe-grid .wearable-select{min-height:125px}.wardrobe-grid .wearable-select .wearable-thumbnail{height:70px}
+@media(max-width:650px){.wardrobe-preview>.modular-avatar{width:115px;height:175px}.wardrobe-preview{height:215px}}
+.wearable-thumbnail{overflow:hidden;pointer-events:none}

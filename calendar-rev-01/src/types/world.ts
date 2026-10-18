@@ -52,6 +52,7 @@ export interface WorldRoomItem {
   y: number;
   scale: number;
   z_index: number;
+  scene_type?: WorldSceneType;
   created_at?: string;
   updated_at?: string;
 }

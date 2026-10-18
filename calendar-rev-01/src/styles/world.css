@@ -65,29 +65,9 @@
 .cyworld-room.night .cy-room-wall:after{background:radial-gradient(circle at 50% 20%,#ffffff12,transparent 58%)}
 /* No built-in window or door: these are ordinary shop/placeable items now. */
 .cy-room-window,.cy-room-door{display:none}
-.scene-character-wrap{position:absolute;width:180px;height:260px;left:52%;bottom:5%;z-index:20;transform:translateX(-50%);animation:characterBob 3s ease-in-out infinite}
-.scene-character{position:absolute;inset:0;width:180px;height:260px;image-rendering:pixelated;filter:drop-shadow(0 10px 5px #493b4425)}
-.scene-character-body{z-index:1}.scene-character-hair{z-index:2}
-.character-layer{position:relative;display:grid;place-items:center}
-.character-layer>img{position:absolute;max-width:none;image-rendering:pixelated}
-.character-layer>img:first-child{height:166px;width:auto;position:relative;z-index:1}
-.character-layer>img:last-child{height:166px;width:auto;z-index:2}
-.cyworld-room.day .scene-character-wrap,.cyworld-room.night .scene-character-wrap{filter:none}
-@media(max-width:650px){.scene-character-wrap{width:150px;height:217px;left:52%;bottom:5%}.scene-character{width:150px;height:217px}.character-layer>img:first-child,.character-layer>img:last-child{height:92px}.cyworld-room.day .scene-character-wrap,.cyworld-room.night .scene-character-wrap{transform:translateX(-50%) scale(.95)}}
-
-
 /* 023: avatar gender selector and cleaner layered mini-me presentation */
 .avatar-gender-box{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:0 0 14px;padding:12px 14px;background:#fff;border:1px solid #c9dfe7;border-radius:10px;box-shadow:inset 0 0 0 2px #f4fafc}
 .avatar-gender-box>div:first-child{display:flex;flex-direction:column;gap:3px}.avatar-gender-box b{color:#4e6f80;font-size:13px}.avatar-gender-box small{color:#91a0a8;font-size:11px}.avatar-gender-buttons{display:flex;gap:6px}.avatar-gender-buttons button{min-width:78px;border:1px solid #bfd6df;background:#f8fcfd;color:#5f7c89;border-radius:8px;padding:8px 10px;font-weight:900;cursor:pointer}.avatar-gender-buttons button.active{background:linear-gradient(#6eabc3,#4e91ac);border-color:#4b8299;color:#fff}.avatar-gender-buttons button.active.female{background:linear-gradient(#d99bb5,#c97e9d);border-color:#bb718f}
-.profile-photo.character-layer{position:relative}.profile-photo.character-layer img{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);height:164px;width:auto}.profile-photo.character-layer img:first-child{position:absolute}.profile-photo.character-layer img:last-child{position:absolute}
-.scene-character-wrap{width:190px;height:274px}.scene-character{width:190px;height:274px}.scene-character-body,.scene-character-hair{position:absolute;inset:0}.scene-character-hair{pointer-events:none}
-@media(max-width:650px){.avatar-gender-box{align-items:flex-start;flex-direction:column}.avatar-gender-buttons{width:100%}.avatar-gender-buttons button{flex:1}.profile-photo.character-layer img{height:92px}.scene-character-wrap{width:155px;height:224px}.scene-character{width:155px;height:224px}}
-
-/* 024: B-reference mini-me visual lock. The reference character is currently a single transparent visual asset; future clothing/hair will be re-layered on this exact base style. */
-.profile-photo.character-layer img{height:170px;width:auto;object-fit:contain}
-.scene-character{width:210px;height:auto;object-fit:contain;image-rendering:auto}
-.scene-character-wrap{width:210px;height:300px}
-@media(max-width:650px){.profile-photo.character-layer img{height:94px}.scene-character{width:160px;height:auto}.scene-character-wrap{width:160px;height:235px}}
 /* 024: guide-style item panel beside the MINIROOM */
 .cyworld-shell.with-items{grid-template-columns:220px minmax(0,1fr) 340px}
 .cyworld-shell.with-items .side-item-panel{min-width:0;max-height:640px;overflow:auto;border-top:0;border-left:1px solid #c1d7e0;background:#f7fbfc;padding:14px 12px}
@@ -100,51 +80,175 @@
 @media(max-width:980px){.cyworld-shell.with-items{grid-template-columns:190px minmax(0,1fr) 290px}.cyworld-shell.with-items .side-item-panel .decorate-grid{grid-template-columns:1fr}}
 @media(max-width:760px){.cyworld-shell.with-items{display:block}.cyworld-shell.with-items .side-item-panel{border-left:0;border-top:1px solid #c1d7e0;max-height:none}.cyworld-shell.with-items .side-item-panel .decorate-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
-/* 026: default avatar visual contract. The profile thumbnail and room avatar always use the same current equipped appearance. */
-.profile-photo.character-layer img{height:170px;width:auto;object-fit:contain}
-.scene-character-wrap{width:170px;height:250px}
-.scene-character{width:170px;height:auto;max-height:250px;object-fit:contain}
-@media(max-width:650px){.profile-photo.character-layer img{height:94px}.scene-character-wrap{width:132px;height:194px}.scene-character{width:132px;max-height:194px}}
+/* 026–029: mini-me visual contract. Keep the character artboard at the source
+   image ratio so every future layer and the blink overlay share exact coordinates. */
+.profile-photo.character-layer .character-avatar {
+  width: 100%;
+  height: 100%;
+}
 
-/* 027: finalized B-style mini-me foundation. The reference proportions are locked;
-   motion is intentionally subtle so furniture and companions remain the focus. */
-.character-avatar{position:relative;width:100%;height:100%;display:block;transform-origin:50% 86%;}
-.character-avatar-image{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:100%;height:100%;object-fit:contain;image-rendering:auto;}
-.character-avatar::after{content:"";position:absolute;left:22%;right:22%;bottom:2%;height:5%;border-radius:50%;background:#5b506022;filter:blur(3px);pointer-events:none;}
-.scene-character-wrap .character-avatar{animation:characterIdle 5.8s ease-in-out infinite;}
-.scene-character-wrap .character-avatar-image{filter:drop-shadow(0 9px 5px #493b4425);}
-.character-blink{position:absolute;inset:0;pointer-events:none;opacity:0;animation:characterBlink 6.2s linear infinite;}
-.character-blink i{position:absolute;top:36.5%;width:8%;height:2.2%;border-radius:999px;background:#ffd7b8;box-shadow:0 0 0 1px #a66f6a22;}
-.character-blink i:first-child{left:29%;transform:rotate(-2deg)}
-.character-blink i:last-child{right:29%;transform:rotate(2deg)}
-.profile-photo.character-layer .character-avatar{width:100%;height:100%;}
-.profile-photo.character-layer .character-avatar-image{width:100%;height:100%;}
-@keyframes characterIdle{0%,100%{transform:translateY(0) scaleY(1)}50%{transform:translateY(-1.5px) scaleY(1.004)}}
-@keyframes characterBlink{0%,88%,100%{opacity:0}89%,91%{opacity:1}90%{opacity:1}}
-@media (prefers-reduced-motion:reduce){.scene-character-wrap .character-avatar,.character-blink{animation:none}.character-blink{display:none}}
-/* 027 sizing override: keep the finalized mini-me at the approved room scale. */
-.scene-character-wrap{width:170px;height:250px}
-.scene-character-wrap .scene-character{width:170px;height:250px;max-height:none}
-.profile-photo.character-layer .character-avatar .character-avatar-image{width:100%;height:100%;object-fit:contain;left:50%;top:50%;transform:translate(-50%,-50%)}
-@media(max-width:650px){.scene-character-wrap{width:132px;height:194px}.scene-character-wrap .scene-character{width:132px;height:194px}.profile-photo.character-layer .character-avatar .character-avatar-image{width:100%;height:100%}}
+.scene-character-wrap {
+  width: 170px;
+  height: 250px;
+  animation: none;
+}
 
-/* 028: finalized idle motion — remove legacy whole-wrapper bobbing. */
-.scene-character-wrap,
+
 .scene-character-wrap .scene-character {
-  animation: none !important;
+  width: 100%;
+  height: 100%;
 }
-.scene-character-wrap .character-avatar {
-  animation: characterIdle 7.2s ease-in-out infinite !important;
+
+.character-avatar {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  transform-origin: 50% 86%;
+  --avatar-ratio: 1 / 1;
+  --blink-delay: 0s;
 }
+
+/* The artboard, not the outer room box, owns the source image ratio. */
+.character-artboard {
+  position: relative;
+  width: auto;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  aspect-ratio: var(--avatar-ratio);
+  flex: 0 0 auto;
+}
+
+.profile-photo.character-layer .character-avatar-image,
+.profile-photo.character-layer .character-layer-image,
+.profile-photo.character-layer .character-blink {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: none;
+}
+
+.character-avatar-image,
+.character-layer-image,
 .character-blink {
-  animation: characterBlink 8.4s linear infinite !important;
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+  user-select: none;
 }
+
+.character-avatar-image {
+  z-index: 10;
+  image-rendering: auto;
+}
+
+.character-layer-image {
+  image-rendering: auto;
+}
+
+.character-blink {
+  z-index: 30;
+  transform-origin: 50% 51%;
+  opacity: 0;
+  animation: characterBlink 7.8s var(--blink-delay) linear infinite;
+  will-change: opacity, transform;
+}
+
+/* A very small breathing/bobbing motion keeps the mini-me alive without making
+   the whole room move. The room wrapper itself never animates. */
+.scene-character-wrap .character-avatar {
+  animation: characterIdle 7.2s ease-in-out infinite;
+}
+
+.scene-character-wrap .character-avatar-image {
+  filter: drop-shadow(0 9px 5px #493b4425);
+}
+
+.character-avatar::after {
+  content: "";
+  position: absolute;
+  left: 30%;
+  right: 30%;
+  bottom: 1%;
+  height: 3%;
+  border-radius: 50%;
+  background: #5b50601c;
+  filter: blur(3px);
+  pointer-events: none;
+}
+
+.profile-photo.character-layer .character-artboard {
+  height: min(170px, 100%);
+}
+
 @keyframes characterIdle {
   0%, 100% { transform: translateY(0) scaleY(1); }
-  45% { transform: translateY(-0.8px) scaleY(1.002); }
+  42% { transform: translateY(-0.45px) scaleY(1.001); }
   55% { transform: translateY(-1.1px) scaleY(1.003); }
+  68% { transform: translateY(-0.35px) scaleY(1.001); }
 }
+
+/* Blink is deliberately quick, with a short closed-eye hold and a long idle gap. */
 @keyframes characterBlink {
-  0%, 90%, 100% { opacity: 0; }
-  91%, 92.2% { opacity: 1; }
+  0%, 89%, 100% {
+    opacity: 0;
+    transform: scaleY(0.08);
+  }
+  90.1% {
+    opacity: 1;
+    transform: scaleY(0.72);
+  }
+  90.8%, 91.35% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  92.15% {
+    opacity: 0;
+    transform: scaleY(0.22);
+  }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .scene-character-wrap .character-avatar,
+  .character-blink {
+    animation: none;
+  }
+  .character-blink {
+    display: none;
+  }
+}
+
+@media(max-width:650px){
+  .scene-character-wrap{width:132px;height:194px}
+  .scene-character-wrap .scene-character{width:132px;height:194px}
+  .profile-photo.character-layer .character-artboard{height:min(94px,100%)}
+}
+
+/* 030: fixed source art, separate dress room and garden. */
+.scene-character-wrap{position:absolute;left:52%;bottom:5%;z-index:20;transform:translateX(-50%);animation:none}
+.character-artboard>.appearance-art{position:absolute;inset:0;width:100%;height:100%;overflow:visible;z-index:10}
+.appearance-art{display:block;width:100%;height:100%;overflow:visible}
+.scene-companion{position:absolute;left:65%;bottom:5%;width:105px;height:140px;z-index:21;display:flex;align-items:center;flex-direction:column;justify-content:flex-end}
+.companion-art{width:100%;height:100%;min-height:0;display:grid;place-items:center}
+.companion-art img{width:100%;height:100%;object-fit:contain}.cat-art{aspect-ratio:1/1}
+.scene-companion .companion-art{height:112px}.companion-preview{display:block;width:58px;height:65px;flex-shrink:0}
+.scene-garden-field{position:absolute;inset:0;background:linear-gradient(#d5edfa 0%,#f0f8df 37%,#a6ce7e 38%,#d5e6a2 100%);opacity:1;z-index:0}
+.cyworld-room.exterior{height:620px;background:#d3e7ad}.cyworld-room.exterior:before,.cyworld-room.exterior:after{display:none}.cyworld-room.exterior.night .scene-garden-field{background:linear-gradient(#26344f 0%,#526a70 37%,#53765d 38%,#789368 100%)}
+.scene-furniture.editing{touch-action:none;outline-width:3px}.furniture-controls button{min-width:48px;min-height:44px;font-size:13px;padding:8px}.furniture-controls{z-index:2}.scene-tools,.scene-info{z-index:900!important}
+.wardrobe-open{width:100%;padding:12px;margin-bottom:14px;border:1px solid #c5d9df;border-radius:10px;background:#eef7fa;color:#426b7a;font-weight:700;cursor:pointer}
+.wardrobe-modal{width:min(850px,96vw);max-height:92dvh;overflow:auto;background:#fffdf9;border:1px solid #dfd5c9;border-radius:20px;padding:24px;box-shadow:0 24px 90px #2f253b44;color:#514b52}
+.wardrobe-heading{display:flex;justify-content:space-between;gap:16px}.wardrobe-heading small{letter-spacing:2px;color:#938070;font-size:10px}.wardrobe-heading h2{margin:5px 0 8px}.wardrobe-heading p{font-size:13px;color:#8a8282;margin:0 0 20px}
+.wardrobe-modal button{cursor:pointer;border:1px solid #ded6cd;background:#fff;border-radius:9px;padding:10px 12px;color:#62545a;min-height:44px}.wardrobe-modal button:disabled{opacity:.5;cursor:default}.wardrobe-heading>button{align-self:flex-start}
+.wardrobe-layout{display:grid;grid-template-columns:230px minmax(0,1fr);gap:22px}.wardrobe-preview{height:340px;border-radius:16px;background:radial-gradient(ellipse at 50% 40%,#fff9f1,#e9eee5);padding:24px 32px 40px;position:relative;display:flex;justify-content:center}.wardrobe-preview>.character-avatar{height:270px;width:160px}.wardrobe-preview>.companion-art{align-self:center;height:220px;width:190px}.wardrobe-preview>span{position:absolute;bottom:14px;font-size:12px;color:#8e8274}
+.wardrobe-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.wardrobe-tabs button{font-size:12px}.wardrobe-tabs .active{background:#557c76;color:white;border-color:#557c76}.wardrobe-reset{font-size:12px;width:100%;margin-bottom:10px}.wardrobe-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.wardrobe-grid article{border:1px solid #e5ded6;border-radius:12px;padding:6px}.wardrobe-grid article.selected{border:2px solid #72968a;padding:5px;background:#f1f7f2}.wardrobe-grid article>button{width:100%;font-size:12px}.wardrobe-grid .wearable-select{border:0;background:transparent;display:flex;align-items:center;flex-direction:column;gap:8px;padding:8px}.wearable-select img{height:42px;width:60px;object-fit:contain}.wearable-swatch{display:block;width:38px;height:38px;border-radius:50%;border:4px solid #fff;box-shadow:0 1px 5px #66553322}.wearable-select small{font-size:11px;color:#8e807c}.wardrobe-modal footer{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}.wardrobe-modal footer button:last-child{background:#557c76;color:white}.wardrobe-error{color:#b54848;font-size:13px}.wardrobe-notice,.wardrobe-empty{font-size:13px;color:#7d7770;line-height:1.7}
+.modal-backdrop:has(.wardrobe-modal){z-index:2100}
+@media(max-width:650px){.wardrobe-modal{padding:16px}.wardrobe-layout{grid-template-columns:1fr;gap:12px}.wardrobe-preview{height:205px;padding:10px 25px 30px}.wardrobe-preview>.character-avatar{height:165px;width:110px}.wardrobe-preview>.companion-art{height:155px;width:145px}.wardrobe-tabs{flex-wrap:nowrap;overflow-x:auto;padding-bottom:6px}.wardrobe-tabs button{flex-shrink:0}.scene-companion{left:65%;width:75px;height:100px}.scene-companion .companion-art{height:80px}.cyworld-room.exterior{height:480px}.companion-row{flex-wrap:wrap}.scene-tools button{min-height:44px}}
+.wardrobe-modal,.wardrobe-modal *{box-sizing:border-box}.wardrobe-heading,.wardrobe-choices{min-width:0}.wardrobe-modal{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.scene-tools{top:14px;bottom:auto!important;right:14px;max-width:calc(100% - 130px);justify-content:flex-end;flex-wrap:wrap}.furniture-controls{top:auto;bottom:14px;left:50%;transform:translateX(-50%);z-index:950;box-sizing:border-box;max-width:calc(100% - 24px)}
+.wardrobe-modal{display:flex;flex-direction:column;overflow:hidden}.wardrobe-layout{overflow:auto;min-height:0}.wardrobe-heading,.wardrobe-modal footer,.wardrobe-error,.wardrobe-notice{flex-shrink:0}.wardrobe-heading>button{white-space:nowrap;flex-shrink:0}.wardrobe-modal footer{padding-top:8px}

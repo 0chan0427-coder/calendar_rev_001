@@ -68,8 +68,8 @@ export const createWorldGuestbook = (ownerId: string, writerId: string, content:
 export const listWorldRoomItems = (userId: string) =>
   supabase.from('world_room_items').select('*').eq('user_id', userId).order('z_index', { ascending: true });
 
-export const addWorldRoomItem = (userId: string, itemId: string, x = 25, y = 38, scale = 0.5, zIndex = 12) =>
-  supabase.rpc('place_world_room_item', { p_user_id: userId, p_item_id: itemId, p_x: x, p_y: y, p_scale: scale, p_z_index: zIndex });
+export const addWorldRoomItem = (userId: string, itemId: string, x = 25, y = 38, scale = 0.5, zIndex = 12, sceneType = 'interior') =>
+  supabase.rpc('place_world_scene_item', { p_scene_type:sceneType, p_user_id: userId, p_item_id: itemId, p_x: x, p_y: y, p_scale: scale, p_z_index: zIndex });
 
 export const updateWorldRoomItem = (userId: string, id: string, values: { x?: number; y?: number; scale?: number; z_index?: number }) =>
   supabase.from('world_room_items').update(values).eq('id', id).eq('user_id', userId);
@@ -152,3 +152,9 @@ export const setWorldActiveCompanion = (userId: string, companionId: string) =>
 
 export const renameWorldCompanion = (userId: string, companionId: string, name: string) =>
   supabase.rpc('rename_world_companion', { p_user_id: userId, p_companion_id: companionId, p_name: name });
+
+// 030: appearance ownership and equipment are validated by the server.
+export const listWorldAppearance = (userId:string) => supabase.from('world_equipment').select('*').eq('user_id',userId);
+export const listWorldWardrobe = (userId:string) => supabase.from('world_wardrobe').select('item_id').eq('user_id',userId);
+export const buyWorldWearable = (itemId:string) => supabase.rpc('purchase_world_wearable',{p_item_id:itemId});
+export const saveWorldAppearance = (targetId:string,equipment:Record<string,string>) => supabase.rpc('save_world_appearance',{p_target_id:targetId,p_equipment:equipment});

@@ -1,0 +1,22 @@
+V030 변경·추가 파일 목록
+기준: calendar_rev_001-main(4).zip
+기존 파일 삭제: 없음
+
+README_V030.txt
+docs/V030_STRUCTURE.md
+public/world/animals/cats/ivory-base.png
+public/world/characters/overlays/minime_female_blink.png
+public/world/characters/overlays/minime_male_blink.png
+public/world/wearables/shared/ribbon-red.png
+src/components/world/AppearanceArt.tsx
+src/components/world/CharacterAvatar.tsx
+src/components/world/CompanionAvatar.tsx
+src/components/world/WardrobePanel.tsx
+src/components/world/WorldScene.tsx
+src/data/companions.ts
+src/data/wardrobe.ts
+src/pages/WorldPage.tsx
+src/services/world.ts
+src/styles/world.css
+src/types/world.ts
+supabase/013_world_appearance.sql

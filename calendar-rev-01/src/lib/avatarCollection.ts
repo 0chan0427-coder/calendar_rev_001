@@ -7,8 +7,8 @@ export function collectionAsset(item:CollectionItem|undefined,resolve:AssetResol
  return `<svg data-collection="${item.id}" x="${b[0]}" y="${b[1]}" width="${b[2]}" height="${b[3]}" viewBox="${(crop||item.crop).join(' ')}" preserveAspectRatio="none" overflow="hidden"><image href="${safe(resolve(item.image))}" width="${item.width}" height="${item.height}" filter="url(#${alphaId})" ${imageExtra}/></svg>`;
 }
 /** Complementary masks split source art without cutting a generic hole around the face. */
-export function hairLayerMasks(width:number,height:number,backPath:string,backId:string,frontId:string){
- return `<mask id="${backId}" maskUnits="userSpaceOnUse" x="0" y="0" width="${width}" height="${height}"><path d="${backPath}" fill="white"/></mask><mask id="${frontId}" maskUnits="userSpaceOnUse" x="0" y="0" width="${width}" height="${height}"><rect width="${width}" height="${height}" fill="white"/><path d="${backPath}" fill="black"/></mask>`;
+export function hairLayerMasks(width:number,height:number,backPath:string,backId:string,frontId:string,frontKeepPath=''){
+ return `<mask id="${backId}" maskUnits="userSpaceOnUse" x="0" y="0" width="${width}" height="${height}"><path d="${backPath}" fill="white"/>${frontKeepPath?`<path d="${frontKeepPath}" fill="black"/>`:""}</mask><mask id="${frontId}" maskUnits="userSpaceOnUse" x="0" y="0" width="${width}" height="${height}"><rect width="${width}" height="${height}" fill="white"/><path d="${backPath}" fill="black"/>${frontKeepPath?`<path d="${frontKeepPath}" fill="white"/>`:""}</mask>`;
 }
 /** One transform for the whole hairstyle keeps the crown, part and tie aligned. */
 export function collectionHair(item:CollectionItem|undefined,resolve:AssetResolver,alphaId:string,maskId:string,layer:'front'|'back'){

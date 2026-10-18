@@ -28,6 +28,16 @@ for(const item of items){
  if(item.slot==='outer'&&item.id!=='outer-wizard'){
   const key="'"+item.id+"':";const entry=garment.slice(garment.indexOf(key)).split('},')[0];
   if(!entry.includes('innerTopClip:'))fail(item.id,'register the outer shoulder envelope for inner clothing');
+  // The approved body has shoulder anchors at x=399 and x=625.
+  // An outer must provide ease beyond this span, while its cuffs remain at the hands.
+  const field=name=>Number(entry.match(new RegExp(name+':\\s*([.0-9]+)'))?.[1]);
+  const point=name=>entry.match(new RegExp(name+':\\s*\\[\\s*([.0-9]+),\\s*([.0-9]+)\\]'))?.slice(1).map(Number);
+  if(!/wearingClass: '(coat|jacket|cardigan)'/.test(entry))fail(item.id,'declare coat/jacket/cardigan silhouette and visually review the fit');
+  const shoulder=point('shoulder'),cuff=point('targetCuff');
+  const span=shoulder&&2*(field('center')-shoulder[0])*field('scaleX');
+  if(!Number.isFinite(span)||span<(625-399)*1.15)fail(item.id,'outer shoulder span must exceed the fixed body span by at least 15%');
+  if(!cuff||Math.hypot(cuff[0]-244,cuff[1]-962)>12)fail(item.id,'outer cuff no longer meets the fixed body hand');
+  if(!entry.includes('sleeveJoinX:'))fail(item.id,'outer must share a continuous shoulder/sleeve seam');
  }
  if(item.slot==='hat'&&!registered(headwear||'',item.id))fail(item.id,'register head opening / front-back headwear fitting');
  if(item.slot==='shoes'&&(!item.feet||item.feet.length!==2||!item.feet.every(inSource)))fail(item.id,'register both feet in original-image coordinates');

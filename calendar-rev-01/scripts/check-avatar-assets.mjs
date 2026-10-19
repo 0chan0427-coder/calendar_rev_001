@@ -8,6 +8,7 @@ const start=text.indexOf(marker)+marker.length,end=text.indexOf('\n];',start)+2;
 if(start<marker.length||end<2)throw Error('Collection catalog must remain a JSON array.');
 const items=JSON.parse(text.slice(start,end));
 const fits=readFileSync(resolve(root,'src/lib/avatarFitting.ts'),'utf8');
+const accessories=readFileSync(resolve(root,'src/lib/avatarAccessories.ts'),'utf8');
 const [garment,headwear]=fits.split('export const HEADWEAR_FITS:');
 const registered=(source,id)=>source.includes("'"+id+"':");
 const fail=(id,message)=>{throw Error(`Avatar fitting: ${id}: ${message}`);};
@@ -38,6 +39,14 @@ for(const item of items){
   if(!Number.isFinite(span)||span<(625-399)*1.15)fail(item.id,'outer shoulder span must exceed the fixed body span by at least 15%');
   if(!cuff||Math.hypot(cuff[0]-244,cuff[1]-962)>12)fail(item.id,'outer cuff no longer meets the fixed body hand');
   if(!entry.includes('sleeveJoinX:'))fail(item.id,'outer must share a continuous shoulder/sleeve seam');
+ }
+ if(item.slot==='accessory'){
+  if(!registered(accessories,item.id))fail(item.id,'register an accessory anchor, fit box and outer layering before release');
+  const entry=accessories.slice(accessories.indexOf("'"+item.id+"':")).split('},')[0];
+  if(!/anchor:'(neck|collar|chest)'/.test(entry)||!/surface:'(over-outer|under-outer)'/.test(entry))fail(item.id,'accessory anchor/surface is missing');
+  const box=entry.match(/box:\[([^\]]+)\]/)?.[1].split(',').map(Number);
+  if(!validBox(box))fail(item.id,'invalid accessory fitting box');
+  if(entry.includes("anchor:'neck'")&&!entry.includes('rearPath:'))fail(item.id,'neck accessories require an explicit rear/front split');
  }
  if(item.slot==='hat'&&!registered(headwear||'',item.id))fail(item.id,'register head opening / front-back headwear fitting');
  if(item.slot==='shoes'&&(!item.feet||item.feet.length!==2||!item.feet.every(inSource)))fail(item.id,'register both feet in original-image coordinates');

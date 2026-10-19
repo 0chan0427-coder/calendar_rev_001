@@ -349,3 +349,17 @@
 .inventory-art>.furniture-art{width:100%;height:100%;max-height:90px}
 .item-art>.furniture-art{max-width:100%;max-height:100%}
 .furniture-placeholder{display:grid;place-items:center;font-size:38px}
+
+/* V047: one window slot; only room characters shrink, wardrobe preview stays unchanged. */
+.scene-character-wrap{scale:.85;transform-origin:50% 100%}
+.room-window-slot{position:absolute;width:var(--window-width);aspect-ratio:3/2;transform:translate(-50%,-50%);z-index:4;pointer-events:none;filter:drop-shadow(0 4px 2px #70533322)}
+.room-window-frame{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;z-index:2}
+.room-window-view{position:absolute;inset:12% 8% 17%;overflow:hidden;background:#b8dced}
+.room-window-view img{width:100%;height:100%;object-fit:cover}
+.window-position{display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin:10px 0}
+.window-panel button{min-height:36px;border:1px solid #cbbba2;background:#fffcf5;border-radius:7px;color:#725c43;padding:7px 9px;cursor:pointer}
+.window-panel button:disabled{opacity:.55;cursor:default}
+.window-view-thumb{height:85px;border-radius:7px;overflow:hidden}.window-view-thumb img{width:100%;height:100%;object-fit:cover}
+.scene-companion .companion-art{height:var(--companion-height,72px)!important;aspect-ratio:auto;width:100%}
+.scene-companion .companion-nameplate{max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.companion-v3 svg{display:block;width:100%;height:100%;overflow:visible}

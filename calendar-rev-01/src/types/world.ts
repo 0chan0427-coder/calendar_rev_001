@@ -32,6 +32,11 @@ export interface WorldProfile {
   wallpaper_id: string;
   floor_id: string;
   window_id: string;
+  window_frame_id?: string|null;
+  window_scenery_id?:string;
+  window_x?:number;
+  window_y?:number;
+  window_scale?:number;
   my_bgm_id?: string | null;
   curtain_id?: string | null;
   avatar_gender?: 'male' | 'female';

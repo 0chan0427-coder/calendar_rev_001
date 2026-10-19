@@ -1,3 +1,6 @@
+import WindowPanel from './WindowPanel';
+import type {WindowUpdate} from './WindowPanel';
+import {isWindowFrame,WINDOW_SCENERY} from '../../data/windows';
 import {useMemo,useState} from 'react';
 import type {WorldCompanion,WorldItem,WorldProfile,WorldRoomItem} from '../../types/world';
 import {WEARABLES,WEAR_SLOTS,normalizeAvatarEquipment,isCat} from '../../data/wardrobe';
@@ -6,11 +9,12 @@ import FurnitureArt from './FurnitureArt';
 import WearableThumbnail from './WearableThumbnail';
 import CompanionAvatar from './CompanionAvatar';
 
-type Tab='avatar'|'furniture'|'animals'|'background';
+type Tab='avatar'|'furniture'|'animals'|'background'|'window';
 interface Props {
  inventory:{item_id:string;quantity:number}[];owned:string[];catalog:WorldItem[];roomItems:WorldRoomItem[];
  companions:WorldCompanion[];equipment:Record<string,Equipment>;profile:WorldProfile;gender:'male'|'female';
  error:string;busy:boolean;saveState:string;selectedId:string|null;
+ onWindow:(v:WindowUpdate)=>void;
  onClose:()=>void;onRefresh:()=>void;onShop:()=>void;onGender:(g:'male'|'female')=>void;
  onWear:(item?:Wearable)=>void;onPetWear:(c:WorldCompanion)=>void;onPet:(c:WorldCompanion)=>void;onPets:()=>void;
  onPlace:(item:WorldItem)=>void;onSelect:(item:WorldRoomItem)=>void;onRemove:(id:string)=>void;
@@ -31,9 +35,9 @@ export default function InventoryPanel(p:Props){
  },[p.inventory,p.roomItems,p.catalog]);
  const meta=(id:string):WorldItem=>p.catalog.find(i=>i.id===id)||{id,name:`아이템 ${id}`,type:'unknown',image:'📦',price:0};
  const entries=[...amounts].map(([id,row])=>({item:meta(id),...row})).filter(r=>r.available+r.placed.length>0);
- const furniture=entries.filter(r=>['room','garden'].includes(r.item.placement_type||'')||['furniture','props','unknown'].includes(r.item.type)||r.placed.length>0);
- const backgrounds=entries.filter(r=>!furniture.includes(r)&&r.item.type!=='animal');
- const tabList:[Tab,string,number][]=[['avatar','미니미',clothes.length],['furniture','가구·소품',furniture.length],['animals','동물',p.companions.length],['background','배경·기타',backgrounds.length]];
+ const furniture=entries.filter(r=>!isWindowFrame(r.item)&&(['room','garden'].includes(r.item.placement_type||'')||['furniture','props','unknown'].includes(r.item.type)||r.placed.length>0));
+ const backgrounds=entries.filter(r=>!furniture.includes(r)&&r.item.type!=='animal'&&!isWindowFrame(r.item)&&!WINDOW_SCENERY.some(v=>v.id===r.item.id));
+ const tabList:[Tab,string,number][]=[['avatar','미니미',clothes.length],['furniture','가구·소품',furniture.length],['animals','동물',p.companions.length],['window','창문·풍경',WINDOW_SCENERY.filter(v=>v.price===0||p.inventory.some(i=>i.item_id===v.id&&i.quantity>0)).length],['background','배경·기타',backgrounds.length]];
  const changeTab=(t:Tab)=>{setTab(t);setQuery('');setFilter('all');};
  const art=(item:WorldItem)=><div className="inventory-art"><FurnitureArt item={item}/></div>;
  const empty=<div className="inventory-empty"><b>표시할 아이템이 없어요.</b><p>{query||filter!=='all'||slot?'검색어나 필터를 바꿔보세요.':'구매한 품목이 여기에 모여요.'}</p><button onClick={()=>{setQuery('');setFilter('all');setSlot('');}}>필터 초기화</button><button onClick={p.onShop}>포인트샵</button></div>;
@@ -56,6 +60,7 @@ export default function InventoryPanel(p:Props){
    <div className="inventory-grid">{shownFurniture.map(({item,available,placed})=>{const scene=item.placement_type==='garden'?'exterior':'interior',wrong=scene!==p.profile.scene_type,valid=['room','garden'].includes(item.placement_type||'');return <article key={item.id}>{art(item)}<b>{item.name}</b><small>전체 {available+placed.length} · 배치 {placed.length} · 남음 {available}</small><span className="inventory-badge">{scene==='exterior'?'정원용':'집 안용'}</span><button disabled={p.busy||!available||!valid||item.is_active===false} onClick={()=>wrong?p.onScene(scene):p.onPlace(item)}>{!valid?'배치 정보 없음':item.is_active===false?'판매 종료 · 수거 가능':!available?'모두 배치 중':wrong?(scene==='exterior'?'정원으로 이동':'집 안으로 이동'):'배치하기'}</button>{placed.map((r,index)=><div className="inventory-placement" key={r.id}><button disabled={p.busy} aria-pressed={p.selectedId===r.id} onClick={()=>p.onSelect(r)}>{(r.scene_type||'interior')==='interior'?'집 안':'정원'} #{index+1} 선택</button><button disabled={p.busy} onClick={()=>p.onRemove(r.id)}>수거</button></div>)}</article>})}</div>{!shownFurniture.length&&empty}
   </>}
   {tab==='animals'&&<><button className="inventory-wide" onClick={p.onPets}>동물 이름·꾸미기 관리</button><div className="inventory-grid">{p.companions.filter(c=>match(c.name)||match(meta(c.item_id).name)).map(c=><article key={c.id}><div className="inventory-pet"><CompanionAvatar itemId={c.item_id} image={meta(c.item_id).image_url} name={c.name} equipment={p.equipment[c.id]}/></div><b>{c.name}</b><small>{meta(c.item_id).name}</small><span className="inventory-badge">{c.is_active?'함께하는 중':'보유'}</span><button disabled={c.is_active||p.busy} onClick={()=>p.onPet(c)}>{c.is_active?'현재 함께함':'함께하기'}</button>{isCat(c.item_id)&&<button onClick={()=>p.onPetWear(c)}>꾸미기</button>}</article>)}</div>{!p.companions.some(c=>match(c.name)||match(meta(c.item_id).name))&&empty}</>}
+  {tab==='window'&&<WindowPanel profile={p.profile} inventory={p.inventory} busy={p.busy} onSave={p.onWindow} onShop={p.onShop}/>}
   {tab==='background'&&<><p className="inventory-caption">벽지와 바닥은 집 안에 적용돼요.</p><div className="inventory-grid">{backgrounds.filter(r=>match(r.item.name)).map(({item,available})=>{const supported=['wallpaper','floor'].includes(item.type),using=(item.type==='wallpaper'?p.profile.wallpaper_id:p.profile.floor_id)===item.id;return <article key={item.id}>{art(item)}<b>{item.name}</b><small>{item.price===0?'기본 제공':`보유 ${available}개`}</small><span className="inventory-badge">{using?'사용 중':'보유'}</span><button disabled={!supported||using||p.busy} onClick={()=>p.onBackground(item)}>{!supported?'보관 중 · 적용 기능 준비 중':using?'사용 중':'집 안에 적용'}</button></article>})}</div>{!backgrounds.some(r=>match(r.item.name))&&empty}</>}
  </aside>;
 }

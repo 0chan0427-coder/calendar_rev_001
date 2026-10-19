@@ -158,3 +158,6 @@ export const listWorldAppearance = (userId:string) => supabase.from('world_equip
 export const listWorldWardrobe = (userId:string) => supabase.from('world_wardrobe').select('item_id').eq('user_id',userId);
 export const buyWorldWearable = (itemId:string) => supabase.rpc('purchase_world_wearable',{p_item_id:itemId});
 export const saveWorldAppearance = (targetId:string,equipment:Record<string,string>) => supabase.rpc('save_world_appearance',{p_target_id:targetId,p_equipment:equipment});
+
+export const saveWorldWindow = (values:import('../components/world/WindowPanel').WindowUpdate) => supabase.rpc('set_world_window',{p_values:values});
+export const buyWorldWindowView = (itemId:string) => supabase.rpc('purchase_world_window_view',{p_item_id:itemId});

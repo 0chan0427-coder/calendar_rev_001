@@ -1,3 +1,4 @@
+import './check-companion-assets.mjs';
 import {readFileSync,readdirSync} from 'node:fs';
 import {resolve,dirname,basename} from 'node:path';
 import {fileURLToPath} from 'node:url';

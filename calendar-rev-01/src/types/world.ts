@@ -68,7 +68,9 @@ export interface WorldDailyStatus {
   visitedUserIds: string[];
 }
 
+export interface CompanionLayout {x:number;y:number;scale:number;z_index:number}
 export interface WorldCompanion {
+  scene_layout?:Partial<Record<WorldSceneType,CompanionLayout>>;
   id: string;
   user_id: string;
   item_id: string;

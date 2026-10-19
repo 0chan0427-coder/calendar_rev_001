@@ -1,7 +1,11 @@
+import SceneControls from './SceneControls';
+import {useSceneDrag} from '../../lib/useSceneDrag';
+import type {WindowUpdate} from './WindowPanel';
+import type {CompanionLayout} from '../../types/world';
 import RoomWindow from './RoomWindow';
 import {isWindowFrame} from '../../data/windows';
 import {companionSceneSize} from '../../data/companions';
-import React, { useEffect, useMemo, useState, useRef } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import type { WorldProfile, WorldSceneType, WorldItem, WorldCompanion } from '../../types/world';
 import FurnitureArt from './FurnitureArt';
 import {furnitureDesign} from '../../data/furniture';
@@ -11,6 +15,8 @@ import type { Equipment } from '../../data/wardrobe';
 
 interface RoomItem { id: string; item_id: string; x: number; y: number; scale: number; z_index: number; scene_type?: WorldSceneType; }
 interface Props {
+  onWindow?:(values:WindowUpdate)=>void;
+  onPetLayout?:(values:Partial<CompanionLayout>&{hide?:boolean})=>void;
   profile: WorldProfile;
   isOwner: boolean;
   onToggleScene?: () => void;
@@ -38,18 +44,16 @@ const timeLabel: Record<string,string> = { day:'낮', night:'밤' };
 const seasonByMonth = (month:number) => month <= 2 || month === 12 ? 'winter' : month <= 5 ? 'spring' : month <= 8 ? 'summer' : 'autumn';
 const timeByHour = (hour:number) => hour < 7 || hour >= 20 ? 'night' : 'day';
 
-export default function WorldScene({ profile, isOwner, onToggleScene, roomItems = [], onMoveItem, onScaleItem, onRemoveItem, onFrontItem, onOpenInventory, decorate = false, onToggleDecorate, catalog = [], companion = null, avatarGender = 'male', equipment = {},selectedItemId,onSelectItem,onBackItem,busy=false,saveState='idle' }: Props) {
+export default function WorldScene({ profile, isOwner, onToggleScene, roomItems = [], onMoveItem, onScaleItem, onRemoveItem, onFrontItem, onOpenInventory, decorate = false, onToggleDecorate, catalog = [], companion = null, avatarGender = 'male', equipment = {},selectedItemId,onSelectItem,onBackItem,busy=false,saveState='idle',onWindow,onPetLayout }: Props) {
   const [now,setNow]=useState(()=>new Date());
   useEffect(()=>{const timer=setInterval(()=>setNow(new Date()),60000);return()=>clearInterval(timer);},[]);
   const editMode = decorate;
-  const [dragPositions, setDragPositions] = useState<Record<string,{x:number;y:number}>>({});
+  const drag=useSceneDrag(editMode&&isOwner&&!busy,profile.user_id+profile.scene_type);
+  const dragPositions=drag.positions;
   const [localSelectedId,setLocalSelectedId]=useState<string|null>(null);
   const selectedId=selectedItemId===undefined?localSelectedId:selectedItemId;
   const setSelectedId=(id:string|null)=>{setLocalSelectedId(id);onSelectItem?.(id);};
-  const cancelDrag=useRef<(()=>void)|null>(null);
-  useEffect(()=>()=>cancelDrag.current?.(),[]);
-  useEffect(()=>{if(!decorate)cancelDrag.current?.();},[decorate]);
-  useEffect(()=>setDragPositions({}),[roomItems]);
+  useEffect(()=>{drag.reset();},[roomItems,profile.window_x,profile.window_y,companion?.scene_layout]);
   const season = seasonByMonth(now.getMonth() + 1);
   const time = timeByHour(now.getHours());
   const scene: WorldSceneType = profile.scene_type;
@@ -61,20 +65,15 @@ export default function WorldScene({ profile, isOwner, onToggleScene, roomItems 
     return {item:{...item,name:label},design,label,kind:(db?.category==='커튼'||db?.subcategory==='커튼')?'curtain':design?.key||db?.type||'props'};
   };
   const positionOf = (item:RoomItem) => dragPositions[item.id] || { x:item.x, y:item.y };
-  const startDrag = (e: React.PointerEvent<HTMLDivElement>, item: RoomItem) => {
-    if (!editMode || !isOwner || !onMoveItem || busy) return;
-    e.preventDefault(); e.stopPropagation(); setSelectedId(item.id);
-    const sceneEl = e.currentTarget.parentElement as HTMLElement; const rect = sceneEl.getBoundingClientRect();
-    cancelDrag.current?.();
-    const initial=positionOf(item),offsetX=e.clientX-(rect.left+initial.x/100*rect.width),offsetY=e.clientY-(rect.top+initial.y/100*rect.height);
-    let latest=initial;
-    const move = (ev: PointerEvent) => {latest={x:Math.max(4,Math.min(96,((ev.clientX-rect.left-offsetX)/rect.width)*100)),y:Math.max(5,Math.min(92,((ev.clientY-rect.top-offsetY)/rect.height)*100))};setDragPositions(prev=>({...prev,[item.id]:latest}));};
-    const cleanup=()=>{window.removeEventListener('pointermove',move);window.removeEventListener('pointerup',up);window.removeEventListener('pointercancel',cancel);cancelDrag.current=null;};
-    const cancel=()=>{cleanup();setDragPositions(prev=>{const n={...prev};delete n[item.id];return n;});};
-    const up=()=>{cleanup();if(Math.abs(latest.x-initial.x)+Math.abs(latest.y-initial.y)>.05)onMoveItem(item.id,latest.x,latest.y);};
-    cancelDrag.current=cancel;
-    window.addEventListener('pointermove',move); window.addEventListener('pointerup',up); window.addEventListener('pointercancel',cancel);
-  };
+  const startDrag=(e:React.PointerEvent<HTMLDivElement>,item:RoomItem)=>{if(!editMode||!isOwner||busy)return;setSelectedId(item.id);drag.start(e,item,p=>onMoveItem?.(item.id,p.x,p.y));};
+  const petLayout={x:68,y:94,scale:1,z_index:16,...companion?.scene_layout?.[scene]};
+  const petPosition=dragPositions['@pet']||petLayout;
+  const windowPosition=dragPositions['@window']||{x:Number(profile.window_x)||50,y:Number(profile.window_y)||27};
+  const petSize=companion?companionSceneSize(companion.item_id):[72,72];
+  const petMinY=scene==='interior'?64:15;
+  const petMove=(dx:number,dy:number)=>onPetLayout?.({x:Math.max(6,Math.min(94,petLayout.x+dx)),y:Math.max(petMinY,Math.min(94,petLayout.y+dy))});
+  const windowMove=(dx:number,dy:number)=>onWindow?.({x:Math.max(15,Math.min(85,windowPosition.x+dx)),y:Math.max(14,Math.min(45,windowPosition.y+dy))});
+  const keyMove=(e:React.KeyboardEvent,move:(dx:number,dy:number)=>void)=>{if(!editMode||!isOwner||busy)return;const deltas:Record<string,[number,number]>={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};if(deltas[e.key]){e.preventDefault();move(...deltas[e.key]);}else if(e.key===' '||e.key==='Enter')e.preventDefault();};
 
   const styleFor=(id:string,type:'wallpaper'|'floor')=>{
     const item=catalog.find(i=>i.id===id),url=item?.image_url||(item?.image?.startsWith('/')?item.image:undefined);
@@ -88,7 +87,7 @@ export default function WorldScene({ profile, isOwner, onToggleScene, roomItems 
     {scene === 'interior' ? <>
       <div className="cy-room-wall" style={styleFor(profile.wallpaper_id,'wallpaper')} aria-hidden="true"/>
       <div className="cy-room-floor" style={styleFor(profile.floor_id,'floor')} aria-hidden="true"/>
-      {profile.window_frame_id!==null&&<RoomWindow profile={profile}/>}
+      {profile.window_frame_id!==null&&<RoomWindow profile={{...profile,window_x:windowPosition.x,window_y:windowPosition.y}} editing={editMode&&isOwner} selected={selectedId==='@window'} onClick={()=>editMode&&isOwner&&setSelectedId('@window')} onKeyDown={e=>{setSelectedId('@window');keyMove(e,windowMove);}} onPointerDown={e=>{if(!editMode||!isOwner||busy)return;setSelectedId('@window');drag.start(e,{id:'@window',...windowPosition,minX:15,maxX:85,minY:14,maxY:45},p=>onWindow?.(p));}}/>}
       <div className="cy-room-overlay" aria-hidden="true" />
     </> : <div className="scene-garden-field" aria-label="비어 있는 정원" />}
 
@@ -101,7 +100,8 @@ export default function WorldScene({ profile, isOwner, onToggleScene, roomItems 
 
 
     <div className="scene-character-wrap" title="내 미니미"><CharacterAvatar gender={avatarGender} equipment={equipment.avatar} className="scene-character" /></div>
-    {companion && <div className="scene-companion" style={{width:companionSceneSize(companion.item_id)[0],height:'auto','--companion-height':companionSceneSize(companion.item_id)[1]+'px'} as React.CSSProperties} title={companion.name}><CompanionAvatar itemId={companion.item_id} equipment={equipment[companion.id]} name={companion.name} image={catalog.find(i=>i.id===companion.item_id)?.image_url}/><span className="companion-nameplate">{companion.name}</span></div>}
+    {companion && <div className={`scene-companion ${editMode&&isOwner?'editing':''} ${selectedId==='@pet'?'selected':''}`} style={{width:petSize[0]*petLayout.scale,height:'auto','--companion-height':petSize[1]*petLayout.scale+'px',left:`clamp(${petSize[0]*petLayout.scale/2+6}px, ${petPosition.x}%, calc(100% - ${petSize[0]*petLayout.scale/2+6}px))`,top:`${petPosition.y}%`,bottom:'auto',transform:'translate(-50%,-100%)',zIndex:petLayout.z_index} as React.CSSProperties} title={companion.name} role={editMode&&isOwner?'button':undefined} tabIndex={editMode&&isOwner?0:undefined} aria-label={editMode&&isOwner?`${companion.name} 동물 선택`:undefined} aria-pressed={editMode&&isOwner?selectedId==='@pet':undefined} onClick={()=>editMode&&isOwner&&setSelectedId('@pet')} onKeyDown={e=>{setSelectedId('@pet');keyMove(e,petMove);}} onPointerDown={e=>{if(!editMode||!isOwner||busy)return;setSelectedId('@pet');drag.start(e,{id:'@pet',...petPosition,minX:6,maxX:94,minY:petMinY,maxY:94},p=>onPetLayout?.(p));}}><CompanionAvatar itemId={companion.item_id} equipment={equipment[companion.id]} name={companion.name} image={catalog.find(i=>i.id===companion.item_id)?.image_url} animate={!editMode}/><span className="companion-nameplate">{companion.name}</span></div>}
+
     <div className="scene-info"><b>{seasonLabel[season]} · {timeLabel[time]}</b><span>{scene==='interior'?'나만의 미니룸':'나만의 정원'}</span></div>
 
     {isOwner && <div className="scene-tools">
@@ -110,12 +110,9 @@ export default function WorldScene({ profile, isOwner, onToggleScene, roomItems 
       <button disabled={busy} onClick={onToggleScene}>{scene==='interior'?'🌳 정원 보기':'🏠 집 안 보기'}</button>
     </div>}
   </section>
-    {editMode&&isOwner&&roomItems.filter(i=>i.id===selectedId&&(i.scene_type||'interior')===scene).map(item=><div key={item.id} className="furniture-controls" role="toolbar" aria-label="선택한 아이템 조절">
-      <div className="furniture-control-title"><b>{getMeta(item.item_id).label}</b><span>{Math.round(Number(item.scale)*100)}% · {saveState==='saving'?'저장 중…':saveState==='error'?'저장 실패':saveState==='saved'?'저장됨':'자동 저장'}</span><button onClick={()=>setSelectedId(null)} aria-label="가구 선택 해제">×</button></div>
-      <div className="furniture-control-actions">
-      <button disabled={busy} onClick={()=>onMoveItem?.(item.id,Math.max(4,item.x-1),item.y)} aria-label="왼쪽으로 이동">←</button><button disabled={busy} onClick={()=>onMoveItem?.(item.id,Math.min(96,item.x+1),item.y)} aria-label="오른쪽으로 이동">→</button><button disabled={busy} onClick={()=>onMoveItem?.(item.id,item.x,Math.max(5,item.y-1))} aria-label="위로 이동">↑</button><button disabled={busy} onClick={()=>onMoveItem?.(item.id,item.x,Math.min(92,item.y+1))} aria-label="아래로 이동">↓</button>
-      <button disabled={busy} onClick={()=>onScaleItem?.(item.id,Number(item.scale)+0.05)}>＋ 크게</button><button disabled={busy} onClick={()=>onScaleItem?.(item.id,Number(item.scale)-0.05)}>－ 작게</button><button disabled={busy} onClick={()=>onFrontItem?.(item.id)}>맨 앞으로</button><button disabled={busy} onClick={()=>onBackItem?.(item.id)}>맨 뒤로</button><button disabled={busy} className="remove-item-btn" onClick={()=>onRemoveItem?.(item.id)}>수거</button>
-      </div>
-    </div>)}
+    {editMode&&isOwner&&selectedId==='@window'&&scene==='interior'&&profile.window_frame_id!==null&&<SceneControls name="원목 창문" scale={Number(profile.window_scale)||1} busy={busy} saveState={saveState} onClose={()=>setSelectedId(null)} onMove={windowMove} onScale={d=>onWindow?.({scale:Math.max(.6,Math.min(1.2,Number(profile.window_scale||1)+d))})} onRemove={()=>{onWindow?.({frame:null});setSelectedId(null);}}/>}
+    {editMode&&isOwner&&selectedId==='@pet'&&companion&&<SceneControls name={companion.name} scale={petLayout.scale} busy={busy} saveState={saveState} onClose={()=>setSelectedId(null)} onMove={petMove} onScale={d=>onPetLayout?.({scale:Math.max(.6,Math.min(1.5,petLayout.scale+d))})} onFront={()=>onPetLayout?.({z_index:Math.min(60,Math.max(petLayout.z_index,...roomItems.map(i=>i.z_index),20)+1)})} onBack={()=>onPetLayout?.({z_index:Math.max(4,Math.min(petLayout.z_index,...roomItems.map(i=>i.z_index),20)-1)})} onRemove={()=>{onPetLayout?.({hide:true});setSelectedId(null);}} removeLabel="함께하기 해제"/>}
+    {editMode&&isOwner&&roomItems.filter(i=>i.id===selectedId&&(i.scene_type||'interior')===scene).map(item=><SceneControls key={item.id} name={getMeta(item.item_id).label} scale={Number(item.scale)} busy={busy} saveState={saveState} onClose={()=>setSelectedId(null)} onMove={(dx,dy)=>onMoveItem?.(item.id,Math.max(4,Math.min(96,item.x+dx)),Math.max(5,Math.min(92,item.y+dy)))} onScale={d=>onScaleItem?.(item.id,Number(item.scale)+d)} onFront={()=>onFrontItem?.(item.id)} onBack={()=>onBackItem?.(item.id)} onRemove={()=>onRemoveItem?.(item.id)}/>)}
+
   </>;
 }

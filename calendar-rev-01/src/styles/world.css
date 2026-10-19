@@ -363,3 +363,20 @@
 .scene-companion .companion-art{height:var(--companion-height,72px)!important;aspect-ratio:auto;width:100%}
 .scene-companion .companion-nameplate{max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .companion-v3 svg{display:block;width:100%;height:100%;overflow:visible}
+
+/* V048 placement: selectable objects share the same controls and grab behavior. */
+.room-window-slot.editing,.scene-companion.editing{pointer-events:auto;touch-action:none;cursor:grab;outline:2px dashed #9b76b5;outline-offset:4px;border-radius:9px}
+.room-window-slot.selected,.scene-companion.selected{outline:3px solid #8d6bb0;outline-offset:4px}
+.room-window-slot.editing img,.scene-companion.editing svg,.scene-companion.editing img{pointer-events:none;user-select:none;-webkit-user-drag:none}
+.pet-idle{transform-origin:50% 100%;animation:pet-breathe 4.8s ease-in-out infinite}
+.pet-idle.pet-float{animation:pet-float 6.4s ease-in-out infinite}
+.pet-tail-motion{transform-box:view-box;animation:pet-tail-sway 7.2s ease-in-out infinite}
+@keyframes pet-breathe{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.012)}}
+@keyframes pet-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+@keyframes pet-tail-sway{0%,35%,75%,100%{transform:rotate(0deg)}45%,65%{transform:rotate(-2deg)}55%{transform:rotate(2deg)}}
+@media(prefers-reduced-motion:reduce){.pet-idle,.pet-tail-motion{animation:none!important;transform:none!important}}
+/* Keep the SVG inside the allocated body box; intrinsic SVG height must not cover the nameplate. */
+.companion-v3{position:relative;display:block}
+.companion-v3>svg{position:absolute;inset:0;width:100%;height:100%}
+.scene-companion .companion-art{flex:none}
+.scene-companion .companion-nameplate{position:relative;z-index:1;flex:none}

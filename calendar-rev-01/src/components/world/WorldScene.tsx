@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useState, useRef } from 'react';
 import type { WorldProfile, WorldSceneType, WorldItem, WorldCompanion } from '../../types/world';
+import FurnitureArt from './FurnitureArt';
+import {furnitureDesign} from '../../data/furniture';
 import CharacterAvatar from './CharacterAvatar';
 import CompanionAvatar from './CompanionAvatar';
 import type { Equipment } from '../../data/wardrobe';
@@ -28,20 +30,10 @@ interface Props {
   avatarGender?: 'male' | 'female';
 }
 
-const assetRoot = '/world';
 const seasonLabel: Record<string,string> = { spring:'봄', summer:'여름', autumn:'가을', winter:'겨울' };
 const timeLabel: Record<string,string> = { day:'낮', night:'밤' };
 const seasonByMonth = (month:number) => month <= 2 || month === 12 ? 'winter' : month <= 5 ? 'spring' : month <= 8 ? 'summer' : 'autumn';
 const timeByHour = (hour:number) => hour < 7 || hour >= 20 ? 'night' : 'day';
-
-const furnitureAssets = [
-  ['sofa-basic','/furniture/livingroom/sofa.png','소파','sofa'], ['table','/furniture/livingroom/table.png','테이블','table'],
-  ['chair','/furniture/livingroom/chair.png','의자','chair'], ['plant','/furniture/livingroom/plant_large.png','화분','plant'],
-  ['cactus','/props/interior/plant.png','선인장','plant'], ['bookcase','/furniture/livingroom/bookcase.png','책장','bookcase'],
-  ['tv','/furniture/livingroom/tv.png','TV','tv'], ['piano','/furniture/study_pc/piano.png','피아노','piano'],
-  ['desk','/furniture/study_pc/computer_desk.png','컴퓨터 책상','desk'], ['bed','/furniture/bedroom/bed.png','침대','bed'],
-  ['lamp','/furniture/seasonal/lamp.png','스탠드 조명','lamp'],
-] as const;
 
 export default function WorldScene({ profile, isOwner, onToggleScene, roomItems = [], onMoveItem, onScaleItem, onRemoveItem, onFrontItem, onOpenInventory, decorate = false, onToggleDecorate, catalog = [], companion = null, avatarGender = 'male', equipment = {},selectedItemId,onSelectItem,onBackItem,busy=false,saveState='idle' }: Props) {
   const now = new Date();
@@ -59,7 +51,11 @@ export default function WorldScene({ profile, isOwner, onToggleScene, roomItems 
   const scene: WorldSceneType = profile.scene_type;
   const sceneClass = useMemo(() => `${scene} ${season} ${time}`, [scene, season, time]);
 
-  const getMeta = (itemId:string) => { const db = catalog.find((x:any)=>x.id===itemId || x.item_id===itemId); const hard = furnitureAssets.find(x=>x[0]===itemId); return { image: db?.image_url || (db?.image?.startsWith('/')?db.image:null) || (hard ? `${assetRoot}${hard[1]}` : `${assetRoot}/furniture/livingroom/sofa.png`), label: db?.name || (hard ? hard[2] : itemId), kind: ((db?.category==='커튼'||db?.subcategory==='커튼') ? 'curtain' : (db?.type || (hard ? hard[3] : 'props'))) }; };
+  const getMeta=(itemId:string)=>{
+    const db=catalog.find(x=>x.id===itemId),item=db||{id:itemId,name:undefined,image:undefined,image_url:undefined};
+    const design=furnitureDesign(item),label=db?.name||design?.name||itemId;
+    return {item:{...item,name:label},design,label,kind:(db?.category==='커튼'||db?.subcategory==='커튼')?'curtain':design?.key||db?.type||'props'};
+  };
   const positionOf = (item:RoomItem) => dragPositions[item.id] || { x:item.x, y:item.y };
   const startDrag = (e: React.PointerEvent<HTMLDivElement>, item: RoomItem) => {
     if (!editMode || !isOwner || !onMoveItem || busy) return;
@@ -91,8 +87,8 @@ export default function WorldScene({ profile, isOwner, onToggleScene, roomItems 
       <div className="cy-room-overlay" aria-hidden="true" />
     </> : <div className="scene-garden-field" aria-label="비어 있는 정원" />}
 
-    {roomItems.filter(item=>(item.scene_type||'interior')===scene).map((item,index) => { const meta=getMeta(item.item_id); const pos=positionOf(item); return <div key={item.id} className={`scene-furniture ${meta.kind} ${meta.kind==='curtain'?'scene-room-curtain':''} ${editMode&&isOwner?'editing':''} ${selectedId===item.id?'selected':''}`} style={{left:`${pos.x}%`,top:`${pos.y}%`,transform:`translate(-50%,-50%) scale(${item.scale})`,zIndex:item.z_index??index+12}} role={editMode&&isOwner?'button':undefined} tabIndex={editMode&&isOwner?0:undefined} aria-label={editMode&&isOwner?`${meta.label} 선택`:undefined} aria-pressed={editMode&&isOwner?selectedId===item.id:undefined} title={meta.label} onKeyDown={e=>{if(!editMode||!isOwner||busy)return;setSelectedId(item.id);if(e.key==='Enter'||e.key===' '){e.preventDefault();return;}const delta:Record<string,[number,number]>={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};if(delta[e.key]){e.preventDefault();const [x,y]=delta[e.key];onMoveItem?.(item.id,Math.max(4,Math.min(96,pos.x+x)),Math.max(5,Math.min(92,pos.y+y)));}}} onPointerDown={e=>startDrag(e,item)} onClick={()=>editMode&&isOwner&&setSelectedId(item.id)}>
-      <img src={meta.image} alt={meta.label}/>
+    {roomItems.filter(item=>(item.scene_type||'interior')===scene).map((item,index) => { const meta=getMeta(item.item_id); const pos=positionOf(item); return <div key={item.id} className={`scene-furniture ${meta.kind} ${meta.kind==='curtain'?'scene-room-curtain':''} ${editMode&&isOwner?'editing':''} ${selectedId===item.id?'selected':''}`} style={{width:meta.design?.sceneSize[0],height:meta.design?.sceneSize[1],left:`${pos.x}%`,top:`${pos.y}%`,transform:`translate(-50%,-50%) scale(${item.scale})`,zIndex:item.z_index??index+12}} role={editMode&&isOwner?'button':undefined} tabIndex={editMode&&isOwner?0:undefined} aria-label={editMode&&isOwner?`${meta.label} 선택`:undefined} aria-pressed={editMode&&isOwner?selectedId===item.id:undefined} title={meta.label} onKeyDown={e=>{if(!editMode||!isOwner||busy)return;setSelectedId(item.id);if(e.key==='Enter'||e.key===' '){e.preventDefault();return;}const delta:Record<string,[number,number]>={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};if(delta[e.key]){e.preventDefault();const [x,y]=delta[e.key];onMoveItem?.(item.id,Math.max(4,Math.min(96,pos.x+x)),Math.max(5,Math.min(92,pos.y+y)));}}} onPointerDown={e=>startDrag(e,item)} onClick={()=>editMode&&isOwner&&setSelectedId(item.id)}>
+      <FurnitureArt item={meta.item}/>
       {editMode&&isOwner&&<span className="furniture-label">{meta.label}</span>}
 
     </div>; })}

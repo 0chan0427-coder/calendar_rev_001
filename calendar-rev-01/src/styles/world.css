@@ -342,3 +342,10 @@
 @media(max-width:760px){.cyworld-shell.with-items{display:block}.cyworld-shell.with-items .inventory-panel{max-height:none;padding:18px 14px}.inventory-tabs{grid-template-columns:repeat(4,minmax(0,1fr))}.inventory-tabs button{flex-direction:column;gap:3px;padding:7px 3px}.inventory-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.inventory-grid .wearable-thumbnail{height:110px}.furniture-controls{padding:8px}.inventory-panel button{min-height:44px}.furniture-control-actions button{min-height:44px!important}.wardrobe-filters{flex-wrap:wrap}}
 /* Keep adjustment controls below the room so they never cover the selected furniture. */
 .furniture-controls{position:relative;left:auto;top:auto!important;bottom:auto!important;transform:none;width:calc(100% - 24px);max-width:none;margin:12px auto;z-index:auto}
+
+/* 045: independent transparent furniture, shared by room, inventory and shop. */
+.furniture-art{display:block;width:100%;height:100%;object-fit:contain;overflow:hidden;image-rendering:auto}
+.scene-furniture>.furniture-art{filter:drop-shadow(0 4px 3px #4a392515);pointer-events:none;user-select:none}
+.inventory-art>.furniture-art{width:100%;height:100%;max-height:90px}
+.item-art>.furniture-art{max-width:100%;max-height:100%}
+.furniture-placeholder{display:grid;place-items:center;font-size:38px}

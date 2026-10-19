@@ -2,6 +2,7 @@ import {useMemo,useState} from 'react';
 import type {WorldCompanion,WorldItem,WorldProfile,WorldRoomItem} from '../../types/world';
 import {WEARABLES,WEAR_SLOTS,normalizeAvatarEquipment,isCat} from '../../data/wardrobe';
 import type {Equipment,WearSlot,Wearable} from '../../data/wardrobe';
+import FurnitureArt from './FurnitureArt';
 import WearableThumbnail from './WearableThumbnail';
 import CompanionAvatar from './CompanionAvatar';
 
@@ -34,7 +35,7 @@ export default function InventoryPanel(p:Props){
  const backgrounds=entries.filter(r=>!furniture.includes(r)&&r.item.type!=='animal');
  const tabList:[Tab,string,number][]=[['avatar','미니미',clothes.length],['furniture','가구·소품',furniture.length],['animals','동물',p.companions.length],['background','배경·기타',backgrounds.length]];
  const changeTab=(t:Tab)=>{setTab(t);setQuery('');setFilter('all');};
- const art=(item:WorldItem)=><div className="inventory-art">{(item.image_url||item.image?.startsWith('/'))?<img src={item.image_url||item.image} alt="" loading="lazy"/>:<span>{item.image||'📦'}</span>}</div>;
+ const art=(item:WorldItem)=><div className="inventory-art"><FurnitureArt item={item}/></div>;
  const empty=<div className="inventory-empty"><b>표시할 아이템이 없어요.</b><p>{query||filter!=='all'||slot?'검색어나 필터를 바꿔보세요.':'구매한 품목이 여기에 모여요.'}</p><button onClick={()=>{setQuery('');setFilter('all');setSlot('');}}>필터 초기화</button><button onClick={p.onShop}>포인트샵</button></div>;
  const shownClothes=clothes.filter(i=>(!slot||i.slot===slot)&&match(i.name)&&(filter!=='using'||eq[i.slot]===i.id)&&(filter!=='purchased'||i.price>0));
  const shownFurniture=furniture.filter(r=>match(r.item.name)&&(filter!=='available'||r.available>0)&&(filter!=='placed'||r.placed.length>0));

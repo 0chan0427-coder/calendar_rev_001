@@ -219,5 +219,214 @@ export const COMPANION_SPRITES:Record<string,CompanionSprite>={
       1276,
       1211
     ]
+  },
+  "adult-cat-ginger": {
+    "image": "/world/companions-v5/adult-cat-ginger.png",
+    "width": 1233,
+    "height": 1276,
+    "crop": [
+      104,
+      -19,
+      1144,
+      1275
+    ]
+  },
+  "adult-cat-ivory": {
+    "image": "/world/companions-v5/adult-cat-ivory.png",
+    "width": 1233,
+    "height": 1275,
+    "crop": [
+      108,
+      -17,
+      1135,
+      1269
+    ]
+  },
+  "adult-crocodile": {
+    "image": "/world/companions-v5/adult-crocodile.png",
+    "width": 1536,
+    "height": 1024,
+    "crop": [
+      3,
+      166,
+      1546,
+      726
+    ]
+  },
+  "adult-dog": {
+    "image": "/world/companions-v5/adult-dog.png",
+    "width": 1199,
+    "height": 1312,
+    "crop": [
+      85,
+      -8,
+      1106,
+      1309
+    ]
+  },
+  "adult-dragon-black": {
+    "image": "/world/companions-v5/adult-dragon-black.png",
+    "width": 1536,
+    "height": 1024,
+    "crop": [
+      8,
+      -11,
+      1546,
+      1049
+    ]
+  },
+  "adult-dragon-blue": {
+    "image": "/world/companions-v5/adult-dragon-blue.png",
+    "width": 1536,
+    "height": 1024,
+    "crop": [
+      7,
+      -11,
+      1548,
+      1051
+    ]
+  },
+  "adult-dragon-crown": {
+    "image": "/world/companions-v5/adult-dragon-crown.png",
+    "width": 1536,
+    "height": 1024,
+    "crop": [
+      8,
+      -11,
+      1545,
+      1049
+    ]
+  },
+  "adult-dragon-glowing": {
+    "image": "/world/companions-v5/adult-dragon-glowing.png",
+    "width": 1536,
+    "height": 1024,
+    "crop": [
+      7,
+      -11,
+      1547,
+      1051
+    ]
+  },
+  "adult-dragon-gold": {
+    "image": "/world/companions-v5/adult-dragon-gold.png",
+    "width": 1536,
+    "height": 1024,
+    "crop": [
+      9,
+      -12,
+      1546,
+      1050
+    ]
+  },
+  "adult-dragon-green": {
+    "image": "/world/companions-v5/adult-dragon-green.png",
+    "width": 1536,
+    "height": 1024,
+    "crop": [
+      9,
+      -11,
+      1544,
+      1049
+    ]
+  },
+  "adult-dragon-red": {
+    "image": "/world/companions-v5/adult-dragon-red.png",
+    "width": 1536,
+    "height": 1024,
+    "crop": [
+      8,
+      -11,
+      1545,
+      1050
+    ]
+  },
+  "adult-eagle": {
+    "image": "/world/companions-v5/adult-eagle.png",
+    "width": 1224,
+    "height": 1285,
+    "crop": [
+      121,
+      27,
+      1084,
+      1247
+    ]
+  },
+  "adult-elephant": {
+    "image": "/world/companions-v5/adult-elephant.png",
+    "width": 1374,
+    "height": 1145,
+    "crop": [
+      14,
+      33,
+      1357,
+      1089
+    ]
+  },
+  "adult-fox": {
+    "image": "/world/companions-v5/adult-fox.png",
+    "width": 1383,
+    "height": 1137,
+    "crop": [
+      26,
+      -14,
+      1351,
+      1138
+    ]
+  },
+  "adult-panda": {
+    "image": "/world/companions-v5/adult-panda.png",
+    "width": 1214,
+    "height": 1295,
+    "crop": [
+      -15,
+      -18,
+      1245,
+      1328
+    ]
+  },
+  "adult-rabbit": {
+    "image": "/world/companions-v5/adult-rabbit.png",
+    "width": 1216,
+    "height": 1293,
+    "crop": [
+      100,
+      -15,
+      1056,
+      1296
+    ]
+  },
+  "adult-tiger": {
+    "image": "/world/companions-v5/adult-tiger.png",
+    "width": 1536,
+    "height": 1024,
+    "crop": [
+      132,
+      16,
+      1361,
+      989
+    ]
+  },
+  "adult-unicorn": {
+    "image": "/world/companions-v5/adult-unicorn.png",
+    "width": 1312,
+    "height": 1199,
+    "crop": [
+      32,
+      7,
+      1288,
+      1180
+    ]
+  },
+  "adult-whale": {
+    "image": "/world/companions-v5/adult-whale.png",
+    "width": 1774,
+    "height": 887,
+    "crop": [
+      27,
+      45,
+      1732,
+      823
+    ]
   }
 };

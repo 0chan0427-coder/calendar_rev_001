@@ -206,7 +206,213 @@ export const COMPANION_PART_RIGS:Record<string,CompanionPartRig[]>={
       "transform": "matrix(1.003933910306845 0 0 1.004142502071251 -4.1927616050354 -1.954432477216237)"
     }
   ],
-  "dragon-baby": []
+  "dragon-baby": [],
+  "adult-cat-ivory": [
+    {
+      "id": "tail",
+      "path": "M860 600H1233V1276H790V1110Q860 1150 865 1050Z",
+      "origin": [
+        860,
+        1120
+      ],
+      "duration": 8.8,
+      "angle": 1
+    }
+  ],
+  "adult-cat-ginger": [
+    {
+      "id": "tail",
+      "path": "M860 600H1233V1276H790V1110Q860 1150 865 1050Z",
+      "origin": [
+        860,
+        1120
+      ],
+      "duration": 8.8,
+      "angle": 1
+    }
+  ],
+  "adult-dog": [
+    {
+      "id": "tail",
+      "path": "M900 930H1199V1312H970V1190Q935 1130 880 1120Z",
+      "origin": [
+        900,
+        1110
+      ],
+      "duration": 7.5,
+      "angle": 1
+    }
+  ],
+  "adult-rabbit": [],
+  "adult-panda": [],
+  "adult-fox": [
+    {
+      "id": "tail",
+      "path": "M900 470H1383V1137H900V800L850 600Z",
+      "origin": [
+        875,
+        590
+      ],
+      "duration": 9,
+      "angle": 1
+    }
+  ],
+  "adult-tiger": [
+    {
+      "id": "tail",
+      "path": "M1290 440H1536V820H1300L1240 700Z",
+      "origin": [
+        1280,
+        690
+      ],
+      "duration": 10,
+      "angle": 0.9
+    }
+  ],
+  "adult-elephant": [
+    {
+      "id": "tail-tuft",
+      "path": "M1290 530H1374V1040H1290L1260 850Z",
+      "origin": [
+        1290,
+        730
+      ],
+      "duration": 10.5,
+      "angle": 0.8
+    }
+  ],
+  "adult-crocodile": [
+    {
+      "id": "tail",
+      "path": "M1220 500H1536V950H1250L1180 690Z",
+      "origin": [
+        1210,
+        660
+      ],
+      "duration": 11,
+      "angle": 0.6
+    }
+  ],
+  "adult-eagle": [
+    {
+      "id": "feathers",
+      "path": "M860 950L1224 1030V1285H840L780 1100Z",
+      "origin": [
+        850,
+        1040
+      ],
+      "duration": 9,
+      "angle": 0.6
+    }
+  ],
+  "adult-whale": [
+    {
+      "id": "flukes",
+      "path": "M1340 0H1774V350L1460 450L1370 340Z",
+      "origin": [
+        1440,
+        370
+      ],
+      "duration": 10,
+      "angle": 0.65
+    }
+  ],
+  "adult-unicorn": [
+    {
+      "id": "tail",
+      "path": "M1000 530H1312V1199H1050L1010 850L940 650Z",
+      "origin": [
+        980,
+        600
+      ],
+      "duration": 9.5,
+      "angle": 0.7
+    }
+  ],
+  "adult-dragon-red": [
+    {
+      "id": "tail-tip",
+      "path": "M1340 320H1536V940H1300L1250 820Q1410 720 1340 620Z",
+      "origin": [
+        1330,
+        810
+      ],
+      "duration": 11,
+      "angle": 0.6
+    }
+  ],
+  "adult-dragon-gold": [
+    {
+      "id": "tail-tip",
+      "path": "M1340 320H1536V940H1300L1250 820Q1410 720 1340 620Z",
+      "origin": [
+        1330,
+        810
+      ],
+      "duration": 11,
+      "angle": 0.6
+    }
+  ],
+  "adult-dragon-blue": [
+    {
+      "id": "tail-tip",
+      "path": "M1340 320H1536V940H1300L1250 820Q1410 720 1340 620Z",
+      "origin": [
+        1330,
+        810
+      ],
+      "duration": 11,
+      "angle": 0.6
+    }
+  ],
+  "adult-dragon-green": [
+    {
+      "id": "tail-tip",
+      "path": "M1340 320H1536V940H1300L1250 820Q1410 720 1340 620Z",
+      "origin": [
+        1330,
+        810
+      ],
+      "duration": 11,
+      "angle": 0.6
+    }
+  ],
+  "adult-dragon-black": [
+    {
+      "id": "tail-tip",
+      "path": "M1340 320H1536V940H1300L1250 820Q1410 720 1340 620Z",
+      "origin": [
+        1330,
+        810
+      ],
+      "duration": 11,
+      "angle": 0.6
+    }
+  ],
+  "adult-dragon-glowing": [
+    {
+      "id": "tail-tip",
+      "path": "M1340 320H1536V940H1300L1250 820Q1410 720 1340 620Z",
+      "origin": [
+        1330,
+        810
+      ],
+      "duration": 11,
+      "angle": 0.6
+    }
+  ],
+  "adult-dragon-crown": [
+    {
+      "id": "tail-tip",
+      "path": "M1340 320H1536V940H1300L1250 820Q1410 720 1340 620Z",
+      "origin": [
+        1330,
+        810
+      ],
+      "duration": 11,
+      "angle": 0.6
+    }
+  ]
 };
 export function companionParts(key:string):CompanionPartRig[]{
  if(COMPANION_PART_RIGS[key])return COMPANION_PART_RIGS[key];

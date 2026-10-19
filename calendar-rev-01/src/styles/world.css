@@ -383,3 +383,6 @@
 
 /* V049: artwork-specific appendage amplitudes, no movement around the room. */
 @keyframes pet-tail-sway{0%,35%,75%,100%{transform:rotate(0deg)}45%,65%{transform:rotate(calc(-1 * var(--pet-part-angle,2deg)))}55%{transform:rotate(var(--pet-part-angle,2deg))}}
+
+/* V050: adult bodies keep their ratio and fit even narrow rooms at the largest user scale. */
+.scene-companion .companion-art{height:auto!important;aspect-ratio:var(--companion-ratio,1 / 1);width:100%}

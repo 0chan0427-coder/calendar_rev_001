@@ -2,6 +2,213 @@
 export const COMPANION_TAIL_RIGS:Record<string,{path:string;origin:[number,number];duration:number}>={
  'cat-ivory':{path:'M970 645H1312V1199H930V1095Q1010 1020 960 930Q940 840 970 780Z',origin:[965,1090],duration:7.2},
  'cat-ginger':{path:'M970 645H1312V1199H930V1095Q1010 1020 960 930Q940 840 970 780Z',origin:[965,1090],duration:7.2},
- dog:{path:'M985 730H1227V1282H970V1090Q1030 970 985 885Z',origin:[995,1100],duration:5.6},
+ dog:{path:'M950 740H1227V1282H930V1120Q1020 1000 950 900Z',origin:[995,1100],duration:5.6},
 };
-export function companionIdleKind(id:string){return /whale|dragon|eagle|griffin/.test(id)?'float':'breathe';}
+export function companionIdleKind(id:string){return /whale/.test(id)?'float':'breathe';}
+
+export interface CompanionPartRig {id:string;path:string;origin:[number,number];duration:number;angle?:number;transform?:string}
+/** New artwork registers only the appendages that can move without exposing the body. */
+export const COMPANION_PART_RIGS:Record<string,CompanionPartRig[]>={
+  "panda": [],
+  "fox": [
+    {
+      "id": "tail",
+      "path": "M860 520H1312V1199H800V1030Q870 900 830 780L860 700Z",
+      "origin": [
+        820,
+        1040
+      ],
+      "duration": 7.5,
+      "angle": 1.7
+    }
+  ],
+  "tiger": [
+    {
+      "id": "tail",
+      "path": "M980 610H1312V1199H980V1120Q1060 1000 1080 850L1000 800Q1000 730 980 710Z",
+      "origin": [
+        1030,
+        1100
+      ],
+      "duration": 8.2,
+      "angle": 1.7
+    }
+  ],
+  "elephant": [
+    {
+      "id": "tail-tuft",
+      "path": "M1110 770H1312V990H1070V860Q1100 850 1110 770Z",
+      "origin": [
+        1075,
+        850
+      ],
+      "duration": 8.8,
+      "angle": 1.8
+    }
+  ],
+  "crocodile": [
+    {
+      "id": "tail",
+      "path": "M1130 280H1536V1024H1100V850Q1160 750 1130 650Z",
+      "origin": [
+        1120,
+        830
+      ],
+      "duration": 8.5,
+      "angle": 1.2
+    }
+  ],
+  "eagle": [
+    {
+      "id": "feathers",
+      "path": "M1015 825H1312V1140H985V1040Z",
+      "origin": [
+        1010,
+        1020
+      ],
+      "duration": 7.8,
+      "angle": 1
+    }
+  ],
+  "whale": [
+    {
+      "id": "flukes",
+      "path": "M1080 0H1700V570H1250Q1180 440 1080 310Z",
+      "origin": [
+        1260,
+        500
+      ],
+      "duration": 7,
+      "angle": 1.2
+    }
+  ],
+  "unicorn": [
+    {
+      "id": "tail",
+      "path": "M930 580H1312V1199H1050V990Q1000 850 930 760Z",
+      "origin": [
+        930,
+        690
+      ],
+      "duration": 8.4,
+      "angle": 1.4
+    },
+    {
+      "id": "mane",
+      "path": "M700 470L840 450V760H710Q760 630 700 570Z",
+      "origin": [
+        720,
+        530
+      ],
+      "duration": 9.4,
+      "angle": 0.6
+    }
+  ],
+  "rabbit": [
+    {
+      "id": "ear",
+      "path": "M770 420L930 150H1227V380L850 550Z",
+      "origin": [
+        815,
+        505
+      ],
+      "duration": 9,
+      "angle": 0.7
+    }
+  ],
+  "dragon-red": [
+    {
+      "id": "tail",
+      "path": "M1000 480H1312V1199H980V1110Q1120 1040 1140 900L1150 800L1100 720L1040 650Z",
+      "origin": [
+        1000,
+        1120
+      ],
+      "duration": 8.4,
+      "angle": 1.2
+    }
+  ],
+  "dragon-gold": [
+    {
+      "id": "tail",
+      "path": "M1000 480H1312V1199H980V1110Q1120 1040 1140 900L1150 800L1100 720L1040 650Z",
+      "origin": [
+        1001.4893784421714,
+        1121.685169842585
+      ],
+      "duration": 8.4,
+      "angle": 1.2,
+      "transform": "matrix(1.004720692368214 0 0 1.004142502071251 -3.231313926042482 -2.954432477216237)"
+    }
+  ],
+  "dragon-blue": [
+    {
+      "id": "tail",
+      "path": "M1000 480H1312V1199H980V1110Q1120 1040 1140 900L1150 800L1100 720L1040 650Z",
+      "origin": [
+        1000.2446892210859,
+        1121.7481358740679
+      ],
+      "duration": 8.4,
+      "angle": 1.2,
+      "transform": "matrix(1.002360346184107 0 0 1.0033140016570008 -2.1156569630212445 -1.9635459817729917)"
+    }
+  ],
+  "dragon-green": [
+    {
+      "id": "tail",
+      "path": "M1000 480H1312V1199H980V1110Q1120 1040 1140 900L1150 800L1100 720L1040 650Z",
+      "origin": [
+        1000.7411487018096,
+        1121.7481358740679
+      ],
+      "duration": 8.4,
+      "angle": 1.2,
+      "transform": "matrix(1.003933910306845 0 0 1.0033140016570008 -3.1927616050354004 -1.9635459817729917)"
+    }
+  ],
+  "dragon-black": [
+    {
+      "id": "tail",
+      "path": "M1000 480H1312V1199H980V1110Q1120 1040 1140 900L1150 800L1100 720L1040 650Z",
+      "origin": [
+        999.9929189614477,
+        1121.7481358740679
+      ],
+      "duration": 8.4,
+      "angle": 1.2,
+      "transform": "matrix(1.003147128245476 0 0 1.0033140016570008 -3.154209284028326 -1.9635459817729917)"
+    }
+  ],
+  "dragon-glowing": [
+    {
+      "id": "tail",
+      "path": "M1000 480H1312V1199H980V1110Q1120 1040 1140 900L1150 800L1100 720L1040 650Z",
+      "origin": [
+        1000.9929189614477,
+        1121.811101905551
+      ],
+      "duration": 8.4,
+      "angle": 1.2,
+      "transform": "matrix(1.003147128245476 0 0 1.0024855012427507 -2.154209284028326 -0.9726594863297429)"
+    }
+  ],
+  "dragon-crown": [
+    {
+      "id": "tail",
+      "path": "M1000 480H1312V1199H980V1110Q1120 1040 1140 900L1150 800L1100 720L1040 650Z",
+      "origin": [
+        999.7411487018096,
+        1122.685169842585
+      ],
+      "duration": 8.4,
+      "angle": 1.2,
+      "transform": "matrix(1.003933910306845 0 0 1.004142502071251 -4.1927616050354 -1.954432477216237)"
+    }
+  ],
+  "dragon-baby": []
+};
+export function companionParts(key:string):CompanionPartRig[]{
+ if(COMPANION_PART_RIGS[key])return COMPANION_PART_RIGS[key];
+ const tail=COMPANION_TAIL_RIGS[key];return tail?[{id:'tail',...tail}]:[];
+}

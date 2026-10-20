@@ -14,6 +14,7 @@ interface Props {
  inventory:{item_id:string;quantity:number}[];owned:string[];catalog:WorldItem[];roomItems:WorldRoomItem[];
  companions:WorldCompanion[];equipment:Record<string,Equipment>;profile:WorldProfile;gender:'male'|'female';
  error:string;busy:boolean;saveState:string;selectedId:string|null;
+ onRefund:()=>void;
  onWindow:(v:WindowUpdate)=>void;
  onClose:()=>void;onRefresh:()=>void;onShop:()=>void;onGender:(g:'male'|'female')=>void;
  onWear:(item?:Wearable)=>void;onPetWear:(c:WorldCompanion)=>void;onPet:(c:WorldCompanion)=>void;onPets:()=>void;
@@ -45,6 +46,7 @@ export default function InventoryPanel(p:Props){
  const shownFurniture=furniture.filter(r=>match(r.item.name)&&(filter!=='available'||r.available>0)&&(filter!=='placed'||r.placed.length>0));
  return <aside className="decorate-panel side-item-panel inventory-panel" aria-label="내 아이템 관리">
   <div className="inventory-heading"><div><small>MY COLLECTION</small><h3>내 아이템</h3><p>구매한 옷부터 배치한 가구까지</p></div><button onClick={p.onClose} disabled={p.busy}>닫기</button></div>
+  <button className="inventory-wide refund-open" onClick={p.onRefund}>구매·환불 내역</button>
   <div className="inventory-tabs" role="group" aria-label="아이템 종류">{tabList.map(([id,label,count])=><button key={id} aria-pressed={tab===id} onClick={()=>changeTab(id)}>{label}<small>{count}</small></button>)}</div>
   <label className="inventory-search"><span>이름 검색</span><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="아이템 이름으로 찾기"/></label>
   {p.error&&<div className="inventory-error" role="alert">{p.error}<button onClick={p.onRefresh}>다시 불러오기</button></div>}

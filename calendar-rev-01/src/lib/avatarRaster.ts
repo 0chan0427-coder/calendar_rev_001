@@ -7,7 +7,7 @@ import { AVATAR_DEFAULTS, WEARABLES } from '../data/wardrobe';
 import { RASTER_ASSETS } from '../data/avatarRaster';
 import type { RasterKey } from '../data/avatarRaster';
 export type AssetResolver=(path:string)=>string;
-export interface AvatarRenderOptions {animate?:boolean;blink?:boolean;phase?:number}
+export interface AvatarRenderOptions {animate?:boolean;blink?:boolean;phase?:number;eyeState?:'open'|'closed'}
 const identity:AssetResolver=p=>p;
 const safe=(s:string)=>s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
 /** One renderer for the actual app and the offline preview. No hand-drawn replacement body. */
@@ -42,7 +42,7 @@ export function avatarSvgMarkup(gender:'male'|'female',input:Equipment={},uid='a
  const closedEyes=`${brows}<g transform="translate(0 ${eyeY})" stroke="#673521" stroke-width="11" fill="none" stroke-linecap="round"><path d="M329 399 Q387 435 446 399 M568 399 Q628 435 688 399"/><path d="M332 401L323 395 M443 401L451 395 M571 401L562 395 M685 401L694 395" stroke-width="7"/></g>`;
  const smileEyes=`${brows}<g transform="translate(0 ${eyeY})" stroke="#673521" stroke-width="13" fill="none" stroke-linecap="round"><path d="M329 420 Q387 359 446 420 M568 420 Q628 359 688 420"/></g>`;
  const eyes=e.face==='eyes-smile'?smileEyes:blinking
-  ?`<g data-eye-state="open" class="${stateClass('open')}">${eyeSprite}</g><g data-eye-state="closed" class="${stateClass('closed')}">${closedEyes}</g>`:eyeSprite;
+  ?`<g data-eye-state="open" class="${stateClass('open')}">${eyeSprite}</g><g data-eye-state="closed" class="${stateClass('closed')}">${closedEyes}</g>`:options.eyeState==='closed'&&e.face!=='eyes-smile'?closedEyes:eyeSprite;
  const faceBody=`<g id="${id('body')}">${base}</g>`;
  const skin=e.skin==='skin-warm'?`<use href="#${id('body')}" clip-path="url(#${id('skin')})" filter="url(#${id('warm')})" data-layer="skin"/>`:'';
  // Masks hide baked-in basics only where replacement clothing is equipped.

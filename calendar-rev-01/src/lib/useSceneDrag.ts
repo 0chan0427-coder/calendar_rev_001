@@ -10,7 +10,7 @@ export function useSceneDrag(enabled:boolean,context:string){
  useEffect(()=>{if(!enabled)cancel.current?.();},[enabled]);
  const start=(e:ReactPointerEvent<HTMLElement>,t:Target,onSave:(p:ScenePosition)=>void)=>{
   if(!enabled||e.button!==0)return;
-  const root=e.currentTarget.closest('.cyworld-room');if(!root)return;
+  const root=e.currentTarget.closest('.room-canvas')||e.currentTarget.closest('.cyworld-room');if(!root)return;
   e.preventDefault();e.stopPropagation();cancel.current?.();
   const rect=root.getBoundingClientRect(),initial=positions[t.id]||t;
   const offsetX=e.clientX-(rect.left+initial.x/100*rect.width),offsetY=e.clientY-(rect.top+initial.y/100*rect.height);

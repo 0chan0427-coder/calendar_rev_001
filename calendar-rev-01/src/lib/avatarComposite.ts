@@ -1,4 +1,5 @@
 import {avatarSvgMarkup} from './avatarRaster';
+import {avatarClipPaths} from './avatarClipPaths';
 import type {Equipment} from '../data/wardrobe';
 
 export interface AvatarComposite {open:string;closed:string}
@@ -14,7 +15,7 @@ function embeddedImage(path:string){
 async function rasterize(svg:string){
  // The SVG is an isolated image document, never a mask subtree in the page DOM.
  // Embed every image first: canvas stays origin-clean and background alpha is retained.
- const source=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml'}));
+ const source=URL.createObjectURL(new Blob([avatarClipPaths(svg)],{type:'image/svg+xml'}));
  try{
   const img=new Image();img.src=source;await img.decode();
   const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=1536;

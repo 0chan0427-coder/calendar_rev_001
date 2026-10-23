@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.8",
+    "paper": "^0.16.0",
+    "paperjs-offset": "^2.2.2",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },

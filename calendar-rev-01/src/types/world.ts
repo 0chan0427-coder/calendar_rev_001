@@ -70,6 +70,9 @@ export interface WorldDailyStatus {
 
 export interface CompanionLayout {x:number;y:number;scale:number;z_index:number}
 export interface WorldCompanion {
+  bond_points?:number;
+  reward_accessory?:boolean;
+  special_form?:boolean;
   scene_layout?:Partial<Record<WorldSceneType,CompanionLayout>>;
   id: string;
   user_id: string;

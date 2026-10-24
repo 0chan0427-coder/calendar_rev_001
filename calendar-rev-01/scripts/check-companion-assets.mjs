@@ -53,3 +53,14 @@ for(const [key,a] of Object.entries(forms)){
 if(expected.size||Object.keys(sqlForms).length)throw Error('Special forms do not cover all registered bodies and cat coats.');
 for(const folder of specialFolders)if(readdirSync(folder).filter(n=>n.endsWith('.png')).length>20)throw Error('Special image folder exceeds 20 files.');
 console.log(`Special form checks passed: ${Object.keys(forms).length} complete PNGs, body/accessory registrations and SQL catalog match.`);
+// V056: one visible renderer and explicit equipment for every companion surface.
+const renderer=readFileSync(resolve(root,'src/components/world/CompanionAvatar.tsx'),'utf8');
+if(!renderer.includes('CompanionCanvas')||renderer.includes("endsWith('dog-sunglasses')")||renderer.includes("endsWith('cat-ribbon')")||renderer.includes('<img'))throw Error('Companion artwork must use canvas; decorations must come from equipment.');
+const wardrobe=readFileSync(resolve(root,'src/data/wardrobe.ts'),'utf8');
+const equipmentMigration=readFileSync(resolve(root,'supabase/026_companion_render_and_equipment.sql'),'utf8');
+if(!wardrobe.includes("id:'sunglasses-dog'")||!equipmentMigration.includes("('sunglasses-dog','companion','glasses',1000,array['dog'])"))throw Error('Dog accessory catalog/server registration missing.');
+for(const path of ['WorldScene.tsx','InventoryPanel.tsx']){
+ const component=readFileSync(resolve(root,'src/components/world',path),'utf8');
+ if(!component.includes('CompanionAvatar')||!component.includes('specialForm=')||!component.includes('rewardAccessory='))throw Error(`Companion state missing in ${path}`);
+}
+console.log('Companion rendering/equipment checks passed: canvas, explicit decorations, scene and inventory state.');

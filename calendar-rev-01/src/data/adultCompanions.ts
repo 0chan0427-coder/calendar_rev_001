@@ -19,6 +19,11 @@ export const ADULT_COMPANIONS:WorldItem[]=[
 ].map(i=>({...i,category:'동물',subcategory:'성체',placement_type:'none',image_url:i.image,description:'성체 체형으로 새로 제작한 동물'}));
 export const BABY_COMPANION_IDS=['cat-white','cat-ribbon','dog-brown','dog-sunglasses','rabbit','panda','fox','tiger','elephant','crocodile','eagle','whale','dragon-red','dragon-gold','unicorn','dragon-blue','dragon-green','dragon-black','dragon-glowing','dragon-crown','dragon-baby'];
 export function normalizeCompanionAge<T extends WorldItem>(item:T):T{
- if(item.type!=='animal'||!BABY_COMPANION_IDS.includes(item.id))return item;
+ if(item.type!=='animal')return item;
+ const baseName=item.name.replace('빨간 리본 고양이','하얀 고양이').replace('선글라스 강아지','갈색 강아지');
+ item={...item,name:baseName,description:item.id.startsWith('adult-')?'성체 동물':'아기 동물'};
+ if(!BABY_COMPANION_IDS.includes(item.id))return item;
  return {...item,name:/^아기\s*/.test(item.name)?item.name:`아기 ${item.name}`,subcategory:'아기'};
 }
+
+export const isRetiredCompanion=(id:string)=>['cat-ribbon','adult-cat-ribbon','dog-sunglasses','adult-dog-sunglasses'].includes(id);

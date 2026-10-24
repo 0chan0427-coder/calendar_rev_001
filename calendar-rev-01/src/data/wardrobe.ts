@@ -1,7 +1,7 @@
 import {COLLECTION_01} from './collection01';
 export type WearSlot='hair'|'face'|'skin'|'makeup'|'glasses'|'hat'|'outer'|'top'|'bottom'|'shoes'|'accessory'|'special'|'coat';
 export type Equipment=Partial<Record<WearSlot,string>>;
-export interface Wearable {id:string;name:string;target:'avatar'|'cat';slot:WearSlot;price:number;mode:'image'|'tint'|'base'|'feature';image?:string;color?:string;region?:[number,number,number,number];z?:number;renderKey?:string;hidden?:boolean;}
+export interface Wearable {id:string;name:string;target:'avatar'|'cat'|'companion';slot:WearSlot;species?:string;price:number;mode:'image'|'tint'|'base'|'feature';image?:string;color?:string;region?:[number,number,number,number];z?:number;renderKey?:string;hidden?:boolean;}
 export const WEAR_SLOTS:[WearSlot,string][]=[['hair','헤어'],['hat','모자'],['top','상의'],['outer','겉옷'],['bottom','하의'],['shoes','신발'],['face','눈'],['skin','피부'],['makeup','메이크업'],['glasses','안경'],['accessory','장식']];
 const art='/world/avatar-v3';
 export const WEARABLES:Wearable[]=[
@@ -38,6 +38,7 @@ export const WEARABLES:Wearable[]=[
  {id:'glasses-round',name:'브라운 라운드 안경',target:'avatar',slot:'glasses',price:0,mode:'feature'},
  {id:'glasses-gold',name:'골드 라운드 안경',target:'avatar',slot:'glasses',price:1000,mode:'feature'},
  {id:'ribbon-avatar',name:'빨간 헤어 리본',target:'avatar',slot:'accessory',price:1000,mode:'image',image:'/world/wearables/shared/ribbon-red.png'},
+ {id:'sunglasses-dog',name:'강아지 선글라스',target:'companion',species:'dog',slot:'glasses',price:1000,mode:'feature'},
  {id:'cat-ivory',name:'아이보리 고양이',target:'cat',slot:'coat',price:0,mode:'tint',color:'#fff4e4'},
  {id:'cat-cheese',name:'치즈색 고양이',target:'cat',slot:'coat',price:1500,mode:'tint',color:'#e9b56f'},
  {id:'cat-gray',name:'회색 고양이',target:'cat',slot:'coat',price:1500,mode:'tint',color:'#9b9ba8'},
@@ -45,5 +46,8 @@ export const WEARABLES:Wearable[]=[
 ];
 export const AVATAR_DEFAULTS:Equipment={hair:'hair-chestnut',hat:'hat-none',outer:'outer-none',top:'top-base',bottom:'bottom-base',shoes:'shoes-none',face:'eyes-default',skin:'skin-default',makeup:'makeup-blush',glasses:'glasses-none'};
 export function normalizeAvatarEquipment(equipment:Equipment={}):Equipment{return {...AVATAR_DEFAULTS,...Object.fromEntries(Object.entries(equipment).filter(([slot,id])=>WEARABLES.some(i=>i.target==='avatar'&&i.slot===slot&&i.id===id)))};}
-export const selectedWearables=(equipment:Equipment={},target:'avatar'|'cat')=>{const merged=target==='avatar'?normalizeAvatarEquipment(equipment):equipment;return WEARABLES.filter(i=>i.target===target&&merged[i.slot]===i.id);};
+export const selectedWearables=(equipment:Equipment={},target:'avatar'|'cat'|'companion')=>{const merged=target==='avatar'?normalizeAvatarEquipment(equipment):equipment;return WEARABLES.filter(i=>i.target===target&&merged[i.slot]===i.id);};
 export const isCat=(id:string)=>/cat|고양/i.test(id);
+
+export const companionFamily=(id:string)=>id.replace(/^adult-/,'').split('-')[0];
+export const companionWearTarget=(id:string):'cat'|'companion'|undefined=>isCat(id)?'cat':WEARABLES.some(i=>i.target==='companion'&&i.species===companionFamily(id))?'companion':undefined;

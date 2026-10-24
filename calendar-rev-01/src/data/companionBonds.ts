@@ -3,22 +3,22 @@ import {companionSpriteKey} from './companionCatalog';
 import type {Equipment} from './wardrobe';
 export const BOND_MAX=900;
 export const BOND_ACCESSORY_AT=450;
-export const CARE_ACTIONS=[{id:'snack',name:'간식 주기',reaction:'맛있게 먹고 기분이 좋아졌어요.'},{id:'pet',name:'쓰다듬기',reaction:'손길에 편안해하고 있어요.'},{id:'play',name:'놀아주기',reaction:'함께 놀아서 즐거워해요.'}] as const;
+export const CARE_ACTIONS=[{id:'snack',name:'간식 주기',reaction:'간식 주기 완료.'},{id:'pet',name:'쓰다듬기',reaction:'쓰다듬기 완료.'},{id:'play',name:'놀아주기',reaction:'놀아주기 완료.'}] as const;
 export type CareAction=typeof CARE_ACTIONS[number]['id'];
 export type RewardKind='accessory'|'special';
 export const BOND_THEMES={
- cat:{accessory:'초승달 보석 목걸이',special:'달빛 고양이',motif:'moon'},
- dog:{accessory:'날개 이름표 스카프',special:'별지기 강아지',motif:'wing'},
- rabbit:{accessory:'달꽃 귀 장식',special:'달토끼',motif:'flower'},
- panda:{accessory:'옥 대나무 펜던트',special:'대숲 수호 판다',motif:'bamboo'},
- fox:{accessory:'수호 방울 매듭',special:'여우 수호령',motif:'knot'},
- tiger:{accessory:'수호 문양 가슴 장식',special:'백호 수호령',motif:'tiger'},
- elephant:{accessory:'숲의 이마 보석',special:'숲의 수호 코끼리',motif:'gem'},
- crocodile:{accessory:'고대 등판 보석',special:'고대 수호 악어',motif:'scale'},
- eagle:{accessory:'폭풍 발목 고리',special:'폭풍 독수리',motif:'ring'},
- whale:{accessory:'별바다 지느러미 장식',special:'별바다 고래',motif:'star'},
- dragon:{accessory:'각성의 속성 보석',special:'각성룡',motif:'diamond'},
- unicorn:{accessory:'오로라 보석 관',special:'오로라 유니콘',motif:'crown'},
+ cat:{accessory:'고양이 목걸이',special:'고양이 특별 외형',motif:'moon'},
+ dog:{accessory:'강아지 스카프',special:'강아지 특별 외형',motif:'wing'},
+ rabbit:{accessory:'토끼 귀 장식',special:'토끼 특별 외형',motif:'flower'},
+ panda:{accessory:'판다 목걸이',special:'판다 특별 외형',motif:'bamboo'},
+ fox:{accessory:'여우 목걸이',special:'여우 특별 외형',motif:'knot'},
+ tiger:{accessory:'호랑이 가슴 장식',special:'호랑이 특별 외형',motif:'tiger'},
+ elephant:{accessory:'코끼리 이마 장식',special:'코끼리 특별 외형',motif:'gem'},
+ crocodile:{accessory:'악어 등 장식',special:'악어 특별 외형',motif:'scale'},
+ eagle:{accessory:'독수리 발목 고리',special:'독수리 특별 외형',motif:'ring'},
+ whale:{accessory:'고래 지느러미 장식',special:'고래 특별 외형',motif:'star'},
+ dragon:{accessory:'용 가슴 장식',special:'용 특별 외형',motif:'diamond'},
+ unicorn:{accessory:'유니콘 머리 장식',special:'유니콘 특별 외형',motif:'crown'},
 } as const;
 export type BondFamily=keyof typeof BOND_THEMES;
 export function companionBondFamily(itemId:string):BondFamily|undefined{

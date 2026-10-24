@@ -1,9 +1,9 @@
 import {BOND_ACCESSORY_FITS,BOND_THEMES,companionBondFamily} from '../../data/companionBonds';
 /** Coordinates are registered separately for each age/body. Only front-facing straps are drawn. */
-export default function CompanionBondAccessory({itemId,special=false}:{itemId:string;special?:boolean}){
+export default function CompanionBondAccessory({itemId,fit:customFit}:{itemId:string;fit?:[number,number,number]}){
  const family=companionBondFamily(itemId);if(!family)return null;
  const adult=itemId.startsWith('adult-');
- const fit=special?adult?[32,41,.8]:[37,65,1]:BOND_ACCESSORY_FITS[family][adult?'adult':'baby'];
+ const fit=customFit||BOND_ACCESSORY_FITS[family][adult?'adult':'baby'];
  const [x,y,scale]=fit;const motif=BOND_THEMES[family].motif;
  const necklace=['moon','bamboo','knot','tiger','diamond'].includes(motif);
  return <g data-bond-accessory={family} transform={`translate(${x} ${y}) scale(${scale})`} stroke="#846740" strokeWidth=".6" strokeLinecap="round" strokeLinejoin="round">

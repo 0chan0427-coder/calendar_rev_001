@@ -40,7 +40,7 @@ export default function CompanionBondPanel({companion,equipment={},onChange,onCl
  {error&&!preview&&<p className="bond-error" role="alert">{error}</p>}
  <div className="bond-rewards"><article><small>450 친밀도 · 상점 미판매</small><h3>{theme?.accessory||'전용 액세서리 준비 중'}</h3><p>{accessoryUnlocked?'해금 완료 · 자유롭게 장착하거나 해제할 수 있어요.':'매일 세 번 챙기면 약 15일에 해금돼요.'}</p><button disabled={!theme||!accessoryUnlocked||(!preview&&(busy||Boolean(error)))} onClick={()=>equip('accessory',!accessory)}>{accessory?'액세서리 해제':accessoryUnlocked?'액세서리 장착':'아직 잠겨 있어요'}</button></article>
  <article><small>900 친밀도 · 최대 보상</small><h3>{theme?.special||'특별 외형 준비 중'}</h3><p>{formReady?(specialUnlocked?'해금 완료 · 기본 모습으로 언제든 돌아갈 수 있어요.':'매일 세 번 챙기면 약 30일에 해금돼요.'):'외형 제작 예정 · 해금 기록은 보관돼요.'}</p><button disabled={!specialUnlocked||(!formReady&&!special)||(!preview&&(busy||Boolean(error)))} onClick={()=>equip('special',!special)}>{special?'기본 모습으로':!formReady?'외형 준비 중':specialUnlocked?'특별 외형 적용':'아직 잠겨 있어요'}</button></article></div>
- {equipment.coat==='cat-cheese'&&<p className="bond-note">치즈 털색의 특별 외형은 준비 중이에요. 현재 털색은 그대로 유지돼요.</p>}
+
  <p className="bond-note">친밀도는 동물마다 따로 쌓여요. 받은 보상은 보관되며, 같은 동물을 다시 데려와도 사용할 수 있어요. 아기는 아기 모습, 성체는 성체 모습을 유지해요.</p>
  </section></div>;
 }

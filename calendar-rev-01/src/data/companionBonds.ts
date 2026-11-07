@@ -1,3 +1,4 @@
+import {PET_SPECIES} from './petRoster';
 import {companionSpecialArt} from './companionSpecialForms';
 import {companionSpriteKey} from './companionCatalog';
 import type {Equipment} from './wardrobe';
@@ -6,7 +7,7 @@ export const BOND_ACCESSORY_AT=450;
 export const CARE_ACTIONS=[{id:'snack',name:'간식 주기',reaction:'간식 주기 완료.'},{id:'pet',name:'쓰다듬기',reaction:'쓰다듬기 완료.'},{id:'play',name:'놀아주기',reaction:'놀아주기 완료.'}] as const;
 export type CareAction=typeof CARE_ACTIONS[number]['id'];
 export type RewardKind='accessory'|'special';
-export const BOND_THEMES={
+const BASE_BOND_THEMES={
  cat:{accessory:'고양이 목걸이',special:'고양이 특별 외형',motif:'moon'},
  dog:{accessory:'강아지 스카프',special:'강아지 특별 외형',motif:'wing'},
  rabbit:{accessory:'토끼 귀 장식',special:'토끼 특별 외형',motif:'flower'},
@@ -20,6 +21,7 @@ export const BOND_THEMES={
  dragon:{accessory:'용 가슴 장식',special:'용 특별 외형',motif:'diamond'},
  unicorn:{accessory:'유니콘 머리 장식',special:'유니콘 특별 외형',motif:'crown'},
 } as const;
+export const BOND_THEMES:Record<string,{accessory:string;special:string;motif:string}>={...BASE_BOND_THEMES,...Object.fromEntries(PET_SPECIES.filter(s=>!s.existing).map(s=>[s.id,{accessory:s.name+' 친밀도 배지',special:s.name+' 특별 외형',motif:'badge'}]))};
 export type BondFamily=keyof typeof BOND_THEMES;
 export function companionBondFamily(itemId:string):BondFamily|undefined{
  const key=(companionSpriteKey(itemId)||itemId).replace(/^adult-/,'');

@@ -1,0 +1,6436 @@
+{
+  "version": 62,
+  "types": [
+    "일반",
+    "불",
+    "물",
+    "풀",
+    "전기",
+    "땅",
+    "바람",
+    "얼음",
+    "빛",
+    "어둠"
+  ],
+  "strong": {
+    "일반": [],
+    "불": [
+      "풀",
+      "얼음"
+    ],
+    "물": [
+      "불",
+      "땅"
+    ],
+    "풀": [
+      "물",
+      "땅"
+    ],
+    "전기": [
+      "물",
+      "바람"
+    ],
+    "땅": [
+      "불",
+      "전기"
+    ],
+    "바람": [
+      "풀",
+      "어둠"
+    ],
+    "얼음": [
+      "바람",
+      "빛"
+    ],
+    "빛": [
+      "어둠",
+      "전기"
+    ],
+    "어둠": [
+      "빛",
+      "얼음"
+    ]
+  },
+  "species": [
+    {
+      "id": "cat",
+      "name": "고양이",
+      "existing": true,
+      "synergy": "빠르게 압박한 뒤 성체가 팀 속도를 지원",
+      "description": "고양이"
+    },
+    {
+      "id": "dog",
+      "name": "개",
+      "existing": true,
+      "synergy": "아기가 팀을 보호하고 성체가 물리 공격을 받아냄",
+      "description": "개"
+    },
+    {
+      "id": "rabbit",
+      "name": "토끼",
+      "existing": true,
+      "synergy": "아기의 감속으로 성체의 특수 공격 기회를 확보",
+      "description": "토끼"
+    },
+    {
+      "id": "panda",
+      "name": "판다",
+      "existing": true,
+      "synergy": "보호 지원과 단단한 물리 전열을 나눠 맡음",
+      "description": "판다"
+    },
+    {
+      "id": "fox",
+      "name": "여우",
+      "existing": true,
+      "synergy": "아기가 특수방어를 낮춘 상대를 성체가 압박",
+      "description": "여우"
+    },
+    {
+      "id": "tiger",
+      "name": "호랑이",
+      "existing": true,
+      "synergy": "아기 물리·성체 특수로 한쪽 방어에 치우친 상대를 공략",
+      "description": "호랑이"
+    },
+    {
+      "id": "elephant",
+      "name": "코끼리",
+      "existing": true,
+      "synergy": "아기가 피해를 줄이고 느린 성체가 강하게 공격",
+      "description": "코끼리"
+    },
+    {
+      "id": "crocodile",
+      "name": "악어",
+      "existing": true,
+      "synergy": "아기가 물리방어를 낮추고 성체가 오래 버팀",
+      "description": "악어"
+    },
+    {
+      "id": "eagle",
+      "name": "독수리",
+      "existing": true,
+      "synergy": "아기는 팀 속도·성체는 빠른 마무리 담당",
+      "description": "독수리"
+    },
+    {
+      "id": "whale",
+      "name": "고래",
+      "existing": true,
+      "synergy": "아기는 팀 보호·성체는 특수 공격을 받아내는 역할",
+      "description": "고래"
+    },
+    {
+      "id": "unicorn",
+      "name": "유니콘",
+      "existing": true,
+      "synergy": "아기는 특수 압박·성체는 회복과 팀 보호",
+      "description": "유니콘"
+    },
+    {
+      "id": "dragon",
+      "name": "용",
+      "existing": true,
+      "synergy": "아기 물리 압박 뒤 성체가 물리·특수 중 방어가 낮은 쪽 선택",
+      "description": "용"
+    },
+    {
+      "id": "wolf",
+      "name": "늑대",
+      "existing": false,
+      "synergy": "아기 방어 약화와 성체의 빠른 물리 공격 연계",
+      "description": "gray wolf with silver gray fur and amber eyes"
+    },
+    {
+      "id": "bear",
+      "name": "곰",
+      "existing": false,
+      "synergy": "아기는 유연한 대응·성체는 물리 방어 중심",
+      "description": "brown bear with thick chocolate brown fur"
+    },
+    {
+      "id": "lion",
+      "name": "사자",
+      "existing": false,
+      "synergy": "아기 특방 약화·성체 특수 압박, 호랑이와 지원 구성이 다름",
+      "description": "African lion with golden tawny fur; adult has a full magnificent mane"
+    },
+    {
+      "id": "leopard",
+      "name": "표범",
+      "existing": false,
+      "synergy": "빠른 교란과 높은 공격력의 역할 분담",
+      "description": "leopard with golden coat and dark rosettes"
+    },
+    {
+      "id": "deer",
+      "name": "사슴",
+      "existing": false,
+      "synergy": "속도 지원과 특수 방어 담당을 연결",
+      "description": "red deer, warm russet coat; mature adult stag with elegant branched antlers"
+    },
+    {
+      "id": "horse",
+      "name": "말",
+      "existing": false,
+      "synergy": "아기는 감속·성체는 속도 우위를 활용한 물리 공격",
+      "description": "chestnut horse with dark flowing mane and white blaze"
+    },
+    {
+      "id": "griffin",
+      "name": "그리핀",
+      "existing": false,
+      "synergy": "특수 공격과 물리 방어를 분담",
+      "description": "griffin, eagle head and forelegs, lion hindquarters, broad brown gold wings"
+    },
+    {
+      "id": "phoenix",
+      "name": "불사조",
+      "existing": false,
+      "synergy": "아기가 기회를 만들고 성체가 특수 공격, 부활은 미도입",
+      "description": "phoenix bird with crimson gold plumage and long elegant fiery tail feathers"
+    },
+    {
+      "id": "owl",
+      "name": "부엉이",
+      "existing": false,
+      "synergy": "아기 교란·성체 특수 방어, 느린 상대 압박",
+      "description": "Eurasian eagle owl with brown cream feathers and orange eyes"
+    },
+    {
+      "id": "penguin",
+      "name": "펭귄",
+      "existing": false,
+      "synergy": "아기의 공격과 성체의 보호로 팀 약점을 보완",
+      "description": "emperor penguin with black white plumage and gold neck patches"
+    },
+    {
+      "id": "seal",
+      "name": "물범",
+      "existing": false,
+      "synergy": "아기 특수 공격·성체 물리 방어",
+      "description": "harbor seal with mottled silver gray coat, no external ears"
+    },
+    {
+      "id": "otter",
+      "name": "수달",
+      "existing": false,
+      "synergy": "아기가 낮춘 방어에 맞춰 성체가 공격 종류 선택",
+      "description": "river otter with rich brown waterproof fur and long tail"
+    },
+    {
+      "id": "turtle",
+      "name": "거북",
+      "existing": false,
+      "synergy": "물리 쪽 지원과 특수 쪽 방어를 분담",
+      "description": "green sea turtle with green olive shell and four flippers"
+    },
+    {
+      "id": "octopus",
+      "name": "문어",
+      "existing": false,
+      "synergy": "아기는 상대 공격을 낮추고 성체는 특수 공격",
+      "description": "red orange octopus with eight naturally curling arms"
+    },
+    {
+      "id": "shark",
+      "name": "상어",
+      "existing": false,
+      "synergy": "빠른 아기와 강한 성체가 같은 상대를 지속 압박",
+      "description": "great white shark, gray back white belly, clearly recognizable shark silhouette"
+    },
+    {
+      "id": "ray",
+      "name": "가오리",
+      "existing": false,
+      "synergy": "아기가 속도 차이를 만들고 성체가 빠른 특수 공격",
+      "description": "manta ray with broad dark wings and cream underside"
+    },
+    {
+      "id": "hedgehog",
+      "name": "고슴도치",
+      "existing": false,
+      "synergy": "아기 방어·성체 속도 지원으로 성장 역할을 반대로 구성",
+      "description": "European hedgehog with brown spines and cream face"
+    },
+    {
+      "id": "snake",
+      "name": "뱀",
+      "existing": false,
+      "synergy": "아기는 특수 공격·성체는 상대 행동 효율을 낮추는 교란",
+      "description": "emerald green tree snake with coiled body"
+    },
+    {
+      "id": "rhino",
+      "name": "코뿔소",
+      "existing": false,
+      "synergy": "아기는 유연한 방어, 성체는 느리고 강한 물리 공격",
+      "description": "white rhinoceros with gray folded skin and two horns"
+    },
+    {
+      "id": "hippo",
+      "name": "하마",
+      "existing": false,
+      "synergy": "아기는 팀 보호, 성체는 물리 공격을 버팀",
+      "description": "hippopotamus with dusky mauve gray skin and broad muzzle"
+    },
+    {
+      "id": "giraffe",
+      "name": "기린",
+      "existing": false,
+      "synergy": "속도 지원 뒤 특수 공격과 방어를 담당",
+      "description": "giraffe with ochre patch pattern, long neck and small ossicones"
+    },
+    {
+      "id": "zebra",
+      "name": "얼룩말",
+      "existing": false,
+      "synergy": "아기가 속도를 조절하고 성체가 빠르게 공격",
+      "description": "plains zebra with black and white stripes and erect mane"
+    },
+    {
+      "id": "gorilla",
+      "name": "고릴라",
+      "existing": false,
+      "synergy": "아기는 보호 지원, 성체는 높은 물리 공격",
+      "description": "western gorilla; adult powerful silverback, baby soft dark fur"
+    },
+    {
+      "id": "orangutan",
+      "name": "오랑우탄",
+      "existing": false,
+      "synergy": "방어 약화와 공격 종류 선택을 조합",
+      "description": "orangutan with long copper orange fur and thoughtful face"
+    },
+    {
+      "id": "sloth",
+      "name": "나무늘보",
+      "existing": false,
+      "synergy": "낮은 속도를 보호·회복으로 보완",
+      "description": "three toed sloth with gray brown fur, naturally crouching gripping a small branch"
+    },
+    {
+      "id": "koala",
+      "name": "코알라",
+      "existing": false,
+      "synergy": "아기는 보호 중심, 성체는 균형 있는 대응",
+      "description": "koala with soft gray fur, round fluffy ears and dark nose"
+    },
+    {
+      "id": "kangaroo",
+      "name": "캥거루",
+      "existing": false,
+      "synergy": "아기의 팀 지원으로 성체 공격 기회 확보",
+      "description": "red kangaroo with russet fur and large hind legs"
+    },
+    {
+      "id": "raccoon",
+      "name": "너구리",
+      "existing": false,
+      "synergy": "속도·방어를 낮추고 유연하게 공격",
+      "description": "raccoon with gray brown fur, black facial mask and striped tail"
+    },
+    {
+      "id": "redpanda",
+      "name": "레서판다",
+      "existing": false,
+      "synergy": "아기는 특수 공격, 성체는 빠른 지원",
+      "description": "red panda with rusty red fur, cream face and bushy ringed tail"
+    },
+    {
+      "id": "squirrel",
+      "name": "다람쥐",
+      "existing": false,
+      "synergy": "아기의 교란으로 성체 특수 공격을 보조",
+      "description": "red squirrel with rusty fur and magnificent bushy tail"
+    },
+    {
+      "id": "bat",
+      "name": "박쥐",
+      "existing": false,
+      "synergy": "아기는 특수 공격, 성체는 빠른 약화 기술",
+      "description": "fruit bat with dark brown fur, warm dark wing membranes and pointed ears"
+    },
+    {
+      "id": "peacock",
+      "name": "공작",
+      "existing": false,
+      "synergy": "보호와 특수방어 약화로 성체를 지원",
+      "description": "Indian blue peacock; adult has magnificent fanned iridescent green blue eye spotted tail"
+    },
+    {
+      "id": "flamingo",
+      "name": "홍학",
+      "existing": false,
+      "synergy": "아기는 공격, 성체는 속도와 공격 약화 지원",
+      "description": "greater flamingo with soft pink plumage, curved beak and slender legs"
+    },
+    {
+      "id": "crane",
+      "name": "두루미",
+      "existing": false,
+      "synergy": "공격 방식과 방어 역할을 서로 다르게 구성",
+      "description": "red crowned crane with white plumage black neck and red crown"
+    },
+    {
+      "id": "chameleon",
+      "name": "카멜레온",
+      "existing": false,
+      "synergy": "상대의 약한 방어를 골라 공격",
+      "description": "panther chameleon with green turquoise skin, curled tail and distinctive eyes"
+    },
+    {
+      "id": "frog",
+      "name": "개구리",
+      "existing": false,
+      "synergy": "아기의 감속·보호와 성체의 빠른 특수 공격",
+      "description": "green tree frog with emerald skin and orange toe pads"
+    },
+    {
+      "id": "scorpion",
+      "name": "전갈",
+      "existing": false,
+      "synergy": "아기가 물리 공격을 버티고 성체가 방어를 돌파",
+      "description": "emperor scorpion with dark charcoal armor, two claws and raised segmented tail"
+    },
+    {
+      "id": "pegasus",
+      "name": "페가수스",
+      "existing": false,
+      "synergy": "아기는 팀 지원, 성체는 빠른 특수 공격",
+      "description": "white pegasus horse with silver flowing mane and large feathered wings"
+    }
+  ],
+  "pets": [
+    {
+      "id": "cat-baby",
+      "species": "cat",
+      "name": "아기 고양이",
+      "age": "baby",
+      "itemId": "cat-white",
+      "spriteKey": "cat-ivory",
+      "existing": true,
+      "types": [
+        "일반"
+      ],
+      "role": "빠른 물리",
+      "stats": {
+        "hp": 56,
+        "atk": 85,
+        "def": 51,
+        "spe": 98,
+        "spa": 56,
+        "spd": 64
+      },
+      "total": 410,
+      "skills": [
+        "P1",
+        "X1",
+        "U1",
+        "U4"
+      ],
+      "ability": {
+        "id": "swift",
+        "name": "민첩",
+        "description": "출전 중 속도 10% 증가"
+      },
+      "synergy": "빠르게 압박한 뒤 성체가 팀 속도를 지원",
+      "image": null,
+      "specialName": "고양이 특별 외형",
+      "specialPalette": 0,
+      "specialDescription": "은빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": null,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "cat-adult",
+      "species": "cat",
+      "name": "고양이",
+      "age": "adult",
+      "itemId": "adult-cat-white",
+      "spriteKey": "adult-cat-ivory",
+      "existing": true,
+      "types": [
+        "바람"
+      ],
+      "role": "빠른 지원",
+      "stats": {
+        "hp": 77,
+        "atk": 56,
+        "def": 77,
+        "spe": 117,
+        "spa": 66,
+        "spd": 97
+      },
+      "total": 490,
+      "skills": [
+        "S7",
+        "X2",
+        "U11",
+        "U7"
+      ],
+      "ability": {
+        "id": "ward",
+        "name": "특수 방어",
+        "description": "받는 특수 피해 10% 감소"
+      },
+      "synergy": "빠르게 압박한 뒤 성체가 팀 속도를 지원",
+      "image": null,
+      "specialName": "고양이 특별 외형",
+      "specialPalette": 0,
+      "specialDescription": "은빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": null,
+      "size": [
+        120,
+        115
+      ]
+    },
+    {
+      "id": "dog-baby",
+      "species": "dog",
+      "name": "아기 개",
+      "age": "baby",
+      "itemId": "dog-brown",
+      "spriteKey": "dog",
+      "existing": true,
+      "types": [
+        "일반"
+      ],
+      "role": "빠른 지원",
+      "stats": {
+        "hp": 67,
+        "atk": 48,
+        "def": 66,
+        "spe": 101,
+        "spa": 57,
+        "spd": 84
+      },
+      "total": 423,
+      "skills": [
+        "S1",
+        "X3",
+        "U10",
+        "U5"
+      ],
+      "ability": {
+        "id": "power",
+        "name": "강한 발톱",
+        "description": "물리 공격 피해 10% 증가"
+      },
+      "synergy": "아기가 팀을 보호하고 성체가 물리 공격을 받아냄",
+      "image": null,
+      "specialName": "개 특별 외형",
+      "specialPalette": 1,
+      "specialDescription": "금빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": null,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "dog-adult",
+      "species": "dog",
+      "name": "개",
+      "age": "adult",
+      "itemId": "adult-dog-brown",
+      "spriteKey": "adult-dog",
+      "existing": true,
+      "types": [
+        "일반"
+      ],
+      "role": "물리 탱커",
+      "stats": {
+        "hp": 101,
+        "atk": 100,
+        "def": 121,
+        "spe": 42,
+        "spa": 58,
+        "spd": 85
+      },
+      "total": 507,
+      "skills": [
+        "P1",
+        "X4",
+        "U3",
+        "U1"
+      ],
+      "ability": {
+        "id": "support",
+        "name": "보호 본능",
+        "description": "보조 기술 사용 시 자신의 최대 HP 5% 회복"
+      },
+      "synergy": "아기가 팀을 보호하고 성체가 물리 공격을 받아냄",
+      "image": null,
+      "specialName": "개 특별 외형",
+      "specialPalette": 1,
+      "specialDescription": "금빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": null,
+      "size": [
+        120,
+        115
+      ]
+    },
+    {
+      "id": "rabbit-baby",
+      "species": "rabbit",
+      "name": "아기 토끼",
+      "age": "baby",
+      "itemId": "rabbit",
+      "spriteKey": "rabbit",
+      "existing": true,
+      "types": [
+        "풀"
+      ],
+      "role": "고속 교란",
+      "stats": {
+        "hp": 54,
+        "atk": 68,
+        "def": 55,
+        "spe": 127,
+        "spa": 68,
+        "spd": 64
+      },
+      "total": 436,
+      "skills": [
+        "P4",
+        "X5",
+        "U8",
+        "U11"
+      ],
+      "ability": {
+        "id": "comeback",
+        "name": "끈기",
+        "description": "HP가 3분의 1 이하일 때 공격 피해 15% 증가"
+      },
+      "synergy": "아기의 감속으로 성체의 특수 공격 기회를 확보",
+      "image": null,
+      "specialName": "토끼 특별 외형",
+      "specialPalette": 2,
+      "specialDescription": "푸른 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": null,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "rabbit-adult",
+      "species": "rabbit",
+      "name": "토끼",
+      "age": "adult",
+      "itemId": "adult-rabbit",
+      "spriteKey": "adult-rabbit",
+      "existing": true,
+      "types": [
+        "풀"
+      ],
+      "role": "빠른 특수",
+      "stats": {
+        "hp": 71,
+        "atk": 66,
+        "def": 76,
+        "spe": 120,
+        "spa": 115,
+        "spd": 76
+      },
+      "total": 524,
+      "skills": [
+        "S4",
+        "X6",
+        "U2",
+        "U9"
+      ],
+      "ability": {
+        "id": "swift",
+        "name": "민첩",
+        "description": "출전 중 속도 10% 증가"
+      },
+      "synergy": "아기의 감속으로 성체의 특수 공격 기회를 확보",
+      "image": null,
+      "specialName": "토끼 특별 외형",
+      "specialPalette": 2,
+      "specialDescription": "푸른 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": null,
+      "size": [
+        120,
+        115
+      ]
+    },
+    {
+      "id": "panda-baby",
+      "species": "panda",
+      "name": "아기 판다",
+      "age": "baby",
+      "itemId": "panda",
+      "spriteKey": "panda",
+      "existing": true,
+      "types": [
+        "풀"
+      ],
+      "role": "지원 탱커",
+      "stats": {
+        "hp": 95,
+        "atk": 51,
+        "def": 98,
+        "spe": 37,
+        "spa": 70,
+        "spd": 98
+      },
+      "total": 449,
+      "skills": [
+        "S4",
+        "X7",
+        "U10",
+        "U9"
+      ],
+      "ability": {
+        "id": "armor",
+        "name": "단단한 몸",
+        "description": "받는 물리 피해 10% 감소"
+      },
+      "synergy": "보호 지원과 단단한 물리 전열을 나눠 맡음",
+      "image": null,
+      "specialName": "판다 특별 외형",
+      "specialPalette": 3,
+      "specialDescription": "밝은 털색로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": null,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "panda-adult",
+      "species": "panda",
+      "name": "판다",
+      "age": "adult",
+      "itemId": "adult-panda",
+      "spriteKey": "adult-panda",
+      "existing": true,
+      "types": [
+        "풀",
+        "땅"
+      ],
+      "role": "물리 탱커",
+      "stats": {
+        "hp": 107,
+        "atk": 107,
+        "def": 130,
+        "spe": 45,
+        "spa": 62,
+        "spd": 90
+      },
+      "total": 541,
+      "skills": [
+        "P4",
+        "X8",
+        "U1",
+        "U3"
+      ],
+      "ability": {
+        "id": "power",
+        "name": "강한 발톱",
+        "description": "물리 공격 피해 10% 증가"
+      },
+      "synergy": "보호 지원과 단단한 물리 전열을 나눠 맡음",
+      "image": null,
+      "specialName": "판다 특별 외형",
+      "specialPalette": 3,
+      "specialDescription": "밝은 털색로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": null,
+      "size": [
+        120,
+        115
+      ]
+    },
+    {
+      "id": "fox-baby",
+      "species": "fox",
+      "name": "아기 여우",
+      "age": "baby",
+      "itemId": "fox",
+      "spriteKey": "fox",
+      "existing": true,
+      "types": [
+        "어둠"
+      ],
+      "role": "빠른 지원",
+      "stats": {
+        "hp": 72,
+        "atk": 53,
+        "def": 72,
+        "spe": 111,
+        "spa": 63,
+        "spd": 91
+      },
+      "total": 462,
+      "skills": [
+        "S10",
+        "X9",
+        "U7",
+        "U11"
+      ],
+      "ability": {
+        "id": "focus",
+        "name": "집중",
+        "description": "특수 공격 피해 10% 증가"
+      },
+      "synergy": "아기가 특수방어를 낮춘 상대를 성체가 압박",
+      "image": null,
+      "specialName": "여우 특별 외형",
+      "specialPalette": 0,
+      "specialDescription": "은빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": null,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "fox-adult",
+      "species": "fox",
+      "name": "여우",
+      "age": "adult",
+      "itemId": "adult-fox",
+      "spriteKey": "adult-fox",
+      "existing": true,
+      "types": [
+        "불",
+        "어둠"
+      ],
+      "role": "특수 공격",
+      "stats": {
+        "hp": 87,
+        "atk": 64,
+        "def": 76,
+        "spe": 93,
+        "spa": 145,
+        "spd": 93
+      },
+      "total": 558,
+      "skills": [
+        "S2",
+        "X10",
+        "U2",
+        "U12"
+      ],
+      "ability": {
+        "id": "comeback",
+        "name": "끈기",
+        "description": "HP가 3분의 1 이하일 때 공격 피해 15% 증가"
+      },
+      "synergy": "아기가 특수방어를 낮춘 상대를 성체가 압박",
+      "image": null,
+      "specialName": "여우 특별 외형",
+      "specialPalette": 0,
+      "specialDescription": "은빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": null,
+      "size": [
+        120,
+        115
+      ]
+    },
+    {
+      "id": "tiger-baby",
+      "species": "tiger",
+      "name": "아기 호랑이",
+      "age": "baby",
+      "itemId": "tiger",
+      "spriteKey": "tiger",
+      "existing": true,
+      "types": [
+        "일반"
+      ],
+      "role": "빠른 물리",
+      "stats": {
+        "hp": 65,
+        "atk": 99,
+        "def": 59,
+        "spe": 114,
+        "spa": 64,
+        "spd": 74
+      },
+      "total": 475,
+      "skills": [
+        "P1",
+        "X11",
+        "U7",
+        "U4"
+      ],
+      "ability": {
+        "id": "precision",
+        "name": "정확한 공격",
+        "description": "공격 기술 명중률 +10%p"
+      },
+      "synergy": "아기 물리·성체 특수로 한쪽 방어에 치우친 상대를 공략",
+      "image": null,
+      "specialName": "호랑이 특별 외형",
+      "specialPalette": 1,
+      "specialDescription": "금빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": null,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "tiger-adult",
+      "species": "tiger",
+      "name": "호랑이",
+      "age": "adult",
+      "itemId": "adult-tiger",
+      "spriteKey": "adult-tiger",
+      "existing": true,
+      "types": [
+        "불"
+      ],
+      "role": "특수 공격",
+      "stats": {
+        "hp": 89,
+        "atk": 66,
+        "def": 78,
+        "spe": 96,
+        "spa": 150,
+        "spd": 96
+      },
+      "total": 575,
+      "skills": [
+        "S2",
+        "X12",
+        "U2",
+        "U12"
+      ],
+      "ability": {
+        "id": "armor",
+        "name": "단단한 몸",
+        "description": "받는 물리 피해 10% 감소"
+      },
+      "synergy": "아기 물리·성체 특수로 한쪽 방어에 치우친 상대를 공략",
+      "image": null,
+      "specialName": "호랑이 특별 외형",
+      "specialPalette": 1,
+      "specialDescription": "금빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": null,
+      "size": [
+        120,
+        115
+      ]
+    },
+    {
+      "id": "elephant-baby",
+      "species": "elephant",
+      "name": "아기 코끼리",
+      "age": "baby",
+      "itemId": "elephant",
+      "spriteKey": "elephant",
+      "existing": true,
+      "types": [
+        "땅"
+      ],
+      "role": "지원 탱커",
+      "stats": {
+        "hp": 101,
+        "atk": 56,
+        "def": 107,
+        "spe": 41,
+        "spa": 76,
+        "spd": 107
+      },
+      "total": 488,
+      "skills": [
+        "S6",
+        "X13",
+        "U10",
+        "U8"
+      ],
+      "ability": {
+        "id": "ward",
+        "name": "특수 방어",
+        "description": "받는 특수 피해 10% 감소"
+      },
+      "synergy": "아기가 피해를 줄이고 느린 성체가 강하게 공격",
+      "image": null,
+      "specialName": "코끼리 특별 외형",
+      "specialPalette": 2,
+      "specialDescription": "푸른 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": null,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "elephant-adult",
+      "species": "elephant",
+      "name": "코끼리",
+      "age": "adult",
+      "itemId": "adult-elephant",
+      "spriteKey": "adult-elephant",
+      "existing": true,
+      "types": [
+        "땅"
+      ],
+      "role": "물리 강타",
+      "stats": {
+        "hp": 87,
+        "atk": 123,
+        "def": 72,
+        "spe": 77,
+        "spa": 56,
+        "spd": 77
+      },
+      "total": 492,
+      "skills": [
+        "P6",
+        "X14",
+        "U1",
+        "U12"
+      ],
+      "ability": {
+        "id": "focus",
+        "name": "집중",
+        "description": "특수 공격 피해 10% 증가"
+      },
+      "synergy": "아기가 피해를 줄이고 느린 성체가 강하게 공격",
+      "image": null,
+      "specialName": "코끼리 특별 외형",
+      "specialPalette": 2,
+      "specialDescription": "푸른 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": null,
+      "size": [
+        220,
+        170
+      ]
+    },
+    {
+      "id": "crocodile-baby",
+      "species": "crocodile",
+      "name": "아기 악어",
+      "age": "baby",
+      "itemId": "crocodile",
+      "spriteKey": "crocodile",
+      "existing": true,
+      "types": [
+        "물"
+      ],
+      "role": "빠른 물리",
+      "stats": {
+        "hp": 56,
+        "atk": 87,
+        "def": 52,
+        "spe": 100,
+        "spa": 56,
+        "spd": 65
+      },
+      "total": 416,
+      "skills": [
+        "P3",
+        "X15",
+        "U6",
+        "U4"
+      ],
+      "ability": {
+        "id": "support",
+        "name": "보호 본능",
+        "description": "보조 기술 사용 시 자신의 최대 HP 5% 회복"
+      },
+      "synergy": "아기가 물리방어를 낮추고 성체가 오래 버팀",
+      "image": null,
+      "specialName": "악어 특별 외형",
+      "specialPalette": 3,
+      "specialDescription": "밝은 털색로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": null,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "crocodile-adult",
+      "species": "crocodile",
+      "name": "악어",
+      "age": "adult",
+      "itemId": "adult-crocodile",
+      "spriteKey": "adult-crocodile",
+      "existing": true,
+      "types": [
+        "물",
+        "땅"
+      ],
+      "role": "물리 탱커",
+      "stats": {
+        "hp": 101,
+        "atk": 101,
+        "def": 122,
+        "spe": 42,
+        "spa": 58,
+        "spd": 85
+      },
+      "total": 509,
+      "skills": [
+        "P3",
+        "X16",
+        "U3",
+        "U9"
+      ],
+      "ability": {
+        "id": "precision",
+        "name": "정확한 공격",
+        "description": "공격 기술 명중률 +10%p"
+      },
+      "synergy": "아기가 물리방어를 낮추고 성체가 오래 버팀",
+      "image": null,
+      "specialName": "악어 특별 외형",
+      "specialPalette": 3,
+      "specialDescription": "밝은 털색로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": null,
+      "size": [
+        120,
+        115
+      ]
+    },
+    {
+      "id": "eagle-baby",
+      "species": "eagle",
+      "name": "아기 독수리",
+      "age": "baby",
+      "itemId": "eagle",
+      "spriteKey": "eagle",
+      "existing": true,
+      "types": [
+        "바람"
+      ],
+      "role": "빠른 지원",
+      "stats": {
+        "hp": 67,
+        "atk": 49,
+        "def": 67,
+        "spe": 103,
+        "spa": 58,
+        "spd": 85
+      },
+      "total": 429,
+      "skills": [
+        "S7",
+        "X17",
+        "U11",
+        "U5"
+      ],
+      "ability": {
+        "id": "swift",
+        "name": "민첩",
+        "description": "출전 중 속도 10% 증가"
+      },
+      "synergy": "아기는 팀 속도·성체는 빠른 마무리 담당",
+      "image": null,
+      "specialName": "독수리 특별 외형",
+      "specialPalette": 0,
+      "specialDescription": "은빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": null,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "eagle-adult",
+      "species": "eagle",
+      "name": "독수리",
+      "age": "adult",
+      "itemId": "adult-eagle",
+      "spriteKey": "adult-eagle",
+      "existing": true,
+      "types": [
+        "바람",
+        "빛"
+      ],
+      "role": "빠른 물리",
+      "stats": {
+        "hp": 71,
+        "atk": 110,
+        "def": 66,
+        "spe": 126,
+        "spa": 71,
+        "spd": 82
+      },
+      "total": 526,
+      "skills": [
+        "P7",
+        "X18",
+        "U1",
+        "U12"
+      ],
+      "ability": {
+        "id": "ward",
+        "name": "특수 방어",
+        "description": "받는 특수 피해 10% 감소"
+      },
+      "synergy": "아기는 팀 속도·성체는 빠른 마무리 담당",
+      "image": null,
+      "specialName": "독수리 특별 외형",
+      "specialPalette": 0,
+      "specialDescription": "은빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": null,
+      "size": [
+        120,
+        115
+      ]
+    },
+    {
+      "id": "whale-baby",
+      "species": "whale",
+      "name": "아기 고래",
+      "age": "baby",
+      "itemId": "whale",
+      "spriteKey": "whale",
+      "existing": true,
+      "types": [
+        "물"
+      ],
+      "role": "지원 탱커",
+      "stats": {
+        "hp": 91,
+        "atk": 51,
+        "def": 97,
+        "spe": 37,
+        "spa": 69,
+        "spd": 97
+      },
+      "total": 442,
+      "skills": [
+        "S3",
+        "X19",
+        "U10",
+        "U8"
+      ],
+      "ability": {
+        "id": "power",
+        "name": "강한 발톱",
+        "description": "물리 공격 피해 10% 증가"
+      },
+      "synergy": "아기는 팀 보호·성체는 특수 공격을 받아내는 역할",
+      "image": null,
+      "specialName": "고래 특별 외형",
+      "specialPalette": 1,
+      "specialDescription": "금빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": null,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "whale-adult",
+      "species": "whale",
+      "name": "고래",
+      "age": "adult",
+      "itemId": "adult-whale",
+      "spriteKey": "adult-whale",
+      "existing": true,
+      "types": [
+        "물",
+        "얼음"
+      ],
+      "role": "특수 탱커",
+      "stats": {
+        "hp": 160,
+        "atk": 65,
+        "def": 110,
+        "spe": 25,
+        "spa": 100,
+        "spd": 140
+      },
+      "total": 600,
+      "skills": [
+        "S3",
+        "X20",
+        "U2",
+        "U9"
+      ],
+      "ability": {
+        "id": "support",
+        "name": "보호 본능",
+        "description": "보조 기술 사용 시 자신의 최대 HP 5% 회복"
+      },
+      "synergy": "아기는 팀 보호·성체는 특수 공격을 받아내는 역할",
+      "image": null,
+      "specialName": "고래 특별 외형",
+      "specialPalette": 1,
+      "specialDescription": "금빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": null,
+      "size": [
+        220,
+        170
+      ]
+    },
+    {
+      "id": "unicorn-baby",
+      "species": "unicorn",
+      "name": "아기 유니콘",
+      "age": "baby",
+      "itemId": "unicorn",
+      "spriteKey": "unicorn",
+      "existing": true,
+      "types": [
+        "빛"
+      ],
+      "role": "빠른 특수",
+      "stats": {
+        "hp": 62,
+        "atk": 57,
+        "def": 66,
+        "spe": 104,
+        "spa": 100,
+        "spd": 66
+      },
+      "total": 455,
+      "skills": [
+        "S9",
+        "X21",
+        "U4",
+        "U7"
+      ],
+      "ability": {
+        "id": "comeback",
+        "name": "끈기",
+        "description": "HP가 3분의 1 이하일 때 공격 피해 15% 증가"
+      },
+      "synergy": "아기는 특수 압박·성체는 회복과 팀 보호",
+      "image": null,
+      "specialName": "유니콘 특별 외형",
+      "specialPalette": 2,
+      "specialDescription": "푸른 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": null,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "unicorn-adult",
+      "species": "unicorn",
+      "name": "유니콘",
+      "age": "adult",
+      "itemId": "adult-unicorn",
+      "spriteKey": "adult-unicorn",
+      "existing": true,
+      "types": [
+        "빛",
+        "풀"
+      ],
+      "role": "지원 탱커",
+      "stats": {
+        "hp": 115,
+        "atk": 64,
+        "def": 123,
+        "spe": 47,
+        "spa": 88,
+        "spd": 123
+      },
+      "total": 560,
+      "skills": [
+        "S9",
+        "X22",
+        "U9",
+        "U10"
+      ],
+      "ability": {
+        "id": "swift",
+        "name": "민첩",
+        "description": "출전 중 속도 10% 증가"
+      },
+      "synergy": "아기는 특수 압박·성체는 회복과 팀 보호",
+      "image": null,
+      "specialName": "유니콘 특별 외형",
+      "specialPalette": 2,
+      "specialDescription": "푸른 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": null,
+      "size": [
+        120,
+        115
+      ]
+    },
+    {
+      "id": "dragon-baby",
+      "species": "dragon",
+      "name": "아기 용",
+      "age": "baby",
+      "itemId": "dragon-red",
+      "spriteKey": "dragon-red",
+      "existing": true,
+      "types": [
+        "불"
+      ],
+      "role": "빠른 물리",
+      "stats": {
+        "hp": 63,
+        "atk": 98,
+        "def": 59,
+        "spe": 112,
+        "spa": 63,
+        "spd": 73
+      },
+      "total": 468,
+      "skills": [
+        "P2",
+        "X23",
+        "U6",
+        "U4"
+      ],
+      "ability": {
+        "id": "armor",
+        "name": "단단한 몸",
+        "description": "받는 물리 피해 10% 감소"
+      },
+      "synergy": "아기 물리 압박 뒤 성체가 물리·특수 중 방어가 낮은 쪽 선택",
+      "image": null,
+      "specialName": "용 특별 외형",
+      "specialPalette": 3,
+      "specialDescription": "밝은 털색로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": null,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "dragon-adult",
+      "species": "dragon",
+      "name": "용",
+      "age": "adult",
+      "itemId": "adult-dragon-red",
+      "spriteKey": "adult-dragon-red",
+      "existing": true,
+      "types": [
+        "불",
+        "바람"
+      ],
+      "role": "혼합 공격",
+      "stats": {
+        "hp": 110,
+        "atk": 80,
+        "def": 100,
+        "spe": 45,
+        "spa": 170,
+        "spd": 95
+      },
+      "total": 600,
+      "skills": [
+        "P2",
+        "X24",
+        "U1",
+        "U2"
+      ],
+      "ability": {
+        "id": "power",
+        "name": "강한 발톱",
+        "description": "물리 공격 피해 10% 증가"
+      },
+      "synergy": "아기 물리 압박 뒤 성체가 물리·특수 중 방어가 낮은 쪽 선택",
+      "image": null,
+      "specialName": "용 특별 외형",
+      "specialPalette": 3,
+      "specialDescription": "밝은 털색로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": null,
+      "size": [
+        220,
+        170
+      ]
+    },
+    {
+      "id": "wolf-baby",
+      "species": "wolf",
+      "name": "아기 늑대",
+      "age": "baby",
+      "itemId": "wolf",
+      "spriteKey": "wolf",
+      "existing": false,
+      "types": [
+        "얼음"
+      ],
+      "role": "빠른 지원",
+      "stats": {
+        "hp": 76,
+        "atk": 55,
+        "def": 75,
+        "spe": 115,
+        "spa": 65,
+        "spd": 95
+      },
+      "total": 481,
+      "skills": [
+        "S8",
+        "X25",
+        "U11",
+        "U6"
+      ],
+      "ability": {
+        "id": "focus",
+        "name": "집중",
+        "description": "특수 공격 피해 10% 증가"
+      },
+      "synergy": "아기 방어 약화와 성체의 빠른 물리 공격 연계",
+      "image": "/world/pets-062-01/wolf.png",
+      "specialName": "늑대 특별 외형",
+      "specialPalette": 0,
+      "specialDescription": "은빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 1500,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "wolf-adult",
+      "species": "wolf",
+      "name": "늑대",
+      "age": "adult",
+      "itemId": "adult-wolf",
+      "spriteKey": "adult-wolf",
+      "existing": false,
+      "types": [
+        "얼음",
+        "어둠"
+      ],
+      "role": "빠른 물리",
+      "stats": {
+        "hp": 67,
+        "atk": 103,
+        "def": 62,
+        "spe": 118,
+        "spa": 67,
+        "spd": 77
+      },
+      "total": 494,
+      "skills": [
+        "P8",
+        "X26",
+        "U1",
+        "U8"
+      ],
+      "ability": {
+        "id": "comeback",
+        "name": "끈기",
+        "description": "HP가 3분의 1 이하일 때 공격 피해 15% 증가"
+      },
+      "synergy": "아기 방어 약화와 성체의 빠른 물리 공격 연계",
+      "image": "/world/pets-062-01/adult-wolf.png",
+      "specialName": "늑대 특별 외형",
+      "specialPalette": 0,
+      "specialDescription": "은빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 4000,
+      "size": [
+        120,
+        115
+      ]
+    },
+    {
+      "id": "bear-baby",
+      "species": "bear",
+      "name": "아기 곰",
+      "age": "baby",
+      "itemId": "bear",
+      "spriteKey": "bear",
+      "existing": false,
+      "types": [
+        "땅"
+      ],
+      "role": "균형",
+      "stats": {
+        "hp": 84,
+        "atk": 87,
+        "def": 82,
+        "spe": 77,
+        "spa": 82,
+        "spd": 82
+      },
+      "total": 494,
+      "skills": [
+        "S6",
+        "X27",
+        "U5",
+        "U9"
+      ],
+      "ability": {
+        "id": "precision",
+        "name": "정확한 공격",
+        "description": "공격 기술 명중률 +10%p"
+      },
+      "synergy": "아기는 유연한 대응·성체는 물리 방어 중심",
+      "image": "/world/pets-062-01/bear.png",
+      "specialName": "곰 특별 외형",
+      "specialPalette": 1,
+      "specialDescription": "금빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 2000,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "bear-adult",
+      "species": "bear",
+      "name": "곰",
+      "age": "adult",
+      "itemId": "adult-bear",
+      "spriteKey": "adult-bear",
+      "existing": false,
+      "types": [
+        "땅",
+        "얼음"
+      ],
+      "role": "물리 탱커",
+      "stats": {
+        "hp": 101,
+        "atk": 101,
+        "def": 122,
+        "spe": 43,
+        "spa": 59,
+        "spd": 85
+      },
+      "total": 511,
+      "skills": [
+        "P6",
+        "X28",
+        "U3",
+        "U12"
+      ],
+      "ability": {
+        "id": "armor",
+        "name": "단단한 몸",
+        "description": "받는 물리 피해 10% 감소"
+      },
+      "synergy": "아기는 유연한 대응·성체는 물리 방어 중심",
+      "image": "/world/pets-062-01/adult-bear.png",
+      "specialName": "곰 특별 외형",
+      "specialPalette": 1,
+      "specialDescription": "금빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 8000,
+      "size": [
+        170,
+        155
+      ]
+    },
+    {
+      "id": "lion-baby",
+      "species": "lion",
+      "name": "아기 사자",
+      "age": "baby",
+      "itemId": "lion",
+      "spriteKey": "lion",
+      "existing": false,
+      "types": [
+        "불"
+      ],
+      "role": "빠른 물리",
+      "stats": {
+        "hp": 57,
+        "atk": 88,
+        "def": 53,
+        "spe": 101,
+        "spa": 57,
+        "spd": 66
+      },
+      "total": 422,
+      "skills": [
+        "P2",
+        "X29",
+        "U7",
+        "U11"
+      ],
+      "ability": {
+        "id": "ward",
+        "name": "특수 방어",
+        "description": "받는 특수 피해 10% 감소"
+      },
+      "synergy": "아기 특방 약화·성체 특수 압박, 호랑이와 지원 구성이 다름",
+      "image": "/world/pets-062-01/lion.png",
+      "specialName": "사자 특별 외형",
+      "specialPalette": 2,
+      "specialDescription": "푸른 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 2500,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "lion-adult",
+      "species": "lion",
+      "name": "사자",
+      "age": "adult",
+      "itemId": "adult-lion",
+      "spriteKey": "adult-lion",
+      "existing": false,
+      "types": [
+        "불",
+        "빛"
+      ],
+      "role": "특수 공격",
+      "stats": {
+        "hp": 81,
+        "atk": 61,
+        "def": 72,
+        "spe": 88,
+        "spa": 138,
+        "spd": 88
+      },
+      "total": 528,
+      "skills": [
+        "S2",
+        "X30",
+        "U2",
+        "U5"
+      ],
+      "ability": {
+        "id": "focus",
+        "name": "집중",
+        "description": "특수 공격 피해 10% 증가"
+      },
+      "synergy": "아기 특방 약화·성체 특수 압박, 호랑이와 지원 구성이 다름",
+      "image": "/world/pets-062-01/adult-lion.png",
+      "specialName": "사자 특별 외형",
+      "specialPalette": 2,
+      "specialDescription": "푸른 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 8000,
+      "size": [
+        170,
+        155
+      ]
+    },
+    {
+      "id": "leopard-baby",
+      "species": "leopard",
+      "name": "아기 표범",
+      "age": "baby",
+      "itemId": "leopard",
+      "spriteKey": "leopard",
+      "existing": false,
+      "types": [
+        "어둠"
+      ],
+      "role": "고속 교란",
+      "stats": {
+        "hp": 55,
+        "atk": 68,
+        "def": 54,
+        "spe": 127,
+        "spa": 68,
+        "spd": 63
+      },
+      "total": 435,
+      "skills": [
+        "P10",
+        "X31",
+        "U6",
+        "U4"
+      ],
+      "ability": {
+        "id": "support",
+        "name": "보호 본능",
+        "description": "보조 기술 사용 시 자신의 최대 HP 5% 회복"
+      },
+      "synergy": "빠른 교란과 높은 공격력의 역할 분담",
+      "image": "/world/pets-062-01/leopard.png",
+      "specialName": "표범 특별 외형",
+      "specialPalette": 3,
+      "specialDescription": "밝은 털색로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 3000,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "leopard-adult",
+      "species": "leopard",
+      "name": "표범",
+      "age": "adult",
+      "itemId": "adult-leopard",
+      "spriteKey": "adult-leopard",
+      "existing": false,
+      "types": [
+        "어둠",
+        "바람"
+      ],
+      "role": "물리 강타",
+      "stats": {
+        "hp": 98,
+        "atk": 136,
+        "def": 79,
+        "spe": 85,
+        "spa": 62,
+        "spd": 85
+      },
+      "total": 545,
+      "skills": [
+        "P10",
+        "X32",
+        "U1",
+        "U12"
+      ],
+      "ability": {
+        "id": "precision",
+        "name": "정확한 공격",
+        "description": "공격 기술 명중률 +10%p"
+      },
+      "synergy": "빠른 교란과 높은 공격력의 역할 분담",
+      "image": "/world/pets-062-01/adult-leopard.png",
+      "specialName": "표범 특별 외형",
+      "specialPalette": 3,
+      "specialDescription": "밝은 털색로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 12000,
+      "size": [
+        120,
+        115
+      ]
+    },
+    {
+      "id": "deer-baby",
+      "species": "deer",
+      "name": "아기 사슴",
+      "age": "baby",
+      "itemId": "deer",
+      "spriteKey": "deer",
+      "existing": false,
+      "types": [
+        "풀"
+      ],
+      "role": "빠른 지원",
+      "stats": {
+        "hp": 70,
+        "atk": 51,
+        "def": 70,
+        "spe": 107,
+        "spa": 61,
+        "spd": 89
+      },
+      "total": 448,
+      "skills": [
+        "S4",
+        "X33",
+        "U11",
+        "U10"
+      ],
+      "ability": {
+        "id": "swift",
+        "name": "민첩",
+        "description": "출전 중 속도 10% 증가"
+      },
+      "synergy": "속도 지원과 특수 방어 담당을 연결",
+      "image": "/world/pets-062-01/deer.png",
+      "specialName": "사슴 특별 외형",
+      "specialPalette": 0,
+      "specialDescription": "은빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 3500,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "deer-adult",
+      "species": "deer",
+      "name": "사슴",
+      "age": "adult",
+      "itemId": "adult-deer",
+      "spriteKey": "adult-deer",
+      "existing": false,
+      "types": [
+        "풀",
+        "빛"
+      ],
+      "role": "특수 탱커",
+      "stats": {
+        "hp": 117,
+        "atk": 64,
+        "def": 94,
+        "spe": 47,
+        "spa": 111,
+        "spd": 129
+      },
+      "total": 562,
+      "skills": [
+        "S4",
+        "X34",
+        "U2",
+        "U9"
+      ],
+      "ability": {
+        "id": "ward",
+        "name": "특수 방어",
+        "description": "받는 특수 피해 10% 감소"
+      },
+      "synergy": "속도 지원과 특수 방어 담당을 연결",
+      "image": "/world/pets-062-01/adult-deer.png",
+      "specialName": "사슴 특별 외형",
+      "specialPalette": 0,
+      "specialDescription": "은빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 12000,
+      "size": [
+        170,
+        155
+      ]
+    },
+    {
+      "id": "horse-baby",
+      "species": "horse",
+      "name": "아기 말",
+      "age": "baby",
+      "itemId": "horse",
+      "spriteKey": "horse",
+      "existing": false,
+      "types": [
+        "일반"
+      ],
+      "role": "고속 교란",
+      "stats": {
+        "hp": 58,
+        "atk": 72,
+        "def": 58,
+        "spe": 134,
+        "spa": 72,
+        "spd": 67
+      },
+      "total": 461,
+      "skills": [
+        "P1",
+        "X35",
+        "U8",
+        "U11"
+      ],
+      "ability": {
+        "id": "power",
+        "name": "강한 발톱",
+        "description": "물리 공격 피해 10% 증가"
+      },
+      "synergy": "아기는 감속·성체는 속도 우위를 활용한 물리 공격",
+      "image": "/world/pets-062-01/horse.png",
+      "specialName": "말 특별 외형",
+      "specialPalette": 1,
+      "specialDescription": "금빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 4000,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "horse-adult",
+      "species": "horse",
+      "name": "말",
+      "age": "adult",
+      "itemId": "adult-horse",
+      "spriteKey": "adult-horse",
+      "existing": false,
+      "types": [
+        "땅",
+        "바람"
+      ],
+      "role": "빠른 물리",
+      "stats": {
+        "hp": 79,
+        "atk": 121,
+        "def": 72,
+        "spe": 139,
+        "spa": 78,
+        "spd": 90
+      },
+      "total": 579,
+      "skills": [
+        "P6",
+        "X36",
+        "U1",
+        "U12"
+      ],
+      "ability": {
+        "id": "support",
+        "name": "보호 본능",
+        "description": "보조 기술 사용 시 자신의 최대 HP 5% 회복"
+      },
+      "synergy": "아기는 감속·성체는 속도 우위를 활용한 물리 공격",
+      "image": "/world/pets-062-01/adult-horse.png",
+      "specialName": "말 특별 외형",
+      "specialPalette": 1,
+      "specialDescription": "금빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 15000,
+      "size": [
+        170,
+        155
+      ]
+    },
+    {
+      "id": "griffin-baby",
+      "species": "griffin",
+      "name": "아기 그리핀",
+      "age": "baby",
+      "itemId": "griffin",
+      "spriteKey": "griffin",
+      "existing": false,
+      "types": [
+        "바람"
+      ],
+      "role": "빠른 특수",
+      "stats": {
+        "hp": 64,
+        "atk": 59,
+        "def": 69,
+        "spe": 109,
+        "spa": 104,
+        "spd": 69
+      },
+      "total": 474,
+      "skills": [
+        "S7",
+        "X37",
+        "U7",
+        "U4"
+      ],
+      "ability": {
+        "id": "comeback",
+        "name": "끈기",
+        "description": "HP가 3분의 1 이하일 때 공격 피해 15% 증가"
+      },
+      "synergy": "특수 공격과 물리 방어를 분담",
+      "image": "/world/pets-062-01/griffin.png",
+      "specialName": "그리핀 특별 외형",
+      "specialPalette": 2,
+      "specialDescription": "푸른 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 1500,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "griffin-adult",
+      "species": "griffin",
+      "name": "그리핀",
+      "age": "adult",
+      "itemId": "adult-griffin",
+      "spriteKey": "adult-griffin",
+      "existing": false,
+      "types": [
+        "바람",
+        "땅"
+      ],
+      "role": "물리 탱커",
+      "stats": {
+        "hp": 90,
+        "atk": 155,
+        "def": 90,
+        "spe": 135,
+        "spa": 55,
+        "spd": 75
+      },
+      "total": 600,
+      "skills": [
+        "P7",
+        "X38",
+        "U3",
+        "U10"
+      ],
+      "ability": {
+        "id": "swift",
+        "name": "민첩",
+        "description": "출전 중 속도 10% 증가"
+      },
+      "synergy": "특수 공격과 물리 방어를 분담",
+      "image": "/world/pets-062-01/adult-griffin.png",
+      "specialName": "그리핀 특별 외형",
+      "specialPalette": 2,
+      "specialDescription": "푸른 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 15000,
+      "size": [
+        220,
+        170
+      ]
+    },
+    {
+      "id": "phoenix-baby",
+      "species": "phoenix",
+      "name": "아기 불사조",
+      "age": "baby",
+      "itemId": "phoenix",
+      "spriteKey": "phoenix",
+      "existing": false,
+      "types": [
+        "불"
+      ],
+      "role": "빠른 지원",
+      "stats": {
+        "hp": 76,
+        "atk": 56,
+        "def": 76,
+        "spe": 117,
+        "spa": 66,
+        "spd": 96
+      },
+      "total": 487,
+      "skills": [
+        "S2",
+        "X39",
+        "U11",
+        "U10"
+      ],
+      "ability": {
+        "id": "armor",
+        "name": "단단한 몸",
+        "description": "받는 물리 피해 10% 감소"
+      },
+      "synergy": "아기가 기회를 만들고 성체가 특수 공격, 부활은 미도입",
+      "image": "/world/pets-062-01/phoenix.png",
+      "specialName": "불사조 특별 외형",
+      "specialPalette": 3,
+      "specialDescription": "밝은 털색로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 2000,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "phoenix-adult",
+      "species": "phoenix",
+      "name": "불사조",
+      "age": "adult",
+      "itemId": "adult-phoenix",
+      "spriteKey": "adult-phoenix",
+      "existing": false,
+      "types": [
+        "불",
+        "빛"
+      ],
+      "role": "특수 공격",
+      "stats": {
+        "hp": 95,
+        "atk": 45,
+        "def": 65,
+        "spe": 110,
+        "spa": 165,
+        "spd": 120
+      },
+      "total": 600,
+      "skills": [
+        "S2",
+        "X40",
+        "U2",
+        "U9"
+      ],
+      "ability": {
+        "id": "power",
+        "name": "강한 발톱",
+        "description": "물리 공격 피해 10% 증가"
+      },
+      "synergy": "아기가 기회를 만들고 성체가 특수 공격, 부활은 미도입",
+      "image": "/world/pets-062-01/adult-phoenix.png",
+      "specialName": "불사조 특별 외형",
+      "specialPalette": 3,
+      "specialDescription": "밝은 털색로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 15000,
+      "size": [
+        220,
+        170
+      ]
+    },
+    {
+      "id": "owl-baby",
+      "species": "owl",
+      "name": "아기 부엉이",
+      "age": "baby",
+      "itemId": "owl",
+      "spriteKey": "owl",
+      "existing": false,
+      "types": [
+        "바람"
+      ],
+      "role": "빠른 특수",
+      "stats": {
+        "hp": 55,
+        "atk": 52,
+        "def": 61,
+        "spe": 95,
+        "spa": 91,
+        "spd": 61
+      },
+      "total": 415,
+      "skills": [
+        "S7",
+        "X41",
+        "U7",
+        "U8"
+      ],
+      "ability": {
+        "id": "focus",
+        "name": "집중",
+        "description": "특수 공격 피해 10% 증가"
+      },
+      "synergy": "아기 교란·성체 특수 방어, 느린 상대 압박",
+      "image": "/world/pets-062-01/owl.png",
+      "specialName": "부엉이 특별 외형",
+      "specialPalette": 0,
+      "specialDescription": "은빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 2500,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "owl-adult",
+      "species": "owl",
+      "name": "부엉이",
+      "age": "adult",
+      "itemId": "adult-owl",
+      "spriteKey": "adult-owl",
+      "existing": false,
+      "types": [
+        "바람",
+        "어둠"
+      ],
+      "role": "특수 탱커",
+      "stats": {
+        "hp": 111,
+        "atk": 61,
+        "def": 88,
+        "spe": 44,
+        "spa": 105,
+        "spd": 121
+      },
+      "total": 530,
+      "skills": [
+        "S7",
+        "X42",
+        "U2",
+        "U9"
+      ],
+      "ability": {
+        "id": "comeback",
+        "name": "끈기",
+        "description": "HP가 3분의 1 이하일 때 공격 피해 15% 증가"
+      },
+      "synergy": "아기 교란·성체 특수 방어, 느린 상대 압박",
+      "image": "/world/pets-062-01/adult-owl.png",
+      "specialName": "부엉이 특별 외형",
+      "specialPalette": 0,
+      "specialDescription": "은빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 8000,
+      "size": [
+        120,
+        115
+      ]
+    },
+    {
+      "id": "penguin-baby",
+      "species": "penguin",
+      "name": "아기 펭귄",
+      "age": "baby",
+      "itemId": "penguin",
+      "spriteKey": "penguin",
+      "existing": false,
+      "types": [
+        "얼음"
+      ],
+      "role": "빠른 물리",
+      "stats": {
+        "hp": 57,
+        "atk": 89,
+        "def": 54,
+        "spe": 103,
+        "spa": 58,
+        "spd": 67
+      },
+      "total": 428,
+      "skills": [
+        "P8",
+        "X43",
+        "U1",
+        "U8"
+      ],
+      "ability": {
+        "id": "precision",
+        "name": "정확한 공격",
+        "description": "공격 기술 명중률 +10%p"
+      },
+      "synergy": "아기의 공격과 성체의 보호로 팀 약점을 보완",
+      "image": "/world/pets-062-01/penguin.png",
+      "specialName": "펭귄 특별 외형",
+      "specialPalette": 1,
+      "specialDescription": "금빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 3000,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "penguin-adult",
+      "species": "penguin",
+      "name": "펭귄",
+      "age": "adult",
+      "itemId": "adult-penguin",
+      "spriteKey": "adult-penguin",
+      "existing": false,
+      "types": [
+        "물",
+        "얼음"
+      ],
+      "role": "지원 탱커",
+      "stats": {
+        "hp": 113,
+        "atk": 63,
+        "def": 120,
+        "spe": 46,
+        "spa": 85,
+        "spd": 120
+      },
+      "total": 547,
+      "skills": [
+        "S3",
+        "X44",
+        "U10",
+        "U9"
+      ],
+      "ability": {
+        "id": "armor",
+        "name": "단단한 몸",
+        "description": "받는 물리 피해 10% 감소"
+      },
+      "synergy": "아기의 공격과 성체의 보호로 팀 약점을 보완",
+      "image": "/world/pets-062-01/adult-penguin.png",
+      "specialName": "펭귄 특별 외형",
+      "specialPalette": 1,
+      "specialDescription": "금빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 12000,
+      "size": [
+        120,
+        115
+      ]
+    },
+    {
+      "id": "seal-baby",
+      "species": "seal",
+      "name": "아기 물범",
+      "age": "baby",
+      "itemId": "seal",
+      "spriteKey": "seal",
+      "existing": false,
+      "types": [
+        "물"
+      ],
+      "role": "빠른 특수",
+      "stats": {
+        "hp": 61,
+        "atk": 55,
+        "def": 64,
+        "spe": 101,
+        "spa": 96,
+        "spd": 64
+      },
+      "total": 441,
+      "skills": [
+        "S3",
+        "X45",
+        "U2",
+        "U8"
+      ],
+      "ability": {
+        "id": "ward",
+        "name": "특수 방어",
+        "description": "받는 특수 피해 10% 감소"
+      },
+      "synergy": "아기 특수 공격·성체 물리 방어",
+      "image": "/world/pets-062-02/seal.png",
+      "specialName": "물범 특별 외형",
+      "specialPalette": 2,
+      "specialDescription": "푸른 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 3500,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "seal-adult",
+      "species": "seal",
+      "name": "물범",
+      "age": "adult",
+      "itemId": "adult-seal",
+      "spriteKey": "adult-seal",
+      "existing": false,
+      "types": [
+        "물",
+        "얼음"
+      ],
+      "role": "물리 탱커",
+      "stats": {
+        "hp": 111,
+        "atk": 112,
+        "def": 135,
+        "spe": 47,
+        "spa": 65,
+        "spd": 94
+      },
+      "total": 564,
+      "skills": [
+        "P3",
+        "X46",
+        "U3",
+        "U5"
+      ],
+      "ability": {
+        "id": "focus",
+        "name": "집중",
+        "description": "특수 공격 피해 10% 증가"
+      },
+      "synergy": "아기 특수 공격·성체 물리 방어",
+      "image": "/world/pets-062-02/adult-seal.png",
+      "specialName": "물범 특별 외형",
+      "specialPalette": 2,
+      "specialDescription": "푸른 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 12000,
+      "size": [
+        120,
+        115
+      ]
+    },
+    {
+      "id": "otter-baby",
+      "species": "otter",
+      "name": "아기 수달",
+      "age": "baby",
+      "itemId": "otter",
+      "spriteKey": "otter",
+      "existing": false,
+      "types": [
+        "물"
+      ],
+      "role": "고속 교란",
+      "stats": {
+        "hp": 57,
+        "atk": 71,
+        "def": 57,
+        "spe": 132,
+        "spa": 71,
+        "spd": 66
+      },
+      "total": 454,
+      "skills": [
+        "P3",
+        "X47",
+        "U6",
+        "U7"
+      ],
+      "ability": {
+        "id": "support",
+        "name": "보호 본능",
+        "description": "보조 기술 사용 시 자신의 최대 HP 5% 회복"
+      },
+      "synergy": "아기가 낮춘 방어에 맞춰 성체가 공격 종류 선택",
+      "image": "/world/pets-062-02/otter.png",
+      "specialName": "수달 특별 외형",
+      "specialPalette": 3,
+      "specialDescription": "밝은 털색로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 4000,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "otter-adult",
+      "species": "otter",
+      "name": "수달",
+      "age": "adult",
+      "itemId": "adult-otter",
+      "spriteKey": "adult-otter",
+      "existing": false,
+      "types": [
+        "물",
+        "풀"
+      ],
+      "role": "혼합 공격",
+      "stats": {
+        "hp": 90,
+        "atk": 121,
+        "def": 79,
+        "spe": 91,
+        "spa": 121,
+        "spd": 79
+      },
+      "total": 581,
+      "skills": [
+        "P3",
+        "X48",
+        "U1",
+        "U2"
+      ],
+      "ability": {
+        "id": "precision",
+        "name": "정확한 공격",
+        "description": "공격 기술 명중률 +10%p"
+      },
+      "synergy": "아기가 낮춘 방어에 맞춰 성체가 공격 종류 선택",
+      "image": "/world/pets-062-02/adult-otter.png",
+      "specialName": "수달 특별 외형",
+      "specialPalette": 3,
+      "specialDescription": "밝은 털색로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 15000,
+      "size": [
+        120,
+        115
+      ]
+    },
+    {
+      "id": "turtle-baby",
+      "species": "turtle",
+      "name": "아기 거북",
+      "age": "baby",
+      "itemId": "turtle",
+      "spriteKey": "turtle",
+      "existing": false,
+      "types": [
+        "물"
+      ],
+      "role": "지원 탱커",
+      "stats": {
+        "hp": 97,
+        "atk": 54,
+        "def": 102,
+        "spe": 39,
+        "spa": 73,
+        "spd": 102
+      },
+      "total": 467,
+      "skills": [
+        "S3",
+        "X49",
+        "U10",
+        "U3"
+      ],
+      "ability": {
+        "id": "swift",
+        "name": "민첩",
+        "description": "출전 중 속도 10% 증가"
+      },
+      "synergy": "물리 쪽 지원과 특수 쪽 방어를 분담",
+      "image": "/world/pets-062-02/turtle.png",
+      "specialName": "거북 특별 외형",
+      "specialPalette": 0,
+      "specialDescription": "은빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 1500,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "turtle-adult",
+      "species": "turtle",
+      "name": "거북",
+      "age": "adult",
+      "itemId": "adult-turtle",
+      "spriteKey": "adult-turtle",
+      "existing": false,
+      "types": [
+        "물",
+        "땅"
+      ],
+      "role": "특수 탱커",
+      "stats": {
+        "hp": 103,
+        "atk": 57,
+        "def": 83,
+        "spe": 42,
+        "spa": 99,
+        "spd": 114
+      },
+      "total": 498,
+      "skills": [
+        "S3",
+        "X50",
+        "U9",
+        "U2"
+      ],
+      "ability": {
+        "id": "ward",
+        "name": "특수 방어",
+        "description": "받는 특수 피해 10% 감소"
+      },
+      "synergy": "물리 쪽 지원과 특수 쪽 방어를 분담",
+      "image": "/world/pets-062-02/adult-turtle.png",
+      "specialName": "거북 특별 외형",
+      "specialPalette": 0,
+      "specialDescription": "은빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 4000,
+      "size": [
+        120,
+        115
+      ]
+    },
+    {
+      "id": "octopus-baby",
+      "species": "octopus",
+      "name": "아기 문어",
+      "age": "baby",
+      "itemId": "octopus",
+      "spriteKey": "octopus",
+      "existing": false,
+      "types": [
+        "물"
+      ],
+      "role": "빠른 지원",
+      "stats": {
+        "hp": 75,
+        "atk": 55,
+        "def": 75,
+        "spe": 115,
+        "spa": 65,
+        "spd": 95
+      },
+      "total": 480,
+      "skills": [
+        "S3",
+        "X51",
+        "U5",
+        "U7"
+      ],
+      "ability": {
+        "id": "power",
+        "name": "강한 발톱",
+        "description": "물리 공격 피해 10% 증가"
+      },
+      "synergy": "아기는 상대 공격을 낮추고 성체는 특수 공격",
+      "image": "/world/pets-062-02/octopus.png",
+      "specialName": "문어 특별 외형",
+      "specialPalette": 1,
+      "specialDescription": "금빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 2000,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "octopus-adult",
+      "species": "octopus",
+      "name": "문어",
+      "age": "adult",
+      "itemId": "adult-octopus",
+      "spriteKey": "adult-octopus",
+      "existing": false,
+      "types": [
+        "물",
+        "어둠"
+      ],
+      "role": "특수 공격",
+      "stats": {
+        "hp": 80,
+        "atk": 59,
+        "def": 70,
+        "spe": 86,
+        "spa": 134,
+        "spd": 86
+      },
+      "total": 515,
+      "skills": [
+        "S3",
+        "X52",
+        "U2",
+        "U8"
+      ],
+      "ability": {
+        "id": "support",
+        "name": "보호 본능",
+        "description": "보조 기술 사용 시 자신의 최대 HP 5% 회복"
+      },
+      "synergy": "아기는 상대 공격을 낮추고 성체는 특수 공격",
+      "image": "/world/pets-062-02/adult-octopus.png",
+      "specialName": "문어 특별 외형",
+      "specialPalette": 1,
+      "specialDescription": "금빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 8000,
+      "size": [
+        120,
+        115
+      ]
+    },
+    {
+      "id": "shark-baby",
+      "species": "shark",
+      "name": "아기 상어",
+      "age": "baby",
+      "itemId": "shark",
+      "spriteKey": "shark",
+      "existing": false,
+      "types": [
+        "물"
+      ],
+      "role": "빠른 물리",
+      "stats": {
+        "hp": 66,
+        "atk": 103,
+        "def": 62,
+        "spe": 118,
+        "spa": 67,
+        "spd": 77
+      },
+      "total": 493,
+      "skills": [
+        "P3",
+        "X53",
+        "U6",
+        "U4"
+      ],
+      "ability": {
+        "id": "comeback",
+        "name": "끈기",
+        "description": "HP가 3분의 1 이하일 때 공격 피해 15% 증가"
+      },
+      "synergy": "빠른 아기와 강한 성체가 같은 상대를 지속 압박",
+      "image": "/world/pets-062-02/shark.png",
+      "specialName": "상어 특별 외형",
+      "specialPalette": 2,
+      "specialDescription": "푸른 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 2500,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "shark-adult",
+      "species": "shark",
+      "name": "상어",
+      "age": "adult",
+      "itemId": "adult-shark",
+      "spriteKey": "adult-shark",
+      "existing": false,
+      "types": [
+        "물",
+        "어둠"
+      ],
+      "role": "물리 강타",
+      "stats": {
+        "hp": 94,
+        "atk": 133,
+        "def": 78,
+        "spe": 83,
+        "spa": 61,
+        "spd": 83
+      },
+      "total": 532,
+      "skills": [
+        "P3",
+        "X54",
+        "U1",
+        "U12"
+      ],
+      "ability": {
+        "id": "swift",
+        "name": "민첩",
+        "description": "출전 중 속도 10% 증가"
+      },
+      "synergy": "빠른 아기와 강한 성체가 같은 상대를 지속 압박",
+      "image": "/world/pets-062-02/adult-shark.png",
+      "specialName": "상어 특별 외형",
+      "specialPalette": 2,
+      "specialDescription": "푸른 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 8000,
+      "size": [
+        120,
+        115
+      ]
+    },
+    {
+      "id": "ray-baby",
+      "species": "ray",
+      "name": "아기 가오리",
+      "age": "baby",
+      "itemId": "ray",
+      "spriteKey": "ray",
+      "existing": false,
+      "types": [
+        "물"
+      ],
+      "role": "빠른 지원",
+      "stats": {
+        "hp": 66,
+        "atk": 48,
+        "def": 66,
+        "spe": 101,
+        "spa": 57,
+        "spd": 83
+      },
+      "total": 421,
+      "skills": [
+        "S3",
+        "X55",
+        "U11",
+        "U8"
+      ],
+      "ability": {
+        "id": "armor",
+        "name": "단단한 몸",
+        "description": "받는 물리 피해 10% 감소"
+      },
+      "synergy": "아기가 속도 차이를 만들고 성체가 빠른 특수 공격",
+      "image": "/world/pets-062-02/ray.png",
+      "specialName": "가오리 특별 외형",
+      "specialPalette": 3,
+      "specialDescription": "밝은 털색로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 3000,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "ray-adult",
+      "species": "ray",
+      "name": "가오리",
+      "age": "adult",
+      "itemId": "adult-ray",
+      "spriteKey": "adult-ray",
+      "existing": false,
+      "types": [
+        "물",
+        "전기"
+      ],
+      "role": "빠른 특수",
+      "stats": {
+        "hp": 74,
+        "atk": 69,
+        "def": 80,
+        "spe": 126,
+        "spa": 120,
+        "spd": 80
+      },
+      "total": 549,
+      "skills": [
+        "S3",
+        "X56",
+        "U2",
+        "U7"
+      ],
+      "ability": {
+        "id": "power",
+        "name": "강한 발톱",
+        "description": "물리 공격 피해 10% 증가"
+      },
+      "synergy": "아기가 속도 차이를 만들고 성체가 빠른 특수 공격",
+      "image": "/world/pets-062-02/adult-ray.png",
+      "specialName": "가오리 특별 외형",
+      "specialPalette": 3,
+      "specialDescription": "밝은 털색로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 12000,
+      "size": [
+        120,
+        115
+      ]
+    },
+    {
+      "id": "hedgehog-baby",
+      "species": "hedgehog",
+      "name": "아기 고슴도치",
+      "age": "baby",
+      "itemId": "hedgehog",
+      "spriteKey": "hedgehog",
+      "existing": false,
+      "types": [
+        "땅"
+      ],
+      "role": "물리 탱커",
+      "stats": {
+        "hp": 86,
+        "atk": 86,
+        "def": 104,
+        "spe": 36,
+        "spa": 50,
+        "spd": 72
+      },
+      "total": 434,
+      "skills": [
+        "P6",
+        "X57",
+        "U3",
+        "U5"
+      ],
+      "ability": {
+        "id": "focus",
+        "name": "집중",
+        "description": "특수 공격 피해 10% 증가"
+      },
+      "synergy": "아기 방어·성체 속도 지원으로 성장 역할을 반대로 구성",
+      "image": "/world/pets-062-02/hedgehog.png",
+      "specialName": "고슴도치 특별 외형",
+      "specialPalette": 0,
+      "specialDescription": "은빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 3500,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "hedgehog-adult",
+      "species": "hedgehog",
+      "name": "고슴도치",
+      "age": "adult",
+      "itemId": "adult-hedgehog",
+      "spriteKey": "adult-hedgehog",
+      "existing": false,
+      "types": [
+        "땅",
+        "전기"
+      ],
+      "role": "빠른 지원",
+      "stats": {
+        "hp": 88,
+        "atk": 65,
+        "def": 88,
+        "spe": 136,
+        "spa": 77,
+        "spd": 112
+      },
+      "total": 566,
+      "skills": [
+        "S6",
+        "X58",
+        "U11",
+        "U7"
+      ],
+      "ability": {
+        "id": "comeback",
+        "name": "끈기",
+        "description": "HP가 3분의 1 이하일 때 공격 피해 15% 증가"
+      },
+      "synergy": "아기 방어·성체 속도 지원으로 성장 역할을 반대로 구성",
+      "image": "/world/pets-062-02/adult-hedgehog.png",
+      "specialName": "고슴도치 특별 외형",
+      "specialPalette": 0,
+      "specialDescription": "은빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 12000,
+      "size": [
+        120,
+        115
+      ]
+    },
+    {
+      "id": "snake-baby",
+      "species": "snake",
+      "name": "아기 뱀",
+      "age": "baby",
+      "itemId": "snake",
+      "spriteKey": "snake",
+      "existing": false,
+      "types": [
+        "풀"
+      ],
+      "role": "빠른 특수",
+      "stats": {
+        "hp": 61,
+        "atk": 56,
+        "def": 65,
+        "spe": 102,
+        "spa": 98,
+        "spd": 65
+      },
+      "total": 447,
+      "skills": [
+        "S4",
+        "X59",
+        "U2",
+        "U7"
+      ],
+      "ability": {
+        "id": "precision",
+        "name": "정확한 공격",
+        "description": "공격 기술 명중률 +10%p"
+      },
+      "synergy": "아기는 특수 공격·성체는 상대 행동 효율을 낮추는 교란",
+      "image": "/world/pets-062-02/snake.png",
+      "specialName": "뱀 특별 외형",
+      "specialPalette": 1,
+      "specialDescription": "금빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 4000,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "snake-adult",
+      "species": "snake",
+      "name": "뱀",
+      "age": "adult",
+      "itemId": "adult-snake",
+      "spriteKey": "adult-snake",
+      "existing": false,
+      "types": [
+        "풀",
+        "어둠"
+      ],
+      "role": "고속 교란",
+      "stats": {
+        "hp": 73,
+        "atk": 91,
+        "def": 73,
+        "spe": 170,
+        "spa": 91,
+        "spd": 85
+      },
+      "total": 583,
+      "skills": [
+        "P4",
+        "X60",
+        "U8",
+        "U5"
+      ],
+      "ability": {
+        "id": "armor",
+        "name": "단단한 몸",
+        "description": "받는 물리 피해 10% 감소"
+      },
+      "synergy": "아기는 특수 공격·성체는 상대 행동 효율을 낮추는 교란",
+      "image": "/world/pets-062-02/adult-snake.png",
+      "specialName": "뱀 특별 외형",
+      "specialPalette": 1,
+      "specialDescription": "금빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 15000,
+      "size": [
+        120,
+        115
+      ]
+    },
+    {
+      "id": "rhino-baby",
+      "species": "rhino",
+      "name": "아기 코뿔소",
+      "age": "baby",
+      "itemId": "rhino",
+      "spriteKey": "rhino",
+      "existing": false,
+      "types": [
+        "땅"
+      ],
+      "role": "균형",
+      "stats": {
+        "hp": 76,
+        "atk": 81,
+        "def": 77,
+        "spe": 72,
+        "spa": 77,
+        "spd": 77
+      },
+      "total": 460,
+      "skills": [
+        "S6",
+        "X61",
+        "U3",
+        "U8"
+      ],
+      "ability": {
+        "id": "ward",
+        "name": "특수 방어",
+        "description": "받는 특수 피해 10% 감소"
+      },
+      "synergy": "아기는 유연한 방어, 성체는 느리고 강한 물리 공격",
+      "image": "/world/pets-062-02/rhino.png",
+      "specialName": "코뿔소 특별 외형",
+      "specialPalette": 2,
+      "specialDescription": "푸른 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 1500,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "rhino-adult",
+      "species": "rhino",
+      "name": "코뿔소",
+      "age": "adult",
+      "itemId": "adult-rhino",
+      "spriteKey": "adult-rhino",
+      "existing": false,
+      "types": [
+        "땅"
+      ],
+      "role": "물리 강타",
+      "stats": {
+        "hp": 89,
+        "atk": 125,
+        "def": 73,
+        "spe": 78,
+        "spa": 57,
+        "spd": 78
+      },
+      "total": 500,
+      "skills": [
+        "P6",
+        "X62",
+        "U1",
+        "U12"
+      ],
+      "ability": {
+        "id": "focus",
+        "name": "집중",
+        "description": "특수 공격 피해 10% 증가"
+      },
+      "synergy": "아기는 유연한 방어, 성체는 느리고 강한 물리 공격",
+      "image": "/world/pets-062-02/adult-rhino.png",
+      "specialName": "코뿔소 특별 외형",
+      "specialPalette": 2,
+      "specialDescription": "푸른 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 4000,
+      "size": [
+        220,
+        170
+      ]
+    },
+    {
+      "id": "hippo-baby",
+      "species": "hippo",
+      "name": "아기 하마",
+      "age": "baby",
+      "itemId": "hippo",
+      "spriteKey": "hippo",
+      "existing": false,
+      "types": [
+        "물"
+      ],
+      "role": "지원 탱커",
+      "stats": {
+        "hp": 100,
+        "atk": 54,
+        "def": 103,
+        "spe": 39,
+        "spa": 74,
+        "spd": 103
+      },
+      "total": 473,
+      "skills": [
+        "S3",
+        "X63",
+        "U10",
+        "U5"
+      ],
+      "ability": {
+        "id": "support",
+        "name": "보호 본능",
+        "description": "보조 기술 사용 시 자신의 최대 HP 5% 회복"
+      },
+      "synergy": "아기는 팀 보호, 성체는 물리 공격을 버팀",
+      "image": "/world/pets-062-02/hippo.png",
+      "specialName": "하마 특별 외형",
+      "specialPalette": 3,
+      "specialDescription": "밝은 털색로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 2000,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "hippo-adult",
+      "species": "hippo",
+      "name": "하마",
+      "age": "adult",
+      "itemId": "adult-hippo",
+      "spriteKey": "adult-hippo",
+      "existing": false,
+      "types": [
+        "물",
+        "땅"
+      ],
+      "role": "물리 탱커",
+      "stats": {
+        "hp": 103,
+        "atk": 102,
+        "def": 124,
+        "spe": 43,
+        "spa": 59,
+        "spd": 86
+      },
+      "total": 517,
+      "skills": [
+        "P3",
+        "X64",
+        "U9",
+        "U1"
+      ],
+      "ability": {
+        "id": "precision",
+        "name": "정확한 공격",
+        "description": "공격 기술 명중률 +10%p"
+      },
+      "synergy": "아기는 팀 보호, 성체는 물리 공격을 버팀",
+      "image": "/world/pets-062-02/adult-hippo.png",
+      "specialName": "하마 특별 외형",
+      "specialPalette": 3,
+      "specialDescription": "밝은 털색로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 8000,
+      "size": [
+        220,
+        170
+      ]
+    },
+    {
+      "id": "giraffe-baby",
+      "species": "giraffe",
+      "name": "아기 기린",
+      "age": "baby",
+      "itemId": "giraffe",
+      "spriteKey": "giraffe",
+      "existing": false,
+      "types": [
+        "풀"
+      ],
+      "role": "빠른 지원",
+      "stats": {
+        "hp": 76,
+        "atk": 56,
+        "def": 76,
+        "spe": 116,
+        "spa": 66,
+        "spd": 96
+      },
+      "total": 486,
+      "skills": [
+        "S4",
+        "X65",
+        "U11",
+        "U7"
+      ],
+      "ability": {
+        "id": "swift",
+        "name": "민첩",
+        "description": "출전 중 속도 10% 증가"
+      },
+      "synergy": "속도 지원 뒤 특수 공격과 방어를 담당",
+      "image": "/world/pets-062-03/giraffe.png",
+      "specialName": "기린 특별 외형",
+      "specialPalette": 0,
+      "specialDescription": "은빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 2500,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "giraffe-adult",
+      "species": "giraffe",
+      "name": "기린",
+      "age": "adult",
+      "itemId": "adult-giraffe",
+      "spriteKey": "adult-giraffe",
+      "existing": false,
+      "types": [
+        "풀",
+        "빛"
+      ],
+      "role": "특수 탱커",
+      "stats": {
+        "hp": 111,
+        "atk": 61,
+        "def": 89,
+        "spe": 45,
+        "spa": 106,
+        "spd": 122
+      },
+      "total": 534,
+      "skills": [
+        "S4",
+        "X66",
+        "U2",
+        "U9"
+      ],
+      "ability": {
+        "id": "ward",
+        "name": "특수 방어",
+        "description": "받는 특수 피해 10% 감소"
+      },
+      "synergy": "속도 지원 뒤 특수 공격과 방어를 담당",
+      "image": "/world/pets-062-03/adult-giraffe.png",
+      "specialName": "기린 특별 외형",
+      "specialPalette": 0,
+      "specialDescription": "은빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 8000,
+      "size": [
+        170,
+        155
+      ]
+    },
+    {
+      "id": "zebra-baby",
+      "species": "zebra",
+      "name": "아기 얼룩말",
+      "age": "baby",
+      "itemId": "zebra",
+      "spriteKey": "zebra",
+      "existing": false,
+      "types": [
+        "일반"
+      ],
+      "role": "고속 교란",
+      "stats": {
+        "hp": 51,
+        "atk": 65,
+        "def": 52,
+        "spe": 121,
+        "spa": 65,
+        "spd": 60
+      },
+      "total": 414,
+      "skills": [
+        "P1",
+        "X67",
+        "U8",
+        "U11"
+      ],
+      "ability": {
+        "id": "power",
+        "name": "강한 발톱",
+        "description": "물리 공격 피해 10% 증가"
+      },
+      "synergy": "아기가 속도를 조절하고 성체가 빠르게 공격",
+      "image": "/world/pets-062-03/zebra.png",
+      "specialName": "얼룩말 특별 외형",
+      "specialPalette": 1,
+      "specialDescription": "금빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 3000,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "zebra-adult",
+      "species": "zebra",
+      "name": "얼룩말",
+      "age": "adult",
+      "itemId": "adult-zebra",
+      "spriteKey": "adult-zebra",
+      "existing": false,
+      "types": [
+        "전기",
+        "땅"
+      ],
+      "role": "빠른 물리",
+      "stats": {
+        "hp": 74,
+        "atk": 115,
+        "def": 69,
+        "spe": 132,
+        "spa": 75,
+        "spd": 86
+      },
+      "total": 551,
+      "skills": [
+        "P5",
+        "X68",
+        "U1",
+        "U6"
+      ],
+      "ability": {
+        "id": "support",
+        "name": "보호 본능",
+        "description": "보조 기술 사용 시 자신의 최대 HP 5% 회복"
+      },
+      "synergy": "아기가 속도를 조절하고 성체가 빠르게 공격",
+      "image": "/world/pets-062-03/adult-zebra.png",
+      "specialName": "얼룩말 특별 외형",
+      "specialPalette": 1,
+      "specialDescription": "금빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 12000,
+      "size": [
+        170,
+        155
+      ]
+    },
+    {
+      "id": "gorilla-baby",
+      "species": "gorilla",
+      "name": "아기 고릴라",
+      "age": "baby",
+      "itemId": "gorilla",
+      "spriteKey": "gorilla",
+      "existing": false,
+      "types": [
+        "풀"
+      ],
+      "role": "균형",
+      "stats": {
+        "hp": 71,
+        "atk": 76,
+        "def": 71,
+        "spe": 67,
+        "spa": 71,
+        "spd": 71
+      },
+      "total": 427,
+      "skills": [
+        "S4",
+        "X69",
+        "U5",
+        "U10"
+      ],
+      "ability": {
+        "id": "comeback",
+        "name": "끈기",
+        "description": "HP가 3분의 1 이하일 때 공격 피해 15% 증가"
+      },
+      "synergy": "아기는 보호 지원, 성체는 높은 물리 공격",
+      "image": "/world/pets-062-03/gorilla.png",
+      "specialName": "고릴라 특별 외형",
+      "specialPalette": 2,
+      "specialDescription": "푸른 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 3500,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "gorilla-adult",
+      "species": "gorilla",
+      "name": "고릴라",
+      "age": "adult",
+      "itemId": "adult-gorilla",
+      "spriteKey": "adult-gorilla",
+      "existing": false,
+      "types": [
+        "풀",
+        "땅"
+      ],
+      "role": "물리 강타",
+      "stats": {
+        "hp": 100,
+        "atk": 142,
+        "def": 83,
+        "spe": 89,
+        "spa": 65,
+        "spd": 89
+      },
+      "total": 568,
+      "skills": [
+        "P4",
+        "X70",
+        "U1",
+        "U12"
+      ],
+      "ability": {
+        "id": "swift",
+        "name": "민첩",
+        "description": "출전 중 속도 10% 증가"
+      },
+      "synergy": "아기는 보호 지원, 성체는 높은 물리 공격",
+      "image": "/world/pets-062-03/adult-gorilla.png",
+      "specialName": "고릴라 특별 외형",
+      "specialPalette": 2,
+      "specialDescription": "푸른 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 12000,
+      "size": [
+        170,
+        155
+      ]
+    },
+    {
+      "id": "orangutan-baby",
+      "species": "orangutan",
+      "name": "아기 오랑우탄",
+      "age": "baby",
+      "itemId": "orangutan",
+      "spriteKey": "orangutan",
+      "existing": false,
+      "types": [
+        "풀"
+      ],
+      "role": "빠른 지원",
+      "stats": {
+        "hp": 69,
+        "atk": 50,
+        "def": 69,
+        "spe": 105,
+        "spa": 60,
+        "spd": 87
+      },
+      "total": 440,
+      "skills": [
+        "S4",
+        "X71",
+        "U6",
+        "U7"
+      ],
+      "ability": {
+        "id": "armor",
+        "name": "단단한 몸",
+        "description": "받는 물리 피해 10% 감소"
+      },
+      "synergy": "방어 약화와 공격 종류 선택을 조합",
+      "image": "/world/pets-062-03/orangutan.png",
+      "specialName": "오랑우탄 특별 외형",
+      "specialPalette": 3,
+      "specialDescription": "밝은 털색로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 4000,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "orangutan-adult",
+      "species": "orangutan",
+      "name": "오랑우탄",
+      "age": "adult",
+      "itemId": "adult-orangutan",
+      "spriteKey": "adult-orangutan",
+      "existing": false,
+      "types": [
+        "풀",
+        "어둠"
+      ],
+      "role": "혼합 공격",
+      "stats": {
+        "hp": 92,
+        "atk": 122,
+        "def": 79,
+        "spe": 91,
+        "spa": 122,
+        "spd": 79
+      },
+      "total": 585,
+      "skills": [
+        "P4",
+        "X72",
+        "U1",
+        "U2"
+      ],
+      "ability": {
+        "id": "power",
+        "name": "강한 발톱",
+        "description": "물리 공격 피해 10% 증가"
+      },
+      "synergy": "방어 약화와 공격 종류 선택을 조합",
+      "image": "/world/pets-062-03/adult-orangutan.png",
+      "specialName": "오랑우탄 특별 외형",
+      "specialPalette": 3,
+      "specialDescription": "밝은 털색로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 15000,
+      "size": [
+        120,
+        115
+      ]
+    },
+    {
+      "id": "sloth-baby",
+      "species": "sloth",
+      "name": "아기 나무늘보",
+      "age": "baby",
+      "itemId": "sloth",
+      "spriteKey": "sloth",
+      "existing": false,
+      "types": [
+        "풀"
+      ],
+      "role": "지원 탱커",
+      "stats": {
+        "hp": 94,
+        "atk": 52,
+        "def": 99,
+        "spe": 38,
+        "spa": 71,
+        "spd": 99
+      },
+      "total": 453,
+      "skills": [
+        "S4",
+        "X73",
+        "U10",
+        "U9"
+      ],
+      "ability": {
+        "id": "focus",
+        "name": "집중",
+        "description": "특수 공격 피해 10% 증가"
+      },
+      "synergy": "낮은 속도를 보호·회복으로 보완",
+      "image": "/world/pets-062-03/sloth.png",
+      "specialName": "나무늘보 특별 외형",
+      "specialPalette": 0,
+      "specialDescription": "은빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 1500,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "sloth-adult",
+      "species": "sloth",
+      "name": "나무늘보",
+      "age": "adult",
+      "itemId": "adult-sloth",
+      "spriteKey": "adult-sloth",
+      "existing": false,
+      "types": [
+        "풀"
+      ],
+      "role": "특수 탱커",
+      "stats": {
+        "hp": 104,
+        "atk": 58,
+        "def": 84,
+        "spe": 42,
+        "spa": 99,
+        "spd": 115
+      },
+      "total": 502,
+      "skills": [
+        "S4",
+        "X74",
+        "U2",
+        "U5"
+      ],
+      "ability": {
+        "id": "comeback",
+        "name": "끈기",
+        "description": "HP가 3분의 1 이하일 때 공격 피해 15% 증가"
+      },
+      "synergy": "낮은 속도를 보호·회복으로 보완",
+      "image": "/world/pets-062-03/adult-sloth.png",
+      "specialName": "나무늘보 특별 외형",
+      "specialPalette": 0,
+      "specialDescription": "은빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 4000,
+      "size": [
+        120,
+        115
+      ]
+    },
+    {
+      "id": "koala-baby",
+      "species": "koala",
+      "name": "아기 코알라",
+      "age": "baby",
+      "itemId": "koala",
+      "spriteKey": "koala",
+      "existing": false,
+      "types": [
+        "풀"
+      ],
+      "role": "지원 탱커",
+      "stats": {
+        "hp": 97,
+        "atk": 53,
+        "def": 102,
+        "spe": 39,
+        "spa": 73,
+        "spd": 102
+      },
+      "total": 466,
+      "skills": [
+        "S4",
+        "X75",
+        "U10",
+        "U9"
+      ],
+      "ability": {
+        "id": "precision",
+        "name": "정확한 공격",
+        "description": "공격 기술 명중률 +10%p"
+      },
+      "synergy": "아기는 보호 중심, 성체는 균형 있는 대응",
+      "image": "/world/pets-062-03/koala.png",
+      "specialName": "코알라 특별 외형",
+      "specialPalette": 1,
+      "specialDescription": "금빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 2000,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "koala-adult",
+      "species": "koala",
+      "name": "코알라",
+      "age": "adult",
+      "itemId": "adult-koala",
+      "spriteKey": "adult-koala",
+      "existing": false,
+      "types": [
+        "풀",
+        "빛"
+      ],
+      "role": "균형",
+      "stats": {
+        "hp": 85,
+        "atk": 92,
+        "def": 87,
+        "spe": 81,
+        "spa": 87,
+        "spd": 87
+      },
+      "total": 519,
+      "skills": [
+        "S4",
+        "X76",
+        "U2",
+        "U5"
+      ],
+      "ability": {
+        "id": "armor",
+        "name": "단단한 몸",
+        "description": "받는 물리 피해 10% 감소"
+      },
+      "synergy": "아기는 보호 중심, 성체는 균형 있는 대응",
+      "image": "/world/pets-062-03/adult-koala.png",
+      "specialName": "코알라 특별 외형",
+      "specialPalette": 1,
+      "specialDescription": "금빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 8000,
+      "size": [
+        120,
+        115
+      ]
+    },
+    {
+      "id": "kangaroo-baby",
+      "species": "kangaroo",
+      "name": "아기 캥거루",
+      "age": "baby",
+      "itemId": "kangaroo",
+      "spriteKey": "kangaroo",
+      "existing": false,
+      "types": [
+        "일반"
+      ],
+      "role": "빠른 지원",
+      "stats": {
+        "hp": 74,
+        "atk": 55,
+        "def": 75,
+        "spe": 115,
+        "spa": 65,
+        "spd": 95
+      },
+      "total": 479,
+      "skills": [
+        "S1",
+        "X77",
+        "U11",
+        "U10"
+      ],
+      "ability": {
+        "id": "ward",
+        "name": "특수 방어",
+        "description": "받는 특수 피해 10% 감소"
+      },
+      "synergy": "아기의 팀 지원으로 성체 공격 기회 확보",
+      "image": "/world/pets-062-03/kangaroo.png",
+      "specialName": "캥거루 특별 외형",
+      "specialPalette": 2,
+      "specialDescription": "푸른 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 2500,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "kangaroo-adult",
+      "species": "kangaroo",
+      "name": "캥거루",
+      "age": "adult",
+      "itemId": "adult-kangaroo",
+      "spriteKey": "adult-kangaroo",
+      "existing": false,
+      "types": [
+        "땅"
+      ],
+      "role": "빠른 물리",
+      "stats": {
+        "hp": 72,
+        "atk": 112,
+        "def": 67,
+        "spe": 128,
+        "spa": 73,
+        "spd": 84
+      },
+      "total": 536,
+      "skills": [
+        "P6",
+        "X78",
+        "U1",
+        "U4"
+      ],
+      "ability": {
+        "id": "focus",
+        "name": "집중",
+        "description": "특수 공격 피해 10% 증가"
+      },
+      "synergy": "아기의 팀 지원으로 성체 공격 기회 확보",
+      "image": "/world/pets-062-03/adult-kangaroo.png",
+      "specialName": "캥거루 특별 외형",
+      "specialPalette": 2,
+      "specialDescription": "푸른 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 8000,
+      "size": [
+        120,
+        115
+      ]
+    },
+    {
+      "id": "raccoon-baby",
+      "species": "raccoon",
+      "name": "아기 너구리",
+      "age": "baby",
+      "itemId": "raccoon",
+      "spriteKey": "raccoon",
+      "existing": false,
+      "types": [
+        "어둠"
+      ],
+      "role": "고속 교란",
+      "stats": {
+        "hp": 60,
+        "atk": 77,
+        "def": 62,
+        "spe": 144,
+        "spa": 77,
+        "spd": 72
+      },
+      "total": 492,
+      "skills": [
+        "P10",
+        "X79",
+        "U8",
+        "U7"
+      ],
+      "ability": {
+        "id": "support",
+        "name": "보호 본능",
+        "description": "보조 기술 사용 시 자신의 최대 HP 5% 회복"
+      },
+      "synergy": "속도·방어를 낮추고 유연하게 공격",
+      "image": "/world/pets-062-03/raccoon.png",
+      "specialName": "너구리 특별 외형",
+      "specialPalette": 3,
+      "specialDescription": "밝은 털색로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 3000,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "raccoon-adult",
+      "species": "raccoon",
+      "name": "너구리",
+      "age": "adult",
+      "itemId": "adult-raccoon",
+      "spriteKey": "adult-raccoon",
+      "existing": false,
+      "types": [
+        "일반",
+        "어둠"
+      ],
+      "role": "혼합 공격",
+      "stats": {
+        "hp": 87,
+        "atk": 115,
+        "def": 75,
+        "spe": 86,
+        "spa": 115,
+        "spd": 75
+      },
+      "total": 553,
+      "skills": [
+        "P1",
+        "X80",
+        "U6",
+        "U2"
+      ],
+      "ability": {
+        "id": "precision",
+        "name": "정확한 공격",
+        "description": "공격 기술 명중률 +10%p"
+      },
+      "synergy": "속도·방어를 낮추고 유연하게 공격",
+      "image": "/world/pets-062-03/adult-raccoon.png",
+      "specialName": "너구리 특별 외형",
+      "specialPalette": 3,
+      "specialDescription": "밝은 털색로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 12000,
+      "size": [
+        120,
+        115
+      ]
+    },
+    {
+      "id": "redpanda-baby",
+      "species": "redpanda",
+      "name": "아기 레서판다",
+      "age": "baby",
+      "itemId": "redpanda",
+      "spriteKey": "redpanda",
+      "existing": false,
+      "types": [
+        "풀"
+      ],
+      "role": "빠른 특수",
+      "stats": {
+        "hp": 57,
+        "atk": 53,
+        "def": 61,
+        "spe": 96,
+        "spa": 92,
+        "spd": 61
+      },
+      "total": 420,
+      "skills": [
+        "S4",
+        "X81",
+        "U2",
+        "U8"
+      ],
+      "ability": {
+        "id": "swift",
+        "name": "민첩",
+        "description": "출전 중 속도 10% 증가"
+      },
+      "synergy": "아기는 특수 공격, 성체는 빠른 지원",
+      "image": "/world/pets-062-03/redpanda.png",
+      "specialName": "레서판다 특별 외형",
+      "specialPalette": 0,
+      "specialDescription": "은빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 3500,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "redpanda-adult",
+      "species": "redpanda",
+      "name": "레서판다",
+      "age": "adult",
+      "itemId": "adult-redpanda",
+      "spriteKey": "adult-redpanda",
+      "existing": false,
+      "types": [
+        "불",
+        "풀"
+      ],
+      "role": "빠른 지원",
+      "stats": {
+        "hp": 89,
+        "atk": 65,
+        "def": 89,
+        "spe": 137,
+        "spa": 77,
+        "spd": 113
+      },
+      "total": 570,
+      "skills": [
+        "S2",
+        "X82",
+        "U11",
+        "U10"
+      ],
+      "ability": {
+        "id": "ward",
+        "name": "특수 방어",
+        "description": "받는 특수 피해 10% 감소"
+      },
+      "synergy": "아기는 특수 공격, 성체는 빠른 지원",
+      "image": "/world/pets-062-03/adult-redpanda.png",
+      "specialName": "레서판다 특별 외형",
+      "specialPalette": 0,
+      "specialDescription": "은빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 12000,
+      "size": [
+        120,
+        115
+      ]
+    },
+    {
+      "id": "squirrel-baby",
+      "species": "squirrel",
+      "name": "아기 다람쥐",
+      "age": "baby",
+      "itemId": "squirrel",
+      "spriteKey": "squirrel",
+      "existing": false,
+      "types": [
+        "일반"
+      ],
+      "role": "고속 교란",
+      "stats": {
+        "hp": 54,
+        "atk": 68,
+        "def": 54,
+        "spe": 126,
+        "spa": 68,
+        "spd": 63
+      },
+      "total": 433,
+      "skills": [
+        "P1",
+        "X83",
+        "U8",
+        "U5"
+      ],
+      "ability": {
+        "id": "power",
+        "name": "강한 발톱",
+        "description": "물리 공격 피해 10% 증가"
+      },
+      "synergy": "아기의 교란으로 성체 특수 공격을 보조",
+      "image": "/world/pets-062-03/squirrel.png",
+      "specialName": "다람쥐 특별 외형",
+      "specialPalette": 1,
+      "specialDescription": "금빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 4000,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "squirrel-adult",
+      "species": "squirrel",
+      "name": "다람쥐",
+      "age": "adult",
+      "itemId": "adult-squirrel",
+      "spriteKey": "adult-squirrel",
+      "existing": false,
+      "types": [
+        "풀",
+        "전기"
+      ],
+      "role": "빠른 특수",
+      "stats": {
+        "hp": 79,
+        "atk": 73,
+        "def": 86,
+        "spe": 135,
+        "spa": 128,
+        "spd": 86
+      },
+      "total": 587,
+      "skills": [
+        "S4",
+        "X84",
+        "U2",
+        "U7"
+      ],
+      "ability": {
+        "id": "support",
+        "name": "보호 본능",
+        "description": "보조 기술 사용 시 자신의 최대 HP 5% 회복"
+      },
+      "synergy": "아기의 교란으로 성체 특수 공격을 보조",
+      "image": "/world/pets-062-03/adult-squirrel.png",
+      "specialName": "다람쥐 특별 외형",
+      "specialPalette": 1,
+      "specialDescription": "금빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 15000,
+      "size": [
+        120,
+        115
+      ]
+    },
+    {
+      "id": "bat-baby",
+      "species": "bat",
+      "name": "아기 박쥐",
+      "age": "baby",
+      "itemId": "bat",
+      "spriteKey": "bat",
+      "existing": false,
+      "types": [
+        "어둠"
+      ],
+      "role": "빠른 특수",
+      "stats": {
+        "hp": 60,
+        "atk": 56,
+        "def": 65,
+        "spe": 102,
+        "spa": 98,
+        "spd": 65
+      },
+      "total": 446,
+      "skills": [
+        "S10",
+        "X85",
+        "U2",
+        "U8"
+      ],
+      "ability": {
+        "id": "comeback",
+        "name": "끈기",
+        "description": "HP가 3분의 1 이하일 때 공격 피해 15% 증가"
+      },
+      "synergy": "아기는 특수 공격, 성체는 빠른 약화 기술",
+      "image": "/world/pets-062-04/bat.png",
+      "specialName": "박쥐 특별 외형",
+      "specialPalette": 2,
+      "specialDescription": "푸른 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 1500,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "bat-adult",
+      "species": "bat",
+      "name": "박쥐",
+      "age": "adult",
+      "itemId": "adult-bat",
+      "spriteKey": "adult-bat",
+      "existing": false,
+      "types": [
+        "바람",
+        "어둠"
+      ],
+      "role": "고속 교란",
+      "stats": {
+        "hp": 62,
+        "atk": 79,
+        "def": 63,
+        "spe": 147,
+        "spa": 79,
+        "spd": 74
+      },
+      "total": 504,
+      "skills": [
+        "P7",
+        "X86",
+        "U5",
+        "U7"
+      ],
+      "ability": {
+        "id": "swift",
+        "name": "민첩",
+        "description": "출전 중 속도 10% 증가"
+      },
+      "synergy": "아기는 특수 공격, 성체는 빠른 약화 기술",
+      "image": "/world/pets-062-04/adult-bat.png",
+      "specialName": "박쥐 특별 외형",
+      "specialPalette": 2,
+      "specialDescription": "푸른 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 4000,
+      "size": [
+        120,
+        115
+      ]
+    },
+    {
+      "id": "peacock-baby",
+      "species": "peacock",
+      "name": "아기 공작",
+      "age": "baby",
+      "itemId": "peacock",
+      "spriteKey": "peacock",
+      "existing": false,
+      "types": [
+        "빛"
+      ],
+      "role": "빠른 지원",
+      "stats": {
+        "hp": 71,
+        "atk": 53,
+        "def": 72,
+        "spe": 110,
+        "spa": 62,
+        "spd": 91
+      },
+      "total": 459,
+      "skills": [
+        "S9",
+        "X87",
+        "U10",
+        "U7"
+      ],
+      "ability": {
+        "id": "armor",
+        "name": "단단한 몸",
+        "description": "받는 물리 피해 10% 감소"
+      },
+      "synergy": "보호와 특수방어 약화로 성체를 지원",
+      "image": "/world/pets-062-04/peacock.png",
+      "specialName": "공작 특별 외형",
+      "specialPalette": 3,
+      "specialDescription": "밝은 털색로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 2000,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "peacock-adult",
+      "species": "peacock",
+      "name": "공작",
+      "age": "adult",
+      "itemId": "adult-peacock",
+      "spriteKey": "adult-peacock",
+      "existing": false,
+      "types": [
+        "빛",
+        "바람"
+      ],
+      "role": "특수 공격",
+      "stats": {
+        "hp": 80,
+        "atk": 60,
+        "def": 71,
+        "spe": 87,
+        "spa": 136,
+        "spd": 87
+      },
+      "total": 521,
+      "skills": [
+        "S9",
+        "X88",
+        "U2",
+        "U8"
+      ],
+      "ability": {
+        "id": "power",
+        "name": "강한 발톱",
+        "description": "물리 공격 피해 10% 증가"
+      },
+      "synergy": "보호와 특수방어 약화로 성체를 지원",
+      "image": "/world/pets-062-04/adult-peacock.png",
+      "specialName": "공작 특별 외형",
+      "specialPalette": 3,
+      "specialDescription": "밝은 털색로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 8000,
+      "size": [
+        120,
+        115
+      ]
+    },
+    {
+      "id": "flamingo-baby",
+      "species": "flamingo",
+      "name": "아기 홍학",
+      "age": "baby",
+      "itemId": "flamingo",
+      "spriteKey": "flamingo",
+      "existing": false,
+      "types": [
+        "물"
+      ],
+      "role": "빠른 특수",
+      "stats": {
+        "hp": 64,
+        "atk": 59,
+        "def": 69,
+        "spe": 108,
+        "spa": 103,
+        "spd": 69
+      },
+      "total": 472,
+      "skills": [
+        "S3",
+        "X89",
+        "U2",
+        "U4"
+      ],
+      "ability": {
+        "id": "focus",
+        "name": "집중",
+        "description": "특수 공격 피해 10% 증가"
+      },
+      "synergy": "아기는 공격, 성체는 속도와 공격 약화 지원",
+      "image": "/world/pets-062-04/flamingo.png",
+      "specialName": "홍학 특별 외형",
+      "specialPalette": 0,
+      "specialDescription": "은빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 2500,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "flamingo-adult",
+      "species": "flamingo",
+      "name": "홍학",
+      "age": "adult",
+      "itemId": "adult-flamingo",
+      "spriteKey": "adult-flamingo",
+      "existing": false,
+      "types": [
+        "물",
+        "바람"
+      ],
+      "role": "빠른 지원",
+      "stats": {
+        "hp": 84,
+        "atk": 62,
+        "def": 84,
+        "spe": 129,
+        "spa": 73,
+        "spd": 106
+      },
+      "total": 538,
+      "skills": [
+        "S3",
+        "X90",
+        "U11",
+        "U5"
+      ],
+      "ability": {
+        "id": "comeback",
+        "name": "끈기",
+        "description": "HP가 3분의 1 이하일 때 공격 피해 15% 증가"
+      },
+      "synergy": "아기는 공격, 성체는 속도와 공격 약화 지원",
+      "image": "/world/pets-062-04/adult-flamingo.png",
+      "specialName": "홍학 특별 외형",
+      "specialPalette": 0,
+      "specialDescription": "은빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 8000,
+      "size": [
+        120,
+        115
+      ]
+    },
+    {
+      "id": "crane-baby",
+      "species": "crane",
+      "name": "아기 두루미",
+      "age": "baby",
+      "itemId": "crane",
+      "spriteKey": "crane",
+      "existing": false,
+      "types": [
+        "바람"
+      ],
+      "role": "빠른 물리",
+      "stats": {
+        "hp": 65,
+        "atk": 101,
+        "def": 61,
+        "spe": 116,
+        "spa": 66,
+        "spd": 76
+      },
+      "total": 485,
+      "skills": [
+        "P7",
+        "X91",
+        "U6",
+        "U11"
+      ],
+      "ability": {
+        "id": "precision",
+        "name": "정확한 공격",
+        "description": "공격 기술 명중률 +10%p"
+      },
+      "synergy": "공격 방식과 방어 역할을 서로 다르게 구성",
+      "image": "/world/pets-062-04/crane.png",
+      "specialName": "두루미 특별 외형",
+      "specialPalette": 1,
+      "specialDescription": "금빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 3000,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "crane-adult",
+      "species": "crane",
+      "name": "두루미",
+      "age": "adult",
+      "itemId": "adult-crane",
+      "spriteKey": "adult-crane",
+      "existing": false,
+      "types": [
+        "바람",
+        "빛"
+      ],
+      "role": "특수 탱커",
+      "stats": {
+        "hp": 115,
+        "atk": 64,
+        "def": 93,
+        "spe": 46,
+        "spa": 110,
+        "spd": 127
+      },
+      "total": 555,
+      "skills": [
+        "S7",
+        "X92",
+        "U2",
+        "U9"
+      ],
+      "ability": {
+        "id": "armor",
+        "name": "단단한 몸",
+        "description": "받는 물리 피해 10% 감소"
+      },
+      "synergy": "공격 방식과 방어 역할을 서로 다르게 구성",
+      "image": "/world/pets-062-04/adult-crane.png",
+      "specialName": "두루미 특별 외형",
+      "specialPalette": 1,
+      "specialDescription": "금빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 12000,
+      "size": [
+        120,
+        115
+      ]
+    },
+    {
+      "id": "chameleon-baby",
+      "species": "chameleon",
+      "name": "아기 카멜레온",
+      "age": "baby",
+      "itemId": "chameleon",
+      "spriteKey": "chameleon",
+      "existing": false,
+      "types": [
+        "풀"
+      ],
+      "role": "빠른 지원",
+      "stats": {
+        "hp": 64,
+        "atk": 47,
+        "def": 65,
+        "spe": 99,
+        "spa": 56,
+        "spd": 82
+      },
+      "total": 413,
+      "skills": [
+        "S4",
+        "X93",
+        "U5",
+        "U7"
+      ],
+      "ability": {
+        "id": "ward",
+        "name": "특수 방어",
+        "description": "받는 특수 피해 10% 감소"
+      },
+      "synergy": "상대의 약한 방어를 골라 공격",
+      "image": "/world/pets-062-04/chameleon.png",
+      "specialName": "카멜레온 특별 외형",
+      "specialPalette": 2,
+      "specialDescription": "푸른 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 3500,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "chameleon-adult",
+      "species": "chameleon",
+      "name": "카멜레온",
+      "age": "adult",
+      "itemId": "adult-chameleon",
+      "spriteKey": "adult-chameleon",
+      "existing": false,
+      "types": [
+        "풀",
+        "어둠"
+      ],
+      "role": "혼합 공격",
+      "stats": {
+        "hp": 91,
+        "atk": 119,
+        "def": 77,
+        "spe": 89,
+        "spa": 119,
+        "spd": 77
+      },
+      "total": 572,
+      "skills": [
+        "P4",
+        "X94",
+        "U1",
+        "U2"
+      ],
+      "ability": {
+        "id": "focus",
+        "name": "집중",
+        "description": "특수 공격 피해 10% 증가"
+      },
+      "synergy": "상대의 약한 방어를 골라 공격",
+      "image": "/world/pets-062-04/adult-chameleon.png",
+      "specialName": "카멜레온 특별 외형",
+      "specialPalette": 2,
+      "specialDescription": "푸른 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 12000,
+      "size": [
+        120,
+        115
+      ]
+    },
+    {
+      "id": "frog-baby",
+      "species": "frog",
+      "name": "아기 개구리",
+      "age": "baby",
+      "itemId": "frog",
+      "spriteKey": "frog",
+      "existing": false,
+      "types": [
+        "물"
+      ],
+      "role": "고속 교란",
+      "stats": {
+        "hp": 53,
+        "atk": 67,
+        "def": 53,
+        "spe": 124,
+        "spa": 67,
+        "spd": 62
+      },
+      "total": 426,
+      "skills": [
+        "P3",
+        "X95",
+        "U8",
+        "U10"
+      ],
+      "ability": {
+        "id": "support",
+        "name": "보호 본능",
+        "description": "보조 기술 사용 시 자신의 최대 HP 5% 회복"
+      },
+      "synergy": "아기의 감속·보호와 성체의 빠른 특수 공격",
+      "image": "/world/pets-062-04/frog.png",
+      "specialName": "개구리 특별 외형",
+      "specialPalette": 3,
+      "specialDescription": "밝은 털색로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 4000,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "frog-adult",
+      "species": "frog",
+      "name": "개구리",
+      "age": "adult",
+      "itemId": "adult-frog",
+      "spriteKey": "adult-frog",
+      "existing": false,
+      "types": [
+        "물",
+        "전기"
+      ],
+      "role": "빠른 특수",
+      "stats": {
+        "hp": 79,
+        "atk": 74,
+        "def": 86,
+        "spe": 135,
+        "spa": 129,
+        "spd": 86
+      },
+      "total": 589,
+      "skills": [
+        "S3",
+        "X96",
+        "U2",
+        "U7"
+      ],
+      "ability": {
+        "id": "precision",
+        "name": "정확한 공격",
+        "description": "공격 기술 명중률 +10%p"
+      },
+      "synergy": "아기의 감속·보호와 성체의 빠른 특수 공격",
+      "image": "/world/pets-062-04/adult-frog.png",
+      "specialName": "개구리 특별 외형",
+      "specialPalette": 3,
+      "specialDescription": "밝은 털색로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 15000,
+      "size": [
+        120,
+        115
+      ]
+    },
+    {
+      "id": "scorpion-baby",
+      "species": "scorpion",
+      "name": "아기 전갈",
+      "age": "baby",
+      "itemId": "scorpion",
+      "spriteKey": "scorpion",
+      "existing": false,
+      "types": [
+        "땅"
+      ],
+      "role": "물리 탱커",
+      "stats": {
+        "hp": 87,
+        "atk": 87,
+        "def": 105,
+        "spe": 37,
+        "spa": 50,
+        "spd": 73
+      },
+      "total": 439,
+      "skills": [
+        "P6",
+        "X97",
+        "U3",
+        "U5"
+      ],
+      "ability": {
+        "id": "swift",
+        "name": "민첩",
+        "description": "출전 중 속도 10% 증가"
+      },
+      "synergy": "아기가 물리 공격을 버티고 성체가 방어를 돌파",
+      "image": "/world/pets-062-04/scorpion.png",
+      "specialName": "전갈 특별 외형",
+      "specialPalette": 0,
+      "specialDescription": "은빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 1500,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "scorpion-adult",
+      "species": "scorpion",
+      "name": "전갈",
+      "age": "adult",
+      "itemId": "adult-scorpion",
+      "spriteKey": "adult-scorpion",
+      "existing": false,
+      "types": [
+        "땅",
+        "어둠"
+      ],
+      "role": "물리 강타",
+      "stats": {
+        "hp": 89,
+        "atk": 127,
+        "def": 74,
+        "spe": 79,
+        "spa": 58,
+        "spd": 79
+      },
+      "total": 506,
+      "skills": [
+        "P6",
+        "X98",
+        "U1",
+        "U6"
+      ],
+      "ability": {
+        "id": "ward",
+        "name": "특수 방어",
+        "description": "받는 특수 피해 10% 감소"
+      },
+      "synergy": "아기가 물리 공격을 버티고 성체가 방어를 돌파",
+      "image": "/world/pets-062-04/adult-scorpion.png",
+      "specialName": "전갈 특별 외형",
+      "specialPalette": 0,
+      "specialDescription": "은빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 4000,
+      "size": [
+        120,
+        115
+      ]
+    },
+    {
+      "id": "pegasus-baby",
+      "species": "pegasus",
+      "name": "아기 페가수스",
+      "age": "baby",
+      "itemId": "pegasus",
+      "spriteKey": "pegasus",
+      "existing": false,
+      "types": [
+        "바람"
+      ],
+      "role": "빠른 지원",
+      "stats": {
+        "hp": 71,
+        "atk": 52,
+        "def": 71,
+        "spe": 108,
+        "spa": 61,
+        "spd": 89
+      },
+      "total": 452,
+      "skills": [
+        "S7",
+        "X99",
+        "U11",
+        "U10"
+      ],
+      "ability": {
+        "id": "power",
+        "name": "강한 발톱",
+        "description": "물리 공격 피해 10% 증가"
+      },
+      "synergy": "아기는 팀 지원, 성체는 빠른 특수 공격",
+      "image": "/world/pets-062-04/pegasus.png",
+      "specialName": "페가수스 특별 외형",
+      "specialPalette": 1,
+      "specialDescription": "금빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 2000,
+      "size": [
+        85,
+        85
+      ]
+    },
+    {
+      "id": "pegasus-adult",
+      "species": "pegasus",
+      "name": "페가수스",
+      "age": "adult",
+      "itemId": "adult-pegasus",
+      "spriteKey": "adult-pegasus",
+      "existing": false,
+      "types": [
+        "바람",
+        "빛"
+      ],
+      "role": "빠른 특수",
+      "stats": {
+        "hp": 72,
+        "atk": 65,
+        "def": 76,
+        "spe": 120,
+        "spa": 114,
+        "spd": 76
+      },
+      "total": 523,
+      "skills": [
+        "S7",
+        "X100",
+        "U2",
+        "U4"
+      ],
+      "ability": {
+        "id": "support",
+        "name": "보호 본능",
+        "description": "보조 기술 사용 시 자신의 최대 HP 5% 회복"
+      },
+      "synergy": "아기는 팀 지원, 성체는 빠른 특수 공격",
+      "image": "/world/pets-062-04/adult-pegasus.png",
+      "specialName": "페가수스 특별 외형",
+      "specialPalette": 1,
+      "specialDescription": "금빛 무늬로 바뀝니다. 전투 능력은 그대로입니다.",
+      "price": 8000,
+      "size": [
+        170,
+        155
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "id": "P1",
+      "name": "몸통치기",
+      "type": "일반",
+      "category": "physical",
+      "power": 75,
+      "accuracy": 100,
+      "priority": 0,
+      "cooldown": 0,
+      "effect": "none",
+      "description": "위력 75 · 추가 효과 없음"
+    },
+    {
+      "id": "S1",
+      "name": "기합파",
+      "type": "일반",
+      "category": "special",
+      "power": 75,
+      "accuracy": 100,
+      "priority": 0,
+      "cooldown": 0,
+      "effect": "none",
+      "description": "위력 75 · 추가 효과 없음"
+    },
+    {
+      "id": "P2",
+      "name": "불꽃발톱",
+      "type": "불",
+      "category": "physical",
+      "power": 75,
+      "accuracy": 100,
+      "priority": 0,
+      "cooldown": 0,
+      "effect": "none",
+      "description": "위력 75 · 추가 효과 없음"
+    },
+    {
+      "id": "S2",
+      "name": "불꽃탄",
+      "type": "불",
+      "category": "special",
+      "power": 75,
+      "accuracy": 100,
+      "priority": 0,
+      "cooldown": 0,
+      "effect": "none",
+      "description": "위력 75 · 추가 효과 없음"
+    },
+    {
+      "id": "P3",
+      "name": "물결치기",
+      "type": "물",
+      "category": "physical",
+      "power": 75,
+      "accuracy": 100,
+      "priority": 0,
+      "cooldown": 0,
+      "effect": "none",
+      "description": "위력 75 · 추가 효과 없음"
+    },
+    {
+      "id": "S3",
+      "name": "물대포",
+      "type": "물",
+      "category": "special",
+      "power": 75,
+      "accuracy": 100,
+      "priority": 0,
+      "cooldown": 0,
+      "effect": "none",
+      "description": "위력 75 · 추가 효과 없음"
+    },
+    {
+      "id": "P4",
+      "name": "덩굴채찍",
+      "type": "풀",
+      "category": "physical",
+      "power": 75,
+      "accuracy": 100,
+      "priority": 0,
+      "cooldown": 0,
+      "effect": "none",
+      "description": "위력 75 · 추가 효과 없음"
+    },
+    {
+      "id": "S4",
+      "name": "잎바람",
+      "type": "풀",
+      "category": "special",
+      "power": 75,
+      "accuracy": 100,
+      "priority": 0,
+      "cooldown": 0,
+      "effect": "none",
+      "description": "위력 75 · 추가 효과 없음"
+    },
+    {
+      "id": "P5",
+      "name": "전기타격",
+      "type": "전기",
+      "category": "physical",
+      "power": 75,
+      "accuracy": 100,
+      "priority": 0,
+      "cooldown": 0,
+      "effect": "none",
+      "description": "위력 75 · 추가 효과 없음"
+    },
+    {
+      "id": "S5",
+      "name": "전기파",
+      "type": "전기",
+      "category": "special",
+      "power": 75,
+      "accuracy": 100,
+      "priority": 0,
+      "cooldown": 0,
+      "effect": "none",
+      "description": "위력 75 · 추가 효과 없음"
+    },
+    {
+      "id": "P6",
+      "name": "바위치기",
+      "type": "땅",
+      "category": "physical",
+      "power": 75,
+      "accuracy": 100,
+      "priority": 0,
+      "cooldown": 0,
+      "effect": "none",
+      "description": "위력 75 · 추가 효과 없음"
+    },
+    {
+      "id": "S6",
+      "name": "모래파",
+      "type": "땅",
+      "category": "special",
+      "power": 75,
+      "accuracy": 100,
+      "priority": 0,
+      "cooldown": 0,
+      "effect": "none",
+      "description": "위력 75 · 추가 효과 없음"
+    },
+    {
+      "id": "P7",
+      "name": "바람베기",
+      "type": "바람",
+      "category": "physical",
+      "power": 75,
+      "accuracy": 100,
+      "priority": 0,
+      "cooldown": 0,
+      "effect": "none",
+      "description": "위력 75 · 추가 효과 없음"
+    },
+    {
+      "id": "S7",
+      "name": "돌풍",
+      "type": "바람",
+      "category": "special",
+      "power": 75,
+      "accuracy": 100,
+      "priority": 0,
+      "cooldown": 0,
+      "effect": "none",
+      "description": "위력 75 · 추가 효과 없음"
+    },
+    {
+      "id": "P8",
+      "name": "얼음타격",
+      "type": "얼음",
+      "category": "physical",
+      "power": 75,
+      "accuracy": 100,
+      "priority": 0,
+      "cooldown": 0,
+      "effect": "none",
+      "description": "위력 75 · 추가 효과 없음"
+    },
+    {
+      "id": "S8",
+      "name": "냉기탄",
+      "type": "얼음",
+      "category": "special",
+      "power": 75,
+      "accuracy": 100,
+      "priority": 0,
+      "cooldown": 0,
+      "effect": "none",
+      "description": "위력 75 · 추가 효과 없음"
+    },
+    {
+      "id": "P9",
+      "name": "빛의타격",
+      "type": "빛",
+      "category": "physical",
+      "power": 75,
+      "accuracy": 100,
+      "priority": 0,
+      "cooldown": 0,
+      "effect": "none",
+      "description": "위력 75 · 추가 효과 없음"
+    },
+    {
+      "id": "S9",
+      "name": "빛의파동",
+      "type": "빛",
+      "category": "special",
+      "power": 75,
+      "accuracy": 100,
+      "priority": 0,
+      "cooldown": 0,
+      "effect": "none",
+      "description": "위력 75 · 추가 효과 없음"
+    },
+    {
+      "id": "P10",
+      "name": "그림자발톱",
+      "type": "어둠",
+      "category": "physical",
+      "power": 75,
+      "accuracy": 100,
+      "priority": 0,
+      "cooldown": 0,
+      "effect": "none",
+      "description": "위력 75 · 추가 효과 없음"
+    },
+    {
+      "id": "S10",
+      "name": "그림자파",
+      "type": "어둠",
+      "category": "special",
+      "power": 75,
+      "accuracy": 100,
+      "priority": 0,
+      "cooldown": 0,
+      "effect": "none",
+      "description": "위력 75 · 추가 효과 없음"
+    },
+    {
+      "id": "U1",
+      "name": "물리강화",
+      "type": "일반",
+      "category": "status",
+      "power": 0,
+      "accuracy": 100,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "atkUp",
+      "description": "공격 1단계 상승"
+    },
+    {
+      "id": "U2",
+      "name": "특수강화",
+      "type": "일반",
+      "category": "status",
+      "power": 0,
+      "accuracy": 100,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spaUp",
+      "description": "특수공격 1단계 상승"
+    },
+    {
+      "id": "U3",
+      "name": "방어강화",
+      "type": "일반",
+      "category": "status",
+      "power": 0,
+      "accuracy": 100,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "defUp",
+      "description": "방어 1단계 상승"
+    },
+    {
+      "id": "U4",
+      "name": "민첩강화",
+      "type": "일반",
+      "category": "status",
+      "power": 0,
+      "accuracy": 100,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "speUp",
+      "description": "속도 1단계 상승"
+    },
+    {
+      "id": "U5",
+      "name": "공격낮추기",
+      "type": "일반",
+      "category": "status",
+      "power": 0,
+      "accuracy": 100,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "atkDown",
+      "description": "상대 공격 1단계 하락"
+    },
+    {
+      "id": "U6",
+      "name": "방어낮추기",
+      "type": "일반",
+      "category": "status",
+      "power": 0,
+      "accuracy": 100,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "defDown",
+      "description": "상대 방어 1단계 하락"
+    },
+    {
+      "id": "U7",
+      "name": "특방낮추기",
+      "type": "일반",
+      "category": "status",
+      "power": 0,
+      "accuracy": 100,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "description": "상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "U8",
+      "name": "감속",
+      "type": "일반",
+      "category": "status",
+      "power": 0,
+      "accuracy": 100,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "speDown",
+      "description": "상대 속도 1단계 하락"
+    },
+    {
+      "id": "U9",
+      "name": "회복",
+      "type": "일반",
+      "category": "status",
+      "power": 0,
+      "accuracy": 100,
+      "priority": 0,
+      "cooldown": 3,
+      "effect": "heal",
+      "description": "최대 HP 25% 회복"
+    },
+    {
+      "id": "U10",
+      "name": "팀보호",
+      "type": "일반",
+      "category": "status",
+      "power": 0,
+      "accuracy": 100,
+      "priority": 0,
+      "cooldown": 3,
+      "effect": "teamGuard",
+      "description": "아군 진영 다음 공격 피해 30% 감소 · 3턴 이내 1회"
+    },
+    {
+      "id": "U11",
+      "name": "팀가속",
+      "type": "일반",
+      "category": "status",
+      "power": 0,
+      "accuracy": 100,
+      "priority": 0,
+      "cooldown": 3,
+      "effect": "teamSpeed",
+      "description": "아군 진영 속도 25% 상승 · 3턴"
+    },
+    {
+      "id": "U12",
+      "name": "방어자세",
+      "type": "일반",
+      "category": "status",
+      "power": 0,
+      "accuracy": 100,
+      "priority": 1,
+      "cooldown": 2,
+      "effect": "protect",
+      "description": "이 턴에 받는 공격 피해 50% 감소"
+    },
+    {
+      "id": "X1",
+      "name": "아기 고양이 · 날렵한 발톱",
+      "type": "땅",
+      "category": "physical",
+      "power": 85,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "speDown",
+      "effectChance": 25,
+      "description": "위력 85 · 명중 90% · 25% 확률로 상대 속도 1단계 하락"
+    },
+    {
+      "id": "X2",
+      "name": "고양이 · 날렵한 발톱",
+      "type": "일반",
+      "category": "special",
+      "power": 85,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 85 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X3",
+      "name": "아기 개 · 돌진",
+      "type": "땅",
+      "category": "special",
+      "power": 90,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 90 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X4",
+      "name": "개 · 돌진",
+      "type": "땅",
+      "category": "physical",
+      "power": 90,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "speDown",
+      "effectChance": 25,
+      "description": "위력 90 · 명중 90% · 25% 확률로 상대 속도 1단계 하락"
+    },
+    {
+      "id": "X5",
+      "name": "아기 토끼 · 뛰어차기",
+      "type": "일반",
+      "category": "physical",
+      "power": 95,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "defDown",
+      "effectChance": 25,
+      "description": "위력 95 · 명중 90% · 25% 확률로 상대 방어 1단계 하락"
+    },
+    {
+      "id": "X6",
+      "name": "토끼 · 뛰어차기",
+      "type": "일반",
+      "category": "special",
+      "power": 95,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 95 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X7",
+      "name": "아기 판다 · 앞발 밀기",
+      "type": "일반",
+      "category": "special",
+      "power": 85,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "speDown",
+      "effectChance": 25,
+      "description": "위력 85 · 명중 90% · 25% 확률로 상대 속도 1단계 하락"
+    },
+    {
+      "id": "X8",
+      "name": "판다 · 앞발 밀기",
+      "type": "땅",
+      "category": "physical",
+      "power": 85,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "defDown",
+      "effectChance": 25,
+      "description": "위력 85 · 명중 90% · 25% 확률로 상대 방어 1단계 하락"
+    },
+    {
+      "id": "X9",
+      "name": "아기 여우 · 속임수 공격",
+      "type": "일반",
+      "category": "special",
+      "power": 90,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 90 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X10",
+      "name": "여우 · 속임수 공격",
+      "type": "어둠",
+      "category": "special",
+      "power": 90,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "speDown",
+      "effectChance": 25,
+      "description": "위력 90 · 명중 90% · 25% 확률로 상대 속도 1단계 하락"
+    },
+    {
+      "id": "X11",
+      "name": "아기 호랑이 · 덮치기",
+      "type": "땅",
+      "category": "physical",
+      "power": 95,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "defDown",
+      "effectChance": 25,
+      "description": "위력 95 · 명중 90% · 25% 확률로 상대 방어 1단계 하락"
+    },
+    {
+      "id": "X12",
+      "name": "호랑이 · 덮치기",
+      "type": "바람",
+      "category": "special",
+      "power": 95,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 95 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X13",
+      "name": "아기 코끼리 · 육중한 발구르기",
+      "type": "일반",
+      "category": "special",
+      "power": 85,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "speDown",
+      "effectChance": 25,
+      "description": "위력 85 · 명중 90% · 25% 확률로 상대 속도 1단계 하락"
+    },
+    {
+      "id": "X14",
+      "name": "코끼리 · 육중한 발구르기",
+      "type": "일반",
+      "category": "physical",
+      "power": 85,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "defDown",
+      "effectChance": 25,
+      "description": "위력 85 · 명중 90% · 25% 확률로 상대 방어 1단계 하락"
+    },
+    {
+      "id": "X15",
+      "name": "아기 악어 · 회전 물기",
+      "type": "얼음",
+      "category": "physical",
+      "power": 90,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "defDown",
+      "effectChance": 25,
+      "description": "위력 90 · 명중 90% · 25% 확률로 상대 방어 1단계 하락"
+    },
+    {
+      "id": "X16",
+      "name": "악어 · 회전 물기",
+      "type": "땅",
+      "category": "physical",
+      "power": 90,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "speDown",
+      "effectChance": 25,
+      "description": "위력 90 · 명중 90% · 25% 확률로 상대 속도 1단계 하락"
+    },
+    {
+      "id": "X17",
+      "name": "아기 독수리 · 급강하",
+      "type": "일반",
+      "category": "special",
+      "power": 95,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 95 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X18",
+      "name": "독수리 · 급강하",
+      "type": "빛",
+      "category": "physical",
+      "power": 95,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "defDown",
+      "effectChance": 25,
+      "description": "위력 95 · 명중 90% · 25% 확률로 상대 방어 1단계 하락"
+    },
+    {
+      "id": "X19",
+      "name": "아기 고래 · 큰 물결",
+      "type": "얼음",
+      "category": "special",
+      "power": 85,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "speDown",
+      "effectChance": 25,
+      "description": "위력 85 · 명중 90% · 25% 확률로 상대 속도 1단계 하락"
+    },
+    {
+      "id": "X20",
+      "name": "고래 · 큰 물결",
+      "type": "얼음",
+      "category": "special",
+      "power": 85,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 85 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X21",
+      "name": "아기 유니콘 · 빛의 뿔",
+      "type": "일반",
+      "category": "special",
+      "power": 90,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 90 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X22",
+      "name": "유니콘 · 빛의 뿔",
+      "type": "풀",
+      "category": "special",
+      "power": 90,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "speDown",
+      "effectChance": 25,
+      "description": "위력 90 · 명중 90% · 25% 확률로 상대 속도 1단계 하락"
+    },
+    {
+      "id": "X23",
+      "name": "아기 용 · 용의 숨결",
+      "type": "바람",
+      "category": "physical",
+      "power": 95,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "defDown",
+      "effectChance": 25,
+      "description": "위력 95 · 명중 90% · 25% 확률로 상대 방어 1단계 하락"
+    },
+    {
+      "id": "X24",
+      "name": "용 · 용의 숨결",
+      "type": "바람",
+      "category": "special",
+      "power": 95,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 95 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X25",
+      "name": "아기 늑대 · 몰아치기",
+      "type": "물",
+      "category": "special",
+      "power": 85,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "speDown",
+      "effectChance": 25,
+      "description": "위력 85 · 명중 90% · 25% 확률로 상대 속도 1단계 하락"
+    },
+    {
+      "id": "X26",
+      "name": "늑대 · 몰아치기",
+      "type": "어둠",
+      "category": "physical",
+      "power": 85,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "defDown",
+      "effectChance": 25,
+      "description": "위력 85 · 명중 90% · 25% 확률로 상대 방어 1단계 하락"
+    },
+    {
+      "id": "X27",
+      "name": "아기 곰 · 앞발 강타",
+      "type": "일반",
+      "category": "special",
+      "power": 90,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 90 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X28",
+      "name": "곰 · 앞발 강타",
+      "type": "얼음",
+      "category": "physical",
+      "power": 90,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "speDown",
+      "effectChance": 25,
+      "description": "위력 90 · 명중 90% · 25% 확률로 상대 속도 1단계 하락"
+    },
+    {
+      "id": "X29",
+      "name": "아기 사자 · 포효",
+      "type": "바람",
+      "category": "physical",
+      "power": 95,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "defDown",
+      "effectChance": 25,
+      "description": "위력 95 · 명중 90% · 25% 확률로 상대 방어 1단계 하락"
+    },
+    {
+      "id": "X30",
+      "name": "사자 · 포효",
+      "type": "빛",
+      "category": "special",
+      "power": 95,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 95 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X31",
+      "name": "아기 표범 · 도약 공격",
+      "type": "일반",
+      "category": "physical",
+      "power": 85,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "speDown",
+      "effectChance": 25,
+      "description": "위력 85 · 명중 90% · 25% 확률로 상대 속도 1단계 하락"
+    },
+    {
+      "id": "X32",
+      "name": "표범 · 도약 공격",
+      "type": "바람",
+      "category": "physical",
+      "power": 85,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "defDown",
+      "effectChance": 25,
+      "description": "위력 85 · 명중 90% · 25% 확률로 상대 방어 1단계 하락"
+    },
+    {
+      "id": "X33",
+      "name": "아기 사슴 · 숲의 기운",
+      "type": "일반",
+      "category": "special",
+      "power": 90,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 90 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X34",
+      "name": "사슴 · 숲의 기운",
+      "type": "빛",
+      "category": "special",
+      "power": 90,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "speDown",
+      "effectChance": 25,
+      "description": "위력 90 · 명중 90% · 25% 확률로 상대 속도 1단계 하락"
+    },
+    {
+      "id": "X35",
+      "name": "아기 말 · 뒷발차기",
+      "type": "땅",
+      "category": "physical",
+      "power": 95,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "defDown",
+      "effectChance": 25,
+      "description": "위력 95 · 명중 90% · 25% 확률로 상대 방어 1단계 하락"
+    },
+    {
+      "id": "X36",
+      "name": "말 · 뒷발차기",
+      "type": "바람",
+      "category": "physical",
+      "power": 95,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "defDown",
+      "effectChance": 25,
+      "description": "위력 95 · 명중 90% · 25% 확률로 상대 방어 1단계 하락"
+    },
+    {
+      "id": "X37",
+      "name": "아기 그리핀 · 하늘 습격",
+      "type": "일반",
+      "category": "special",
+      "power": 85,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "speDown",
+      "effectChance": 25,
+      "description": "위력 85 · 명중 90% · 25% 확률로 상대 속도 1단계 하락"
+    },
+    {
+      "id": "X38",
+      "name": "그리핀 · 하늘 습격",
+      "type": "땅",
+      "category": "physical",
+      "power": 85,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "defDown",
+      "effectChance": 25,
+      "description": "위력 85 · 명중 90% · 25% 확률로 상대 방어 1단계 하락"
+    },
+    {
+      "id": "X39",
+      "name": "아기 불사조 · 불꽃 깃털",
+      "type": "바람",
+      "category": "special",
+      "power": 90,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 90 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X40",
+      "name": "불사조 · 불꽃 깃털",
+      "type": "빛",
+      "category": "special",
+      "power": 90,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "speDown",
+      "effectChance": 25,
+      "description": "위력 90 · 명중 90% · 25% 확률로 상대 속도 1단계 하락"
+    },
+    {
+      "id": "X41",
+      "name": "아기 부엉이 · 밤의 날갯짓",
+      "type": "일반",
+      "category": "special",
+      "power": 95,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 95 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X42",
+      "name": "부엉이 · 밤의 날갯짓",
+      "type": "어둠",
+      "category": "special",
+      "power": 95,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 95 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X43",
+      "name": "아기 펭귄 · 얼음 미끄럼",
+      "type": "물",
+      "category": "physical",
+      "power": 85,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "speDown",
+      "effectChance": 25,
+      "description": "위력 85 · 명중 90% · 25% 확률로 상대 속도 1단계 하락"
+    },
+    {
+      "id": "X44",
+      "name": "펭귄 · 얼음 미끄럼",
+      "type": "얼음",
+      "category": "special",
+      "power": 85,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 85 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X45",
+      "name": "아기 물범 · 물결 밀기",
+      "type": "얼음",
+      "category": "special",
+      "power": 90,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 90 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X46",
+      "name": "물범 · 물결 밀기",
+      "type": "얼음",
+      "category": "physical",
+      "power": 90,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "speDown",
+      "effectChance": 25,
+      "description": "위력 90 · 명중 90% · 25% 확률로 상대 속도 1단계 하락"
+    },
+    {
+      "id": "X47",
+      "name": "아기 수달 · 꼬리치기",
+      "type": "얼음",
+      "category": "physical",
+      "power": 95,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "defDown",
+      "effectChance": 25,
+      "description": "위력 95 · 명중 90% · 25% 확률로 상대 방어 1단계 하락"
+    },
+    {
+      "id": "X48",
+      "name": "수달 · 꼬리치기",
+      "type": "풀",
+      "category": "special",
+      "power": 95,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 95 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X49",
+      "name": "아기 거북 · 등껍질 공격",
+      "type": "얼음",
+      "category": "special",
+      "power": 85,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "speDown",
+      "effectChance": 25,
+      "description": "위력 85 · 명중 90% · 25% 확률로 상대 속도 1단계 하락"
+    },
+    {
+      "id": "X50",
+      "name": "거북 · 등껍질 공격",
+      "type": "땅",
+      "category": "special",
+      "power": 85,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 85 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X51",
+      "name": "아기 문어 · 먹물 분사",
+      "type": "얼음",
+      "category": "special",
+      "power": 90,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 90 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X52",
+      "name": "문어 · 먹물 분사",
+      "type": "어둠",
+      "category": "special",
+      "power": 90,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "speDown",
+      "effectChance": 25,
+      "description": "위력 90 · 명중 90% · 25% 확률로 상대 속도 1단계 하락"
+    },
+    {
+      "id": "X53",
+      "name": "아기 상어 · 빠른 물기",
+      "type": "얼음",
+      "category": "physical",
+      "power": 95,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "defDown",
+      "effectChance": 25,
+      "description": "위력 95 · 명중 90% · 25% 확률로 상대 방어 1단계 하락"
+    },
+    {
+      "id": "X54",
+      "name": "상어 · 빠른 물기",
+      "type": "어둠",
+      "category": "physical",
+      "power": 95,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "defDown",
+      "effectChance": 25,
+      "description": "위력 95 · 명중 90% · 25% 확률로 상대 방어 1단계 하락"
+    },
+    {
+      "id": "X55",
+      "name": "아기 가오리 · 해류 타기",
+      "type": "얼음",
+      "category": "special",
+      "power": 85,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "speDown",
+      "effectChance": 25,
+      "description": "위력 85 · 명중 90% · 25% 확률로 상대 속도 1단계 하락"
+    },
+    {
+      "id": "X56",
+      "name": "가오리 · 해류 타기",
+      "type": "전기",
+      "category": "special",
+      "power": 85,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 85 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X57",
+      "name": "아기 고슴도치 · 가시 공격",
+      "type": "일반",
+      "category": "physical",
+      "power": 90,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "defDown",
+      "effectChance": 25,
+      "description": "위력 90 · 명중 90% · 25% 확률로 상대 방어 1단계 하락"
+    },
+    {
+      "id": "X58",
+      "name": "고슴도치 · 가시 공격",
+      "type": "전기",
+      "category": "special",
+      "power": 90,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "speDown",
+      "effectChance": 25,
+      "description": "위력 90 · 명중 90% · 25% 확률로 상대 속도 1단계 하락"
+    },
+    {
+      "id": "X59",
+      "name": "아기 뱀 · 휘감기",
+      "type": "일반",
+      "category": "special",
+      "power": 95,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 95 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X60",
+      "name": "뱀 · 휘감기",
+      "type": "어둠",
+      "category": "physical",
+      "power": 95,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "defDown",
+      "effectChance": 25,
+      "description": "위력 95 · 명중 90% · 25% 확률로 상대 방어 1단계 하락"
+    },
+    {
+      "id": "X61",
+      "name": "아기 코뿔소 · 뿔 돌진",
+      "type": "일반",
+      "category": "special",
+      "power": 85,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "speDown",
+      "effectChance": 25,
+      "description": "위력 85 · 명중 90% · 25% 확률로 상대 속도 1단계 하락"
+    },
+    {
+      "id": "X62",
+      "name": "코뿔소 · 뿔 돌진",
+      "type": "일반",
+      "category": "physical",
+      "power": 85,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "defDown",
+      "effectChance": 25,
+      "description": "위력 85 · 명중 90% · 25% 확률로 상대 방어 1단계 하락"
+    },
+    {
+      "id": "X63",
+      "name": "아기 하마 · 육중한 몸통치기",
+      "type": "얼음",
+      "category": "special",
+      "power": 90,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 90 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X64",
+      "name": "하마 · 육중한 몸통치기",
+      "type": "땅",
+      "category": "physical",
+      "power": 90,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "speDown",
+      "effectChance": 25,
+      "description": "위력 90 · 명중 90% · 25% 확률로 상대 속도 1단계 하락"
+    },
+    {
+      "id": "X65",
+      "name": "아기 기린 · 높은 발차기",
+      "type": "일반",
+      "category": "special",
+      "power": 95,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 95 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X66",
+      "name": "기린 · 높은 발차기",
+      "type": "빛",
+      "category": "special",
+      "power": 95,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 95 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X67",
+      "name": "아기 얼룩말 · 번개 질주",
+      "type": "땅",
+      "category": "physical",
+      "power": 85,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "speDown",
+      "effectChance": 25,
+      "description": "위력 85 · 명중 90% · 25% 확률로 상대 속도 1단계 하락"
+    },
+    {
+      "id": "X68",
+      "name": "얼룩말 · 번개 질주",
+      "type": "땅",
+      "category": "physical",
+      "power": 85,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "defDown",
+      "effectChance": 25,
+      "description": "위력 85 · 명중 90% · 25% 확률로 상대 방어 1단계 하락"
+    },
+    {
+      "id": "X69",
+      "name": "아기 고릴라 · 주먹 강타",
+      "type": "일반",
+      "category": "special",
+      "power": 90,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 90 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X70",
+      "name": "고릴라 · 주먹 강타",
+      "type": "땅",
+      "category": "physical",
+      "power": 90,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "speDown",
+      "effectChance": 25,
+      "description": "위력 90 · 명중 90% · 25% 확률로 상대 속도 1단계 하락"
+    },
+    {
+      "id": "X71",
+      "name": "아기 오랑우탄 · 팔 휘두르기",
+      "type": "일반",
+      "category": "special",
+      "power": 95,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 95 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X72",
+      "name": "오랑우탄 · 팔 휘두르기",
+      "type": "어둠",
+      "category": "special",
+      "power": 95,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 95 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X73",
+      "name": "아기 나무늘보 · 느린 반격",
+      "type": "일반",
+      "category": "special",
+      "power": 85,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "speDown",
+      "effectChance": 25,
+      "description": "위력 85 · 명중 90% · 25% 확률로 상대 속도 1단계 하락"
+    },
+    {
+      "id": "X74",
+      "name": "나무늘보 · 느린 반격",
+      "type": "일반",
+      "category": "special",
+      "power": 85,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 85 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X75",
+      "name": "아기 코알라 · 나뭇잎 공격",
+      "type": "일반",
+      "category": "special",
+      "power": 90,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 90 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X76",
+      "name": "코알라 · 나뭇잎 공격",
+      "type": "빛",
+      "category": "special",
+      "power": 90,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "speDown",
+      "effectChance": 25,
+      "description": "위력 90 · 명중 90% · 25% 확률로 상대 속도 1단계 하락"
+    },
+    {
+      "id": "X77",
+      "name": "아기 캥거루 · 도약차기",
+      "type": "땅",
+      "category": "special",
+      "power": 95,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 95 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X78",
+      "name": "캥거루 · 도약차기",
+      "type": "일반",
+      "category": "physical",
+      "power": 95,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "defDown",
+      "effectChance": 25,
+      "description": "위력 95 · 명중 90% · 25% 확률로 상대 방어 1단계 하락"
+    },
+    {
+      "id": "X79",
+      "name": "아기 너구리 · 재빠른 습격",
+      "type": "일반",
+      "category": "physical",
+      "power": 85,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "speDown",
+      "effectChance": 25,
+      "description": "위력 85 · 명중 90% · 25% 확률로 상대 속도 1단계 하락"
+    },
+    {
+      "id": "X80",
+      "name": "너구리 · 재빠른 습격",
+      "type": "어둠",
+      "category": "special",
+      "power": 85,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 85 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X81",
+      "name": "아기 레서판다 · 회전 꼬리",
+      "type": "일반",
+      "category": "special",
+      "power": 90,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 90 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X82",
+      "name": "레서판다 · 회전 꼬리",
+      "type": "풀",
+      "category": "special",
+      "power": 90,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "speDown",
+      "effectChance": 25,
+      "description": "위력 90 · 명중 90% · 25% 확률로 상대 속도 1단계 하락"
+    },
+    {
+      "id": "X83",
+      "name": "아기 다람쥐 · 도토리 던지기",
+      "type": "땅",
+      "category": "physical",
+      "power": 95,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "defDown",
+      "effectChance": 25,
+      "description": "위력 95 · 명중 90% · 25% 확률로 상대 방어 1단계 하락"
+    },
+    {
+      "id": "X84",
+      "name": "다람쥐 · 도토리 던지기",
+      "type": "전기",
+      "category": "special",
+      "power": 95,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 95 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X85",
+      "name": "아기 박쥐 · 초음파",
+      "type": "일반",
+      "category": "special",
+      "power": 85,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "speDown",
+      "effectChance": 25,
+      "description": "위력 85 · 명중 90% · 25% 확률로 상대 속도 1단계 하락"
+    },
+    {
+      "id": "X86",
+      "name": "박쥐 · 초음파",
+      "type": "어둠",
+      "category": "physical",
+      "power": 85,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "defDown",
+      "effectChance": 25,
+      "description": "위력 85 · 명중 90% · 25% 확률로 상대 방어 1단계 하락"
+    },
+    {
+      "id": "X87",
+      "name": "아기 공작 · 깃털 부채",
+      "type": "일반",
+      "category": "special",
+      "power": 90,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 90 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X88",
+      "name": "공작 · 깃털 부채",
+      "type": "바람",
+      "category": "special",
+      "power": 90,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "speDown",
+      "effectChance": 25,
+      "description": "위력 90 · 명중 90% · 25% 확률로 상대 속도 1단계 하락"
+    },
+    {
+      "id": "X89",
+      "name": "아기 홍학 · 날개치기",
+      "type": "얼음",
+      "category": "special",
+      "power": 95,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 95 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X90",
+      "name": "홍학 · 날개치기",
+      "type": "바람",
+      "category": "special",
+      "power": 95,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 95 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X91",
+      "name": "아기 두루미 · 긴 부리",
+      "type": "일반",
+      "category": "physical",
+      "power": 85,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "speDown",
+      "effectChance": 25,
+      "description": "위력 85 · 명중 90% · 25% 확률로 상대 속도 1단계 하락"
+    },
+    {
+      "id": "X92",
+      "name": "두루미 · 긴 부리",
+      "type": "빛",
+      "category": "special",
+      "power": 85,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 85 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X93",
+      "name": "아기 카멜레온 · 위장 습격",
+      "type": "일반",
+      "category": "special",
+      "power": 90,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 90 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X94",
+      "name": "카멜레온 · 위장 습격",
+      "type": "어둠",
+      "category": "special",
+      "power": 90,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "speDown",
+      "effectChance": 25,
+      "description": "위력 90 · 명중 90% · 25% 확률로 상대 속도 1단계 하락"
+    },
+    {
+      "id": "X95",
+      "name": "아기 개구리 · 물방울 탄",
+      "type": "얼음",
+      "category": "physical",
+      "power": 95,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "defDown",
+      "effectChance": 25,
+      "description": "위력 95 · 명중 90% · 25% 확률로 상대 방어 1단계 하락"
+    },
+    {
+      "id": "X96",
+      "name": "개구리 · 물방울 탄",
+      "type": "전기",
+      "category": "special",
+      "power": 95,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 95 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X97",
+      "name": "아기 전갈 · 집게 공격",
+      "type": "일반",
+      "category": "physical",
+      "power": 85,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "speDown",
+      "effectChance": 25,
+      "description": "위력 85 · 명중 90% · 25% 확률로 상대 속도 1단계 하락"
+    },
+    {
+      "id": "X98",
+      "name": "전갈 · 집게 공격",
+      "type": "어둠",
+      "category": "physical",
+      "power": 85,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "defDown",
+      "effectChance": 25,
+      "description": "위력 85 · 명중 90% · 25% 확률로 상대 방어 1단계 하락"
+    },
+    {
+      "id": "X99",
+      "name": "아기 페가수스 · 천공 질주",
+      "type": "일반",
+      "category": "special",
+      "power": 90,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "spdDown",
+      "effectChance": 25,
+      "description": "위력 90 · 명중 90% · 25% 확률로 상대 특수방어 1단계 하락"
+    },
+    {
+      "id": "X100",
+      "name": "페가수스 · 천공 질주",
+      "type": "빛",
+      "category": "special",
+      "power": 90,
+      "accuracy": 90,
+      "priority": 0,
+      "cooldown": 2,
+      "effect": "speDown",
+      "effectChance": 25,
+      "description": "위력 90 · 명중 90% · 25% 확률로 상대 속도 1단계 하락"
+    }
+  ]
+}

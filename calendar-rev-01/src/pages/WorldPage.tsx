@@ -1,4 +1,5 @@
 import PlazaHub,{type GameExitGuard} from '../components/fishing/PlazaHub';
+import {withExpandedCompanions} from '../data/expandedCompanions';
 import AquariumPanel from '../components/fishing/AquariumPanel';
 import DailyHeartPanel from '../components/world/DailyHeartPanel';
 import CompanionBondPanel from '../components/world/CompanionBondPanel';
@@ -136,7 +137,7 @@ export default function WorldPage() {
   const inventoryCount=(itemId:string)=>Number(inventory.find((x:any)=>x.item_id===itemId)?.quantity ?? 0);
   const unread=notices.filter(n=>!n.is_read).length;
   const activeCompanion=companions.find(c=>c.is_active)||null;
-  const shopItems=withWindowItems(catalog.length?catalog:[...WORLD_ITEMS,...ADULT_COMPANIONS]).map(refreshFurnitureArt).map(normalizeCompanionAge).filter((i:any)=>i.is_active!==false&&!isRetiredCompanion(i.id));
+  const shopItems=withWindowItems(withExpandedCompanions(catalog.length?catalog:[...WORLD_ITEMS,...ADULT_COMPANIONS])).map(refreshFurnitureArt).map(normalizeCompanionAge).filter((i:any)=>i.is_active!==false&&!isRetiredCompanion(i.id));
   const shopCategories=['전체',...Array.from(new Set(shopItems.map((i:any)=>i.category||(({wallpaper:'벽지',floor:'바닥',furniture:'가구',props:'소품',animal:'동물',theme:'테마'} as Record<string,string>)[i.type]||'기타'))))];
   const visibleShopItems=shopItems.filter((i:any)=>shopCategory==='전체'||(i.category||'기타')===shopCategory).filter(i=>shopCategory!=='동물'||shopAge==='all'||(shopAge==='baby'?/^아기\s*/.test(i.name):!/^아기\s*/.test(i.name)));
   const resetAdminForm=()=>{setAdminEditing(false);setAdminFile(null);setAdminForm({item_id:'',item_name:'',item_type:'props',price:1000,category:'소품',subcategory:'',description:'',image_url:null,placement_type:'none',min_scale:0.5,max_scale:1.5,default_z_index:12,animation_type:'none',is_active:true,sort_order:0});};

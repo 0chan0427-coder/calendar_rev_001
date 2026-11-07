@@ -1,0 +1,14 @@
+import {supabase} from '../lib/supabase';
+import type {BattlePet} from '../data/petRoster';
+import type {Equipment} from '../data/wardrobe';
+export interface BattleFighter extends BattlePet{companionId:string|null;equipment:Equipment;special_form:boolean;reward_accessory:boolean;hp:number;maxHp:number;stages:Record<string,number>;cooldowns:Record<string,number>}
+export interface BattleState{phase:'waiting'|'lead'|'turn'|'replace'|'finished';version:number;turn:number;teams:[BattleFighter[],BattleFighter[]];active:[number,number];field:[{guard:number;haste:number},{guard:number;haste:number}];logs:string[];winner:number|null}
+export interface BattleRoom{id:string;code:string;mode:'ai'|'pvp';side:number;state:BattleState;submitted:boolean;opponentSubmitted:boolean;deadline:string;serverTime:string;opponentName:string}
+export type BattleAction={kind:'skill';skill:string}|{kind:'switch';index:number};
+async function rpc<T>(name:string,args:Record<string,unknown>){const {data,error}=await supabase.rpc(name,args);if(error)throw error;return data as T;}
+export const getPetBattle=(id:string|null=null)=>rpc<BattleRoom|null>('get_pet_battle',{p_id:id});
+export const createPetBattle=(team:string[],mode:'ai'|'pvp')=>rpc<BattleRoom>('create_pet_battle',{p_team:team,p_mode:mode});
+export const practicePetBattle=(forms:string[])=>rpc<BattleRoom>('practice_pet_battle',{p_forms:forms});
+export const joinPetBattle=(code:string,team:string[])=>rpc<BattleRoom>('join_pet_battle',{p_code:code,p_team:team});
+export const choosePetBattle=(id:string,version:number,action:BattleAction)=>rpc<BattleRoom>('choose_pet_battle',{p_id:id,p_version:version,p_action:action});
+export const leavePetBattle=(id:string)=>rpc<BattleRoom>('leave_pet_battle',{p_id:id});

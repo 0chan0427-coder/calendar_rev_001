@@ -3,10 +3,11 @@ import {BOND_ACCESSORY_FITS,BOND_THEMES,companionBondFamily} from '../../data/co
 export default function CompanionBondAccessory({itemId,fit:customFit}:{itemId:string;fit?:[number,number,number]}){
  const family=companionBondFamily(itemId);if(!family)return null;
  const adult=itemId.startsWith('adult-');
- const fit=customFit||BOND_ACCESSORY_FITS[family][adult?'adult':'baby'];
+ const fit=customFit||BOND_ACCESSORY_FITS[family]?.[adult?'adult':'baby']||[88,8,.65];
  const [x,y,scale]=fit;const motif=BOND_THEMES[family].motif;
  const necklace=['moon','bamboo','knot','tiger','diamond'].includes(motif);
  return <g data-bond-accessory={family} transform={`translate(${x} ${y}) scale(${scale})`} stroke="#846740" strokeWidth=".6" strokeLinecap="round" strokeLinejoin="round">
+ {motif==='badge'&&<><circle r="6" fill="#d5b980"/><path d="M0-4L1-1 4-1 2 1 3 4 0 2-3 4-2 1-4-1-1-1Z" fill="#f9f2d9"/></>}
  {necklace&&<path d="M-10-4Q0 5 10-4" fill="none" stroke="#ae8d54" strokeWidth="1.25"/>}
  {motif==='moon'&&<><path d="M0 1V4"/><path d="M2 4A4 4 0 1 0 3 10A3.5 3.5 0 0 1 2 4Z" fill="#e5c47a"/><path d="M-2 5L0 6-2 7-4 6Z" fill="#c0e1e5"/></>}
  {motif==='wing'&&<><path d="M-11-5Q0-1 11-5L6 2L0 0L-6 2Z" fill="#70899a" stroke="#516b7c"/><path d="M-2 1L-8-1-6 3-2 4M2 1L8-1 6 3 2 4" fill="#f3ecd9"/><path d="M0 1L2 4 0 7-2 4Z" fill="#dcb86c"/></>}

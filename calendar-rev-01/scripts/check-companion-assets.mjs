@@ -15,11 +15,12 @@ const catalog=readFileSync(resolve(root,'src/constants/world.ts'),'utf8');
 const adultCatalog=readFileSync(resolve(root,'src/data/adultCompanions.ts'),'utf8');
 const ids=[...(catalog+'\n'+adultCatalog).matchAll(/\{\s*id:\s*'([^']+)',\s*name:\s*'[^']+',\s*type:\s*'animal'/g)].map(m=>m[1]);
 for(const id of ids)if(!sprites[map[id]||id])throw Error(`Animal ${id} has no registered new art.`);
-const sizes=readFileSync(resolve(root,'src/data/companions.ts'),'utf8'),folders=new Set();
+const sizeSource=readFileSync(resolve(root,'src/data/companions.ts'),'utf8'),sizeMarker='export const COMPANION_SCENE_SIZES:Record<string,[number,number]>=';
+const sizeStart=sizeSource.indexOf(sizeMarker)+sizeMarker.length;const sizes=JSON.parse(sizeSource.slice(sizeStart,sizeSource.indexOf(';',sizeStart))),folders=new Set();
 for(const [key,a] of Object.entries(sprites)){
- if(!sizes.includes("'"+key+"':")&&!new RegExp('\\b'+key+':').test(sizes))throw Error(`Animal ${key} has no explicit scene size.`);
+ if(!Object.hasOwn(sizes,key))throw Error(`Animal ${key} has no explicit scene size.`);
  if(!Array.isArray(a.crop)||a.crop.length!==4||!a.crop.every(Number.isFinite)||a.crop[2]<=0||a.crop[3]<=0)throw Error(`Invalid animal crop: ${key}`);
- if(!/^\/world\/companions-v[345]\/[^/]+\.png$/.test(a.image))throw Error(`Legacy/unregistered animal art path: ${key}`);
+ if(!/^\/world\/(?:companions-v[345]|pets-062-0[1-4])\/[^/]+\.png$/.test(a.image))throw Error(`Legacy/unregistered animal art path: ${key}`);
  const file=resolve(root,'public',a.image.slice(1)),bytes=readFileSync(file);folders.add(dirname(file));
  if(bytes.readUInt32BE(16)!==a.width||bytes.readUInt32BE(20)!==a.height)throw Error(`Animal dimensions mismatch: ${key}`);
  if(bytes[25]!==6)throw Error(`Animal must have PNG transparency: ${key}`);
@@ -33,12 +34,12 @@ const specialStart=specialSource.indexOf(specialMarker)+specialMarker.length;
 if(specialStart<specialMarker.length)throw Error('Missing special form registry.');
 const forms=JSON.parse(specialSource.slice(specialStart,specialSource.indexOf(';',specialStart)));
 const expected=new Set([...Object.keys(sprites),'cat-gray','adult-cat-gray']);
-const migration=readFileSync(resolve(root,'supabase/025_all_companion_special_forms.sql'),'utf8');
+const migration=readFileSync(resolve(root,'supabase/025_all_companion_special_forms.sql'),'utf8')+readdirSync(resolve(root,'supabase')).filter(n=>/^062_.*\.sql$/.test(n)).sort().map(n=>readFileSync(resolve(root,'supabase',n),'utf8')).join('\n');
 const sqlForms=Object.fromEntries([...migration.matchAll(/\('([^']+)','(\/world\/[^']+\.png)',true\)/g)].map(m=>[m[1],m[2]]));
 const specialFolders=new Set(),images=new Set();
 for(const [key,a] of Object.entries(forms)){
  if(!expected.delete(key))throw Error(`Unexpected special body: ${key}`);
- if(!/^\/world\/bond-(054|055-0[12])\/[^/]+\.png$/.test(a.image))throw Error(`Invalid special image path: ${key}`);
+ if(!/^\/world\/(?:bond-(054|055-0[12])|pets-062-0[1-4])\/[^/]+\.png$/.test(a.image))throw Error(`Invalid special image path: ${key}`);
  if(images.has(a.image))throw Error(`Special body needs its own image: ${key}`);images.add(a.image);
  if(sqlForms[key]!==a.image)throw Error(`SQL special registry differs: ${key}`);delete sqlForms[key];
  if(!Array.isArray(a.crop)||a.crop.length!==4||!a.crop.every(Number.isFinite)||a.crop[2]<=0||a.crop[3]<=0)throw Error(`Invalid special crop: ${key}`);
@@ -64,3 +65,5 @@ for(const path of ['WorldScene.tsx','InventoryPanel.tsx']){
  if(!component.includes('CompanionAvatar')||!component.includes('specialForm=')||!component.includes('rewardAccessory='))throw Error(`Companion state missing in ${path}`);
 }
 console.log('Companion rendering/equipment checks passed: canvas, explicit decorations, scene and inventory state.');
+
+await import('./check-pet-battle-assets.mjs');

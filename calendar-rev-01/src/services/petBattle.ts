@@ -1,9 +1,12 @@
 import {supabase} from '../lib/supabase';
 import type {BattlePet} from '../data/petRoster';
 import type {Equipment} from '../data/wardrobe';
-export interface BattleFighter extends BattlePet{companionId:string|null;equipment:Equipment;special_form:boolean;reward_accessory:boolean;hp:number;maxHp:number;stages:Record<string,number>;cooldowns:Record<string,number>}
-export interface BattleState{phase:'waiting'|'lead'|'turn'|'replace'|'finished';version:number;turn:number;teams:[BattleFighter[],BattleFighter[]];active:[number,number];field:[{guard:number;haste:number},{guard:number;haste:number}];logs:string[];winner:number|null}
-export interface BattleRoom{id:string;code:string;mode:'ai'|'pvp';side:number;state:BattleState;submitted:boolean;opponentSubmitted:boolean;deadline:string;serverTime:string;opponentName:string}
+export interface BattleFighter extends BattlePet{revealed?:boolean;companionId:string|null;equipment:Equipment;special_form:boolean;reward_accessory:boolean;hp:number;maxHp:number;stages:Record<string,number>;cooldowns:Record<string,number>}
+export interface HiddenBattleFighter{hidden:true;revealed:false;slot:number}
+export type BattleTeamEntry=BattleFighter|HiddenBattleFighter;
+export const isBattleFighter=(pet:BattleTeamEntry|undefined):pet is BattleFighter=>Boolean(pet&&!('hidden'in pet));
+export interface BattleState{phase:'waiting'|'lead'|'turn'|'replace'|'finished';version:number;turn:number;teams:[BattleTeamEntry[],BattleTeamEntry[]];active:[number,number];field:[{guard:number;haste:number},{guard:number;haste:number}];logs:string[];winner:number|null}
+export interface BattleRoom{fogOfWarVersion?:number;id:string;code:string;mode:'ai'|'pvp';side:number;state:BattleState;submitted:boolean;opponentSubmitted:boolean;deadline:string;serverTime:string;opponentName:string}
 export type BattleAction={kind:'skill';skill:string}|{kind:'switch';index:number};
 async function rpc<T>(name:string,args:Record<string,unknown>){const {data,error}=await supabase.rpc(name,args);if(error)throw error;return data as T;}
 export const getPetBattle=(id:string|null=null)=>rpc<BattleRoom|null>('get_pet_battle',{p_id:id});

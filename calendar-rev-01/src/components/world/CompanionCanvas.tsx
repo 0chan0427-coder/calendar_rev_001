@@ -17,11 +17,13 @@ async function raster(svg:SVGSVGElement){
 }
 export interface CanvasPart{id:string;origin:[number,number];duration:number;angle?:number}
 const NO_PARTS:CanvasPart[]=[];
-export default function CompanionCanvas({children,className='',label,animate=false,parts=NO_PARTS}:{children:ReactNode;className?:string;label:string;animate?:boolean;parts?:CanvasPart[]}){
+export default function CompanionCanvas({children,recipeKey,className='',label,animate=false,parts=NO_PARTS}:{children:ReactNode;recipeKey:string;className?:string;label:string;animate?:boolean;parts?:CanvasPart[]}){
  const recipe=useRef<HTMLDivElement>(null),canvas=useRef<HTMLCanvasElement>(null);
  const [failed,setFailed]=useState(false),[retry,setRetry]=useState(0),[ready,setReady]=useState(false);
- // React children describe the complete recipe. Cleanup prevents stale async frames replacing a new outfit.
- useEffect(()=>{let live=true,raf=0,visible=true,observer:IntersectionObserver|undefined;setReady(false);setFailed(false);
+ const partsKey=JSON.stringify(parts);
+ // Timers/polling can recreate identical JSX and rig arrays. Only a visual change rebuilds pixels.
+ // Keep the last complete frame on screen until the next composition has loaded successfully.
+ useEffect(()=>{let live=true,raf=0,visible=true,observer:IntersectionObserver|undefined;setFailed(false);
  const svg=recipe.current?.querySelector('svg'),target=canvas.current;if(!svg||!target)return;
  const media=window.matchMedia('(prefers-reduced-motion: reduce)');let draw:((time:number)=>void)|undefined;
  const stop=()=>{cancelAnimationFrame(raf);raf=0;};
@@ -43,7 +45,7 @@ export default function CompanionCanvas({children,className='',label,animate=fal
  };
  void load().catch(()=>{if(live)setFailed(true);});
  return()=>{live=false;stop();observer?.disconnect();document.removeEventListener('visibilitychange',change);media.removeEventListener('change',change);};
- },[children,animate,parts,retry]);
+ },[recipeKey,animate,partsKey,retry]);
  return <div className={`companion-art companion-canvas ${className}`} role="img" aria-label={label} aria-busy={!ready&&!failed} style={{colorScheme:'only light',opacity:1,mixBlendMode:'normal'} as CSSProperties}>
  <div ref={recipe} hidden aria-hidden="true">{children}</div>
  <canvas ref={canvas} aria-hidden="true" style={{display:ready&&!failed?'block':'none',width:'100%',height:'100%',objectFit:'contain',opacity:1,filter:'none',mixBlendMode:'normal'}}/>

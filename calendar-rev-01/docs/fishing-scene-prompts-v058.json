@@ -1,0 +1,17 @@
+[
+  {
+    "id": "pond",
+    "prompt": "Use case: stylized-concept. Asset type: production background/foreground layer for a cozy illustrated 2D first-person fishing game, wide landscape 3:2 canvas. A tranquil Korean freshwater lake from a seated angler first-person viewpoint at the near bank. Across the lake are deep green pines and deciduous trees, a low distant misty mountain ridge. Soft early morning light. The horizon shoreline sits in the upper 28 percent, bottom 65 percent is open clear teal green water with subtle reflections and gentle ripples. A tiny soft near-bank edge may enter bottom corners only. Elegant detailed softly painted storybook game art, calm natural colors, fine clean edges, coherent perspective, polished high quality. No text, labels, logos, interface, border, fish, people seen from outside, or fishing bobber. Scenery ONLY. Do not include any fishing rod, hands, fishing line, boat, angler or character. No transparency.",
+    "tool": "built-in image_gen"
+  },
+  {
+    "id": "coast",
+    "prompt": "Use case: stylized-concept. Asset type: production background/foreground layer for a cozy illustrated 2D first-person fishing game, wide landscape 3:2 canvas. A calm Korean coastal fishing cove seen from a seated first-person angler at the shore. Distant low islands and hazy headlands at the horizon, a pale warm blue sky, ocean extending away in front of viewer. Horizon upper 28 percent, bottom 65 percent open aquamarine water with delicate highlights and natural small ripples. A little coastal rock may enter bottom corners only. Elegant detailed softly painted storybook game art, calm natural colors, fine clean edges, coherent perspective, polished high quality. No text, labels, logos, interface, border, fish, people seen from outside, or fishing bobber. Scenery ONLY. Do not include any fishing rod, hands, fishing line, boat, angler or character. No transparency.",
+    "tool": "built-in image_gen"
+  },
+  {
+    "id": "hands",
+    "prompt": "Use case: stylized-concept. Asset type: production background/foreground layer for a cozy illustrated 2D first-person fishing game, wide landscape 3:2 canvas. A first-person fishing foreground cutout ONLY: two hands wearing simple full-finger charcoal-gray outdoor gloves with muted sage-green jacket cuffs, holding one short warm cork fishing rod HANDLE with a compact black and silver spinning reel. Right hand grips the cork handle, left hand rests naturally on the reel crank. Seen by the person looking down past their own hands. The handle points diagonally toward the upper left, but the long fishing rod shaft is NOT included: end it cleanly at the forward end of the cork grip, where a separate animated rod shaft will be attached in the game. Hands, sleeves and grip occupy ONLY the lower RIGHT quarter of a wide 3:2 canvas; top 60 percent and left 50 percent remain empty TRANSPARENT space. The forearms are naturally cropped by the bottom and right canvas edge. No separate floating hands, no exposed skin, no additional fingers, no long rod pole, no fishing line, no hook. Elegant detailed softly painted storybook game art, calm natural colors, fine clean edges, coherent perspective, polished high quality. No text, labels, logos, interface, border, fish, people seen from outside, or fishing bobber. Genuine transparent background.",
+    "tool": "built-in image_gen"
+  }
+]

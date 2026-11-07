@@ -1,0 +1,327 @@
+{
+  "version": 57,
+  "sale_cap": 500,
+  "bag_capacity": 100,
+  "locations": [
+    {
+      "id": "pond",
+      "name": "민물 낚시터"
+    },
+    {
+      "id": "coast",
+      "name": "바다 낚시터"
+    }
+  ],
+  "tiers": [
+    "일반",
+    "드묾",
+    "희귀",
+    "초희귀",
+    "특별 희귀"
+  ],
+  "species": [
+    {
+      "id": "crucian",
+      "name": "붕어",
+      "tier": 0,
+      "locations": [
+        "pond"
+      ],
+      "weight": 400000,
+      "min_cm": 8,
+      "max_cm": 45,
+      "base_price": 8,
+      "display_percent": 26,
+      "image_path": "/world/fishing-057/crucian.png",
+      "crop": [
+        95,
+        0,
+        1607,
+        897
+      ]
+    },
+    {
+      "id": "carp",
+      "name": "잉어",
+      "tier": 0,
+      "locations": [
+        "pond"
+      ],
+      "weight": 250000,
+      "min_cm": 15,
+      "max_cm": 100,
+      "base_price": 12,
+      "display_percent": 33,
+      "image_path": "/world/fishing-057/carp.png",
+      "crop": [
+        37,
+        64,
+        1710,
+        755
+      ]
+    },
+    {
+      "id": "catfish",
+      "name": "메기",
+      "tier": 1,
+      "locations": [
+        "pond"
+      ],
+      "weight": 270000,
+      "min_cm": 15,
+      "max_cm": 130,
+      "base_price": 28,
+      "display_percent": 34,
+      "image_path": "/world/fishing-057/catfish.png",
+      "crop": [
+        9,
+        186,
+        1740,
+        528
+      ]
+    },
+    {
+      "id": "trout",
+      "name": "무지개송어",
+      "tier": 2,
+      "locations": [
+        "pond"
+      ],
+      "weight": 70000,
+      "min_cm": 15,
+      "max_cm": 90,
+      "base_price": 70,
+      "display_percent": 32,
+      "image_path": "/world/fishing-057/trout.png",
+      "crop": [
+        19,
+        114,
+        1736,
+        642
+      ]
+    },
+    {
+      "id": "koi",
+      "name": "비단잉어",
+      "tier": 3,
+      "locations": [
+        "pond"
+      ],
+      "weight": 9800,
+      "min_cm": 15,
+      "max_cm": 100,
+      "base_price": 180,
+      "display_percent": 34,
+      "image_path": "/world/fishing-057/koi.png",
+      "crop": [
+        40,
+        111,
+        1722,
+        693
+      ]
+    },
+    {
+      "id": "golden-carp",
+      "name": "황금잉어",
+      "tier": 4,
+      "locations": [
+        "pond"
+      ],
+      "weight": 200,
+      "min_cm": 20,
+      "max_cm": 110,
+      "base_price": 300,
+      "display_percent": 35,
+      "image_path": "/world/fishing-057/golden-carp.png",
+      "crop": [
+        43,
+        65,
+        1689,
+        757
+      ]
+    },
+    {
+      "id": "mackerel",
+      "name": "고등어",
+      "tier": 0,
+      "locations": [
+        "coast"
+      ],
+      "weight": 649900,
+      "min_cm": 15,
+      "max_cm": 60,
+      "base_price": 10,
+      "display_percent": 28,
+      "image_path": "/world/fishing-057/mackerel.png",
+      "crop": [
+        49,
+        145,
+        1697,
+        598
+      ]
+    },
+    {
+      "id": "clownfish",
+      "name": "흰동가리",
+      "tier": 1,
+      "locations": [
+        "coast"
+      ],
+      "weight": 270000,
+      "min_cm": 3,
+      "max_cm": 18,
+      "base_price": 25,
+      "display_percent": 23,
+      "image_path": "/world/fishing-057/clownfish.png",
+      "crop": [
+        83,
+        4,
+        1649,
+        869
+      ]
+    },
+    {
+      "id": "blue-tang",
+      "name": "블루탱",
+      "tier": 2,
+      "locations": [
+        "coast"
+      ],
+      "weight": 70000,
+      "min_cm": 8,
+      "max_cm": 35,
+      "base_price": 75,
+      "display_percent": 26,
+      "image_path": "/world/fishing-057/blue-tang.png",
+      "crop": [
+        104,
+        19,
+        1599,
+        861
+      ]
+    },
+    {
+      "id": "tuna",
+      "name": "참치",
+      "tier": 3,
+      "locations": [
+        "coast"
+      ],
+      "weight": 9000,
+      "min_cm": 50,
+      "max_cm": 300,
+      "base_price": 160,
+      "display_percent": 41,
+      "image_path": "/world/fishing-057/tuna.png",
+      "crop": [
+        31,
+        96,
+        1699,
+        702
+      ]
+    },
+    {
+      "id": "manta",
+      "name": "만타가오리",
+      "tier": 3,
+      "locations": [
+        "coast"
+      ],
+      "weight": 1000,
+      "min_cm": 100,
+      "max_cm": 650,
+      "base_price": 220,
+      "display_percent": 42,
+      "image_path": "/world/fishing-057/manta.png",
+      "crop": [
+        0,
+        13,
+        1772,
+        771
+      ]
+    },
+    {
+      "id": "coelacanth",
+      "name": "실러캔스",
+      "tier": 4,
+      "locations": [
+        "coast"
+      ],
+      "weight": 100,
+      "min_cm": 40,
+      "max_cm": 200,
+      "base_price": 300,
+      "display_percent": 38,
+      "image_path": "/world/fishing-057/coelacanth.png",
+      "crop": [
+        29,
+        50,
+        1719,
+        784
+      ]
+    }
+  ],
+  "baits": [
+    {
+      "id": "basic",
+      "name": "기본 미끼",
+      "pack_size": 0,
+      "pack_price": 0,
+      "modifiers": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "size_bias": 0,
+      "effect": "무료·무제한. 모든 물고기 출현."
+    },
+    {
+      "id": "premium",
+      "name": "고급 미끼",
+      "pack_size": 10,
+      "pack_price": 100,
+      "modifiers": [
+        0.7,
+        1.6,
+        1.8,
+        2,
+        2
+      ],
+      "size_bias": 0,
+      "effect": "드문 물고기와 희귀종의 출현 비중 증가."
+    },
+    {
+      "id": "large",
+      "name": "대물 미끼",
+      "pack_size": 10,
+      "pack_price": 200,
+      "modifiers": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "size_bias": 0.65,
+      "effect": "종별 출현 확률은 기본과 동일. 큰 개체 확률 증가."
+    },
+    {
+      "id": "special",
+      "name": "특수 미끼",
+      "pack_size": 10,
+      "pack_price": 300,
+      "modifiers": [
+        0.5,
+        1.8,
+        2.6,
+        3,
+        4
+      ],
+      "size_bias": 0,
+      "effect": "희귀·초희귀·특별 희귀종의 출현 비중 증가."
+    }
+  ],
+  "migration": "027_fishing_and_aquarium.sql"
+}

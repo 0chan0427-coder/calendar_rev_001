@@ -21,3 +21,10 @@
 .motion-whale .aquarium-float{animation:aquarium-float 8s ease-in-out infinite}
 @keyframes aquarium-jelly{50%{transform:translateY(-14px)}}
 @media(prefers-reduced-motion:reduce){.aquarium-route .aquarium-float{animation:none!important}}
+/* V060: physical length sets size; measured height keeps tall animals inside glass. */
+.aquarium-route.aquarium-sized{left:8px;right:8px;top:24px;bottom:24px;height:auto}
+.aquarium-sized .aquarium-swim{left:0}
+.aquarium-sized .aquarium-float,.aquarium-sized .aquarium-turn,.aquarium-sized .fish-art{width:100%;height:100%}
+.aquarium-sized .fish-art{aspect-ratio:auto}
+.aquarium-sized.motion-star .aquarium-swim,.aquarium-sized.motion-bottom .aquarium-swim{left:0;transform:translateX(var(--rest-position))}
+@media(prefers-reduced-motion:reduce){.aquarium-sized .aquarium-swim{transform:translateX(var(--rest-position))}}

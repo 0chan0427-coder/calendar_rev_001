@@ -34,14 +34,21 @@ const specialStart=specialSource.indexOf(specialMarker)+specialMarker.length;
 if(specialStart<specialMarker.length)throw Error('Missing special form registry.');
 const forms=JSON.parse(specialSource.slice(specialStart,specialSource.indexOf(';',specialStart)));
 const expected=new Set([...Object.keys(sprites),'cat-gray','adult-cat-gray']);
-const migration=readFileSync(resolve(root,'supabase/025_all_companion_special_forms.sql'),'utf8')+readdirSync(resolve(root,'supabase')).filter(n=>/^062_.*\.sql$/.test(n)).sort().map(n=>readFileSync(resolve(root,'supabase',n),'utf8')).join('\n');
+// New migrations run in Supabase and need not be committed to the frontend checkout.
+// Verify new bodies against the versioned application catalog instead of optional SQL files.
+const migration=readFileSync(resolve(root,'supabase/025_all_companion_special_forms.sql'),'utf8');
 const sqlForms=Object.fromEntries([...migration.matchAll(/\('([^']+)','(\/world\/[^']+\.png)',true\)/g)].map(m=>[m[1],m[2]]));
+const battleCatalog=JSON.parse(readFileSync(resolve(root,'src/data/pet-battle-catalog.json'),'utf8'));
+for(const pet of battleCatalog.pets.filter(p=>!p.existing)){
+ if(!pet.spriteKey||!pet.image)throw Error(`Missing companion catalog art: ${pet.id}`);
+ sqlForms[pet.spriteKey]=pet.image;
+}
 const specialFolders=new Set(),images=new Set();
 for(const [key,a] of Object.entries(forms)){
  if(!expected.delete(key))throw Error(`Unexpected special body: ${key}`);
  if(!/^\/world\/(?:bond-(054|055-0[12])|pets-062-0[1-4])\/[^/]+\.png$/.test(a.image))throw Error(`Invalid special image path: ${key}`);
  if(images.has(a.image))throw Error(`Special body needs its own image: ${key}`);images.add(a.image);
- if(sqlForms[key]!==a.image)throw Error(`SQL special registry differs: ${key}`);delete sqlForms[key];
+ if(sqlForms[key]!==a.image)throw Error(`Special art registry differs: ${key}`);delete sqlForms[key];
  if(!Array.isArray(a.crop)||a.crop.length!==4||!a.crop.every(Number.isFinite)||a.crop[2]<=0||a.crop[3]<=0)throw Error(`Invalid special crop: ${key}`);
  if(!Array.isArray(a.accessory)||a.accessory.length!==3||!a.accessory.every(Number.isFinite)||a.accessory[0]<0||a.accessory[0]>100||a.accessory[1]<0||a.accessory[1]>100||a.accessory[2]<=0)throw Error(`Missing special accessory registration: ${key}`);
  if(key.endsWith('dog')&&(!a.glasses||a.glasses.length!==5||!a.glasses.every(Number.isFinite)))throw Error(`Missing special dog sunglasses fit: ${key}`);

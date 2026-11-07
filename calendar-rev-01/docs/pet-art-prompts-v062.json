@@ -1,0 +1,537 @@
+{
+  "note": "Production prompt specifications for the selected 76 assets. Existing 24 battle forms reuse existing artwork.",
+  "assets": [
+    {
+      "id": "wolf-baby",
+      "image": "/world/pets-062-01/wolf.png",
+      "mode": "built-in image generation",
+      "prompt": "One juvenile, charming rounded proportions gray wolf with silver gray fur and amber eyes. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "wolf-adult",
+      "image": "/world/pets-062-01/adult-wolf.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy gray wolf with silver gray fur and amber eyes. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "bear-baby",
+      "image": "/world/pets-062-01/bear.png",
+      "mode": "built-in image generation",
+      "prompt": "One juvenile, charming rounded proportions brown bear with thick chocolate brown fur. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "bear-adult",
+      "image": "/world/pets-062-01/adult-bear.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy brown bear with thick chocolate brown fur. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "lion-baby",
+      "image": "/world/pets-062-01/lion.png",
+      "mode": "built-in image generation",
+      "prompt": "Create the young lion cub counterpart of the adult-lion.png reference. Keep the hand-painted rendering style and golden coat. A clearly juvenile lion cub with no mane, rounded ears, small short legs, sitting with tail visible, looking calmly toward the left. One animal, clean transparent background, no text, no other objects.",
+      "reference": "public/world/pets-062-01/adult-lion.png"
+    },
+    {
+      "id": "lion-adult",
+      "image": "/world/pets-062-01/adult-lion.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy African lion with golden tawny fur; adult has a full magnificent mane. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "leopard-baby",
+      "image": "/world/pets-062-01/leopard.png",
+      "mode": "built-in image generation",
+      "prompt": "One juvenile, charming rounded proportions leopard with golden coat and dark rosettes. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "leopard-adult",
+      "image": "/world/pets-062-01/adult-leopard.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy leopard with golden coat and dark rosettes. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "deer-baby",
+      "image": "/world/pets-062-01/deer.png",
+      "mode": "built-in image generation",
+      "prompt": "One juvenile, charming rounded proportions red deer, warm russet coat; mature adult stag with elegant branched antlers. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "deer-adult",
+      "image": "/world/pets-062-01/adult-deer.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy red deer, warm russet coat; mature adult stag with elegant branched antlers. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "horse-baby",
+      "image": "/world/pets-062-01/horse.png",
+      "mode": "built-in image generation",
+      "prompt": "One juvenile, charming rounded proportions chestnut horse with dark flowing mane and white blaze. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "horse-adult",
+      "image": "/world/pets-062-01/adult-horse.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy chestnut horse with dark flowing mane and white blaze. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "griffin-baby",
+      "image": "/world/pets-062-01/griffin.png",
+      "mode": "built-in image generation",
+      "prompt": "One juvenile, charming rounded proportions griffin, eagle head and forelegs, lion hindquarters, broad brown gold wings. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "griffin-adult",
+      "image": "/world/pets-062-01/adult-griffin.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy griffin, eagle head and forelegs, lion hindquarters, broad brown gold wings. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "phoenix-baby",
+      "image": "/world/pets-062-01/phoenix.png",
+      "mode": "built-in image generation",
+      "prompt": "One juvenile, charming rounded proportions phoenix bird with crimson gold plumage and long elegant fiery tail feathers. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "phoenix-adult",
+      "image": "/world/pets-062-01/adult-phoenix.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy phoenix bird with crimson gold plumage and long elegant fiery tail feathers. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "owl-baby",
+      "image": "/world/pets-062-01/owl.png",
+      "mode": "built-in image generation",
+      "prompt": "One juvenile, charming rounded proportions Eurasian eagle owl with brown cream feathers and orange eyes. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "owl-adult",
+      "image": "/world/pets-062-01/adult-owl.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy Eurasian eagle owl with brown cream feathers and orange eyes. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "penguin-baby",
+      "image": "/world/pets-062-01/penguin.png",
+      "mode": "built-in image generation",
+      "prompt": "One juvenile, charming rounded proportions emperor penguin with black white plumage and gold neck patches. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "penguin-adult",
+      "image": "/world/pets-062-01/adult-penguin.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy emperor penguin with black white plumage and gold neck patches. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "seal-baby",
+      "image": "/world/pets-062-02/seal.png",
+      "mode": "built-in image generation",
+      "prompt": "One juvenile, charming rounded proportions harbor seal with mottled silver gray coat, no external ears. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "seal-adult",
+      "image": "/world/pets-062-02/adult-seal.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy harbor seal with mottled silver gray coat, no external ears. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "otter-baby",
+      "image": "/world/pets-062-02/otter.png",
+      "mode": "built-in image generation",
+      "prompt": "One juvenile, charming rounded proportions river otter with rich brown waterproof fur and long tail. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "otter-adult",
+      "image": "/world/pets-062-02/adult-otter.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy river otter with rich brown waterproof fur and long tail. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "turtle-baby",
+      "image": "/world/pets-062-02/turtle.png",
+      "mode": "built-in image generation",
+      "prompt": "One juvenile, charming rounded proportions green sea turtle with green olive shell and four flippers. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "turtle-adult",
+      "image": "/world/pets-062-02/adult-turtle.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy green sea turtle with green olive shell and four flippers. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "octopus-baby",
+      "image": "/world/pets-062-02/octopus.png",
+      "mode": "built-in image generation",
+      "prompt": "One juvenile, charming rounded proportions red orange octopus with eight naturally curling arms. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "octopus-adult",
+      "image": "/world/pets-062-02/adult-octopus.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy red orange octopus with eight naturally curling arms. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "shark-baby",
+      "image": "/world/pets-062-02/shark.png",
+      "mode": "built-in image generation",
+      "prompt": "One juvenile, charming rounded proportions great white shark, gray back white belly, clearly recognizable shark silhouette. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "shark-adult",
+      "image": "/world/pets-062-02/adult-shark.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy great white shark, gray back white belly, clearly recognizable shark silhouette. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "ray-baby",
+      "image": "/world/pets-062-02/ray.png",
+      "mode": "built-in image generation",
+      "prompt": "One juvenile, charming rounded proportions manta ray with broad dark wings and cream underside. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "ray-adult",
+      "image": "/world/pets-062-02/adult-ray.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy manta ray with broad dark wings and cream underside. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "hedgehog-baby",
+      "image": "/world/pets-062-02/hedgehog.png",
+      "mode": "built-in image generation",
+      "prompt": "One juvenile, charming rounded proportions European hedgehog with brown spines and cream face. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "hedgehog-adult",
+      "image": "/world/pets-062-02/adult-hedgehog.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy European hedgehog with brown spines and cream face. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "snake-baby",
+      "image": "/world/pets-062-02/snake.png",
+      "mode": "built-in image generation",
+      "prompt": "One juvenile, charming rounded proportions emerald green tree snake with coiled body. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "snake-adult",
+      "image": "/world/pets-062-02/adult-snake.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy emerald green tree snake with coiled body. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "rhino-baby",
+      "image": "/world/pets-062-02/rhino.png",
+      "mode": "built-in image generation",
+      "prompt": "One juvenile, charming rounded proportions white rhinoceros with gray folded skin and two horns. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "rhino-adult",
+      "image": "/world/pets-062-02/adult-rhino.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy white rhinoceros with gray folded skin and two horns. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "hippo-baby",
+      "image": "/world/pets-062-02/hippo.png",
+      "mode": "built-in image generation",
+      "prompt": "One juvenile, charming rounded proportions hippopotamus with dusky mauve gray skin and broad muzzle. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "hippo-adult",
+      "image": "/world/pets-062-02/adult-hippo.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy hippopotamus with dusky mauve gray skin and broad muzzle. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "giraffe-baby",
+      "image": "/world/pets-062-03/giraffe.png",
+      "mode": "built-in image generation",
+      "prompt": "One juvenile, charming rounded proportions giraffe with ochre patch pattern, long neck and small ossicones. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "giraffe-adult",
+      "image": "/world/pets-062-03/adult-giraffe.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy giraffe with ochre patch pattern, long neck and small ossicones. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "zebra-baby",
+      "image": "/world/pets-062-03/zebra.png",
+      "mode": "built-in image generation",
+      "prompt": "One juvenile, charming rounded proportions plains zebra with black and white stripes and erect mane. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "zebra-adult",
+      "image": "/world/pets-062-03/adult-zebra.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy plains zebra with black and white stripes and erect mane. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "gorilla-baby",
+      "image": "/world/pets-062-03/gorilla.png",
+      "mode": "built-in image generation",
+      "prompt": "One juvenile, charming rounded proportions western gorilla; adult powerful silverback, baby soft dark fur. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "gorilla-adult",
+      "image": "/world/pets-062-03/adult-gorilla.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy western gorilla; adult powerful silverback, baby soft dark fur. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "orangutan-baby",
+      "image": "/world/pets-062-03/orangutan.png",
+      "mode": "built-in image generation",
+      "prompt": "One juvenile, charming rounded proportions orangutan with long copper orange fur and thoughtful face. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "orangutan-adult",
+      "image": "/world/pets-062-03/adult-orangutan.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy orangutan with long copper orange fur and thoughtful face. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "sloth-baby",
+      "image": "/world/pets-062-03/sloth.png",
+      "mode": "built-in image generation",
+      "prompt": "One juvenile, charming rounded proportions three toed sloth with gray brown fur, naturally crouching gripping a small branch. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "sloth-adult",
+      "image": "/world/pets-062-03/adult-sloth.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy three toed sloth with gray brown fur, naturally crouching gripping a small branch. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "koala-baby",
+      "image": "/world/pets-062-03/koala.png",
+      "mode": "built-in image generation",
+      "prompt": "One juvenile, charming rounded proportions koala with soft gray fur, round fluffy ears and dark nose. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "koala-adult",
+      "image": "/world/pets-062-03/adult-koala.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy koala with soft gray fur, round fluffy ears and dark nose. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "kangaroo-baby",
+      "image": "/world/pets-062-03/kangaroo.png",
+      "mode": "built-in image generation",
+      "prompt": "One juvenile, charming rounded proportions red kangaroo with russet fur and large hind legs. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "kangaroo-adult",
+      "image": "/world/pets-062-03/adult-kangaroo.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy red kangaroo with russet fur and large hind legs. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "raccoon-baby",
+      "image": "/world/pets-062-03/raccoon.png",
+      "mode": "built-in image generation",
+      "prompt": "One juvenile, charming rounded proportions raccoon with gray brown fur, black facial mask and striped tail. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "raccoon-adult",
+      "image": "/world/pets-062-03/adult-raccoon.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy raccoon with gray brown fur, black facial mask and striped tail. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "redpanda-baby",
+      "image": "/world/pets-062-03/redpanda.png",
+      "mode": "built-in image generation",
+      "prompt": "One juvenile, charming rounded proportions red panda with rusty red fur, cream face and bushy ringed tail. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "redpanda-adult",
+      "image": "/world/pets-062-03/adult-redpanda.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy red panda with rusty red fur, cream face and bushy ringed tail. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "squirrel-baby",
+      "image": "/world/pets-062-03/squirrel.png",
+      "mode": "built-in image generation",
+      "prompt": "One juvenile, charming rounded proportions red squirrel with rusty fur and magnificent bushy tail. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "squirrel-adult",
+      "image": "/world/pets-062-03/adult-squirrel.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy red squirrel with rusty fur and magnificent bushy tail. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "bat-baby",
+      "image": "/world/pets-062-04/bat.png",
+      "mode": "built-in image generation",
+      "prompt": "One juvenile, charming rounded proportions fruit bat with dark brown fur, warm dark wing membranes and pointed ears. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "bat-adult",
+      "image": "/world/pets-062-04/adult-bat.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy fruit bat with dark brown fur, warm dark wing membranes and pointed ears. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "peacock-baby",
+      "image": "/world/pets-062-04/peacock.png",
+      "mode": "built-in image generation",
+      "prompt": "One juvenile, charming rounded proportions Indian blue peacock; adult has magnificent fanned iridescent green blue eye spotted tail. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "peacock-adult",
+      "image": "/world/pets-062-04/adult-peacock.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy Indian blue peacock; adult has magnificent fanned iridescent green blue eye spotted tail. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "flamingo-baby",
+      "image": "/world/pets-062-04/flamingo.png",
+      "mode": "built-in image generation",
+      "prompt": "One juvenile, charming rounded proportions greater flamingo with soft pink plumage, curved beak and slender legs. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "flamingo-adult",
+      "image": "/world/pets-062-04/adult-flamingo.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy greater flamingo with soft pink plumage, curved beak and slender legs. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "crane-baby",
+      "image": "/world/pets-062-04/crane.png",
+      "mode": "built-in image generation",
+      "prompt": "One juvenile, charming rounded proportions red crowned crane with white plumage black neck and red crown. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "crane-adult",
+      "image": "/world/pets-062-04/adult-crane.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy red crowned crane with white plumage black neck and red crown. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "chameleon-baby",
+      "image": "/world/pets-062-04/chameleon.png",
+      "mode": "built-in image generation",
+      "prompt": "One juvenile, charming rounded proportions panther chameleon with green turquoise skin, curled tail and distinctive eyes. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "chameleon-adult",
+      "image": "/world/pets-062-04/adult-chameleon.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy panther chameleon with green turquoise skin, curled tail and distinctive eyes. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "frog-baby",
+      "image": "/world/pets-062-04/frog.png",
+      "mode": "built-in image generation",
+      "prompt": "One juvenile, charming rounded proportions green tree frog with emerald skin and orange toe pads. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "frog-adult",
+      "image": "/world/pets-062-04/adult-frog.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy green tree frog with emerald skin and orange toe pads. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "scorpion-baby",
+      "image": "/world/pets-062-04/scorpion.png",
+      "mode": "built-in image generation",
+      "prompt": "One juvenile, charming rounded proportions emperor scorpion with dark charcoal armor, two claws and raised segmented tail. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "scorpion-adult",
+      "image": "/world/pets-062-04/adult-scorpion.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy emperor scorpion with dark charcoal armor, two claws and raised segmented tail. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "pegasus-baby",
+      "image": "/world/pets-062-04/pegasus.png",
+      "mode": "built-in image generation",
+      "prompt": "One juvenile, charming rounded proportions white pegasus horse with silver flowing mane and large feathered wings. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    },
+    {
+      "id": "pegasus-adult",
+      "image": "/world/pets-062-04/adult-pegasus.png",
+      "mode": "built-in image generation",
+      "prompt": "One adult, mature majestic anatomy white pegasus horse with silver flowing mane and large feathered wings. Full body three-quarter view facing left. Refined hand-painted 2D animal illustration, detailed fur or feathers, clean silhouette, natural colors. Entire body, tail, wings and feet visible with transparent padding. True transparent alpha background. No clothing, accessories, scenery, text or watermark.",
+      "reference": null
+    }
+  ]
+}

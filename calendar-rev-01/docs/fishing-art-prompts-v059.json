@@ -1,0 +1,293 @@
+{
+  "generator": "built-in image generation",
+  "assets": [
+    {
+      "id": "pale-chub",
+      "name": "피라미",
+      "folder": "fishing-059-01",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE pale chub with silver flanks and a rosy orange stripe. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "bitterling",
+      "name": "각시붕어",
+      "folder": "fishing-059-01",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE rosy bitterling, deep flattened silver body with violet pink sides. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "loach",
+      "name": "미꾸라지",
+      "folder": "fishing-059-01",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE pond loach, long slender mottled brown body and tiny whiskers. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "smelt",
+      "name": "빙어",
+      "folder": "fishing-059-01",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE pond smelt, small slender translucent silver fish. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "freshwater-shrimp",
+      "name": "민물새우",
+      "folder": "fishing-059-01",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE freshwater shrimp, pale translucent olive brown curved shell, long antennae and many tiny legs. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "freshwater-crab",
+      "name": "참게",
+      "folder": "fishing-059-01",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE Chinese mitten crab, olive brown square shell and furry claws, paired legs clearly separate. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "goby",
+      "name": "망둑어",
+      "folder": "fishing-059-01",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE freshwater goby, squat tan speckled fish with rounded fanlike fins. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "perch",
+      "name": "퍼치",
+      "folder": "fishing-059-01",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE European perch, green gold body with dark vertical bars and orange lower fins. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "bass",
+      "name": "큰입배스",
+      "folder": "fishing-059-01",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE largemouth bass, olive green fish with a broad dark lateral stripe and large jaw. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "bluegill",
+      "name": "블루길",
+      "folder": "fishing-059-01",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE bluegill sunfish, deep round olive body, blue cheek and dark gill spot. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "eel",
+      "name": "뱀장어",
+      "folder": "fishing-059-01",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE Japanese freshwater eel, long smooth dark brown ribbon body and pale belly. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "crayfish",
+      "name": "민물가재",
+      "folder": "fishing-059-01",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE red brown freshwater crayfish with two large claws and segmented tail. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "goldfish",
+      "name": "금붕어",
+      "folder": "fishing-059-01",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE bright orange fancy goldfish with flowing translucent double tail. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "mandarin-fish",
+      "name": "쏘가리",
+      "folder": "fishing-059-01",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE Korean mandarin fish with bold irregular dark leopard markings and spiny dorsal fin. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "snakehead",
+      "name": "가물치",
+      "folder": "fishing-059-01",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE northern snakehead, elongated olive brown mottled body and long dorsal fin. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "sturgeon",
+      "name": "철갑상어",
+      "folder": "fishing-059-01",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE sturgeon with long pointed snout, barbels and five rows of armored bony scutes. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "arowana",
+      "name": "아로와나",
+      "folder": "fishing-059-01",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE Asian red arowana, large metallic copper red scales, upturned mouth and two chin barbels. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "platinum-arowana",
+      "name": "백금아로와나",
+      "folder": "fishing-059-01",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE platinum white Asian arowana with pearly silver scales, subtle blue iridescence, elegant long body, no glow effects. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "sardine",
+      "name": "정어리",
+      "folder": "fishing-059-01",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE silver sardine, blue green back and a row of dark flank dots. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "horse-mackerel",
+      "name": "전갱이",
+      "folder": "fishing-059-01",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE Japanese horse mackerel, silver yellow sides with dark gill spot and forked tail. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "anchovy",
+      "name": "멸치",
+      "folder": "fishing-059-02",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE Japanese anchovy, slender tiny silver fish with translucent fins. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "shrimp",
+      "name": "보리새우",
+      "folder": "fishing-059-02",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE kuruma prawn with cream and brown striped curved shell, long antennae and delicate legs. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "swimming-crab",
+      "name": "꽃게",
+      "folder": "fishing-059-02",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE blue swimming crab, wide spiny blue gray shell, blue claws and paddle shaped rear legs. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "squid",
+      "name": "살오징어",
+      "folder": "fishing-059-02",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE Japanese flying squid, elongated reddish brown mantle, two triangular fins, ten arms reaching left. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "flounder",
+      "name": "넙치",
+      "folder": "fishing-059-02",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE olive flounder, flattened oval mottled brown body with both eyes visible on upper side, side-oblique dorsal view. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "pufferfish",
+      "name": "복어",
+      "folder": "fishing-059-02",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE tiger pufferfish in normal uninflated shape, round gray spotted body and tiny fins. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "mullet",
+      "name": "숭어",
+      "folder": "fishing-059-02",
+      "prompt": "Single isolated flathead grey mullet aquarium game sprite. Full body side profile facing left, small blunt head, silver scales, five fine charcoal horizontal stripes, two separated dorsal fins, forked tail. Hand-painted 2D game illustration with clean dark contour and softly shaded silver blue scales, detailed but charming natural anatomy, matching a cozy aquarium collection game. Use crisp fully cut-out silhouette. Opaque body, delicate clear fin edges. Genuinely empty transparent background all around and between the fins. No soft shadow, NO gray haze, NO white haze, NO cloud, NO glow, NO airbrush outside animal. One fish only, entire animal and all fins inside canvas with generous margins. No water or bubbles or text. Wide landscape composition."
+    },
+    {
+      "id": "starfish",
+      "name": "불가사리",
+      "folder": "fishing-059-02",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE five armed orange sea star with textured surface, whole animal viewed obliquely from above. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "sea-cucumber",
+      "name": "해삼",
+      "folder": "fishing-059-02",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE dark brown sea cucumber with soft knobby elongated body and small tube feet. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "octopus",
+      "name": "참문어",
+      "folder": "fishing-059-02",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE common octopus, rich red brown bulbous mantle and eight distinct curling arms with suckers. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "cuttlefish",
+      "name": "갑오징어",
+      "folder": "fishing-059-02",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE golden brown cuttlefish with broad oval mantle, wavy skirt fins and short curled arms reaching left. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "lobster",
+      "name": "바닷가재",
+      "folder": "fishing-059-02",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE American lobster, dark blue green shell with russet accents, two unequal large claws and long antennae. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "seahorse",
+      "name": "해마",
+      "folder": "fishing-059-02",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE golden yellow seahorse, curved upright neck, horse shaped snout facing left and tightly curled tail. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "moon-jelly",
+      "name": "보름달물해파리",
+      "folder": "fishing-059-02",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE moon jellyfish with pale lavender translucent bell and short delicate tentacles, four pink ring-shaped organs visible. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "spiny-lobster",
+      "name": "닭새우",
+      "folder": "fishing-059-02",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE Japanese spiny lobster, orange brown spiny shell, very long antennae, no large pincers. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "reef-squid",
+      "name": "흰꼴뚜기",
+      "folder": "fishing-059-02",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE bigfin reef squid with pale turquoise speckled body, broad rounded fins down whole mantle and slender arms reaching left. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "lionfish",
+      "name": "쏠배감펭",
+      "folder": "fishing-059-02",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE red lionfish, red and cream vertical stripes, dramatic separated long fan fins and dorsal spines. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "green-turtle",
+      "name": "푸른바다거북",
+      "folder": "fishing-059-02",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE green sea turtle, olive heart-shaped shell with patterned scutes, small beaked head facing left, four broad flippers. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "hammerhead",
+      "name": "귀상어",
+      "folder": "fishing-059-02",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE scalloped hammerhead shark with unmistakable broad hammer shaped head, gray back and pale belly, side three-quarter view facing left. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "leopard-shark",
+      "name": "표범상어",
+      "folder": "fishing-059-02",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE leopard shark, gray body with dark saddle patches and rounded black spots, sleek long tail. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "sunfish",
+      "name": "개복치",
+      "folder": "fishing-059-03",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE ocean sunfish, enormous tall disk shaped gray body, blunt tail edge, long opposing dorsal and anal fins. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "giant-octopus",
+      "name": "대왕문어",
+      "folder": "fishing-059-03",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE giant Pacific octopus, deep crimson reddish skin with papillae, large mantle and eight long powerful curling sucker-covered arms. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "nautilus",
+      "name": "앵무조개",
+      "folder": "fishing-059-03",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE chambered nautilus, cream spiral shell with rust brown zebra stripes, hood and fine tentacles emerging toward left. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "great-white",
+      "name": "백상아리",
+      "folder": "fishing-059-03",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE great white shark, muscular gray back pure white underside, conical snout, triangular dorsal fin and crescent tail, closed mouth. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "orca",
+      "name": "범고래",
+      "folder": "fishing-059-03",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE killer whale orca, crisp black and white markings, white eye patch, tall dorsal fin and horizontal tail flukes. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "whale-shark",
+      "name": "고래상어",
+      "folder": "fishing-059-03",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE whale shark, broad flat head and wide mouth, blue gray body covered in neat cream white spots and stripes. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "sperm-whale",
+      "name": "향유고래",
+      "folder": "fishing-059-03",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE sperm whale, huge rectangular head, narrow underslung jaw, wrinkled slate gray body, small dorsal hump and horizontal tail flukes. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    },
+    {
+      "id": "white-humpback",
+      "name": "흰혹등고래",
+      "folder": "fishing-059-03",
+      "prompt": "Use case: stylized-concept. Asset type: individual aquarium collection game sprite. Subject: ONE rare all-white humpback whale, chalk ivory white body, long knobby pectoral flippers, ridged throat and horizontal tail flukes, no magical glow. Premium hand-painted 2D game illustration, softly shaded natural colors, fine clean dark contour, detailed recognizable anatomy, charming but not baby-like, matching a polished cozy aquarium game. Entire single animal visible, centered with generous transparent margins. Side profile facing LEFT (head at left, tail at right); for crabs/starfish a readable oblique view. Natural relaxed swimming pose, no floor contact shadow. True transparent RGBA background. No water, no bubbles, no rocks, no plants, no frame, no letters, no numbers, no props, no other creatures. Do not crop any appendage, claw, whisker, fin or tail. Wide horizontal canvas except naturally upright species; make subject occupy about 80 percent of canvas. No photorealism and no pixel art."
+    }
+  ]
+}

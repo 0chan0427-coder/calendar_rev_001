@@ -18,3 +18,17 @@ for(const name of ['pond','coast','hands']){
 const fightSource=readFileSync(resolve(root,'src/data/fishingFight.ts'),'utf8'),tierSource=readFileSync(resolve(root,'src/services/fishing.ts'),'utf8');
 if(!fightSource.includes('stepFishingFight')||!tierSource.includes("['일반','고급','희귀','매우 희귀','극희귀']")||JSON.stringify(catalog.tiers)!==JSON.stringify(['일반','고급','희귀','매우 희귀','극희귀']))throw Error('Fishing fight/grade configuration mismatch.');
 console.log('V058 POV layers and grade labels checked.');
+
+// V059 metadata drives both the server fight and aquarium animation.
+const motions=new Set(['fish','eel','crustacean','cephalopod','octopus','seahorse','jelly','turtle','whale','star','bottom']);
+const patterns=new Set(['steady','agile','burst']);
+for(const s of catalog.species){
+ if(!motions.has(s.motion)||!patterns.has(s.fight_pattern)||!Number.isInteger(s.tier)||s.tier<0||s.tier>4||!Number.isInteger(s.weight))throw Error(`Invalid species metadata: ${s.id}`);
+}
+for(const loc of catalog.locations){
+ const available=catalog.species.filter(s=>s.locations.includes(loc.id));
+ if(available.reduce((n,s)=>n+s.weight,0)!==1000000)throw Error(`Unbalanced location weight: ${loc.id}`);
+ if(new Set(available.map(s=>s.tier)).size!==5)throw Error(`Location missing a grade: ${loc.id}`);
+}
+if(catalog.version===59&&catalog.species.length!==60)throw Error('V059 requires all 60 species.');
+console.log('V059 species motions, fight patterns and probabilities checked.');

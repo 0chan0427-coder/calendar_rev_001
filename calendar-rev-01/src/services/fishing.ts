@@ -1,6 +1,6 @@
 import type {FightProfile,FightState} from '../data/fishingFight';
 import {supabase} from '../lib/supabase';
-export interface FishSpecies{id:string;name:string;tier:number;locations:string[];weight:number;min_cm:number;max_cm:number;base_price:number;display_percent:number;image_path:string;crop:number[]}
+export interface FishSpecies{id:string;name:string;tier:number;locations:string[];weight:number;min_cm:number;max_cm:number;base_price:number;display_percent:number;image_path:string;crop:number[];motion?:'fish'|'eel'|'crustacean'|'cephalopod'|'octopus'|'seahorse'|'jelly'|'turtle'|'whale'|'star'|'bottom';fight_pattern?:'steady'|'agile'|'burst'}
 export interface FishingBait{id:string;name:string;pack_size:number;pack_price:number;modifiers:number[];size_bias:number;effect:string}
 export interface CaughtFish{id:string;species_id:string;length_cm:number;sale_value:number;caught_at:string;locked:boolean;displayed?:boolean;sold_at?:string|null}
 export interface FishingFight{state:FightState;profile:FightProfile;started_at:string;expires_at:string;paused:boolean;pause_remaining_ms:number}

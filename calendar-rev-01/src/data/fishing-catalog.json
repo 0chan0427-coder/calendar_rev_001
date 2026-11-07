@@ -1,5 +1,5 @@
 {
-  "version": 58,
+  "version": 59,
   "sale_cap": 500,
   "bag_capacity": 100,
   "locations": [
@@ -27,7 +27,7 @@
       "locations": [
         "pond"
       ],
-      "weight": 400000,
+      "weight": 72223,
       "min_cm": 8,
       "max_cm": 45,
       "base_price": 8,
@@ -38,7 +38,9 @@
         0,
         1607,
         897
-      ]
+      ],
+      "motion": "fish",
+      "fight_pattern": "steady"
     },
     {
       "id": "carp",
@@ -47,7 +49,7 @@
       "locations": [
         "pond"
       ],
-      "weight": 250000,
+      "weight": 72223,
       "min_cm": 15,
       "max_cm": 100,
       "base_price": 12,
@@ -58,7 +60,9 @@
         64,
         1710,
         755
-      ]
+      ],
+      "motion": "fish",
+      "fight_pattern": "steady"
     },
     {
       "id": "catfish",
@@ -67,7 +71,7 @@
       "locations": [
         "pond"
       ],
-      "weight": 270000,
+      "weight": 38572,
       "min_cm": 15,
       "max_cm": 130,
       "base_price": 28,
@@ -78,7 +82,9 @@
         186,
         1740,
         528
-      ]
+      ],
+      "motion": "fish",
+      "fight_pattern": "burst"
     },
     {
       "id": "trout",
@@ -87,7 +93,7 @@
       "locations": [
         "pond"
       ],
-      "weight": 70000,
+      "weight": 17500,
       "min_cm": 15,
       "max_cm": 90,
       "base_price": 70,
@@ -98,7 +104,9 @@
         114,
         1736,
         642
-      ]
+      ],
+      "motion": "fish",
+      "fight_pattern": "agile"
     },
     {
       "id": "koi",
@@ -107,7 +115,7 @@
       "locations": [
         "pond"
       ],
-      "weight": 9800,
+      "weight": 4900,
       "min_cm": 15,
       "max_cm": 100,
       "base_price": 180,
@@ -118,7 +126,9 @@
         111,
         1722,
         693
-      ]
+      ],
+      "motion": "fish",
+      "fight_pattern": "steady"
     },
     {
       "id": "golden-carp",
@@ -127,7 +137,7 @@
       "locations": [
         "pond"
       ],
-      "weight": 200,
+      "weight": 100,
       "min_cm": 20,
       "max_cm": 110,
       "base_price": 300,
@@ -138,7 +148,9 @@
         65,
         1689,
         757
-      ]
+      ],
+      "motion": "fish",
+      "fight_pattern": "steady"
     },
     {
       "id": "mackerel",
@@ -147,7 +159,7 @@
       "locations": [
         "coast"
       ],
-      "weight": 649900,
+      "weight": 54159,
       "min_cm": 15,
       "max_cm": 60,
       "base_price": 10,
@@ -158,7 +170,9 @@
         145,
         1697,
         598
-      ]
+      ],
+      "motion": "fish",
+      "fight_pattern": "steady"
     },
     {
       "id": "clownfish",
@@ -167,7 +181,7 @@
       "locations": [
         "coast"
       ],
-      "weight": 270000,
+      "weight": 30000,
       "min_cm": 3,
       "max_cm": 18,
       "base_price": 25,
@@ -178,7 +192,9 @@
         4,
         1649,
         869
-      ]
+      ],
+      "motion": "fish",
+      "fight_pattern": "agile"
     },
     {
       "id": "blue-tang",
@@ -187,7 +203,7 @@
       "locations": [
         "coast"
       ],
-      "weight": 70000,
+      "weight": 10000,
       "min_cm": 8,
       "max_cm": 35,
       "base_price": 75,
@@ -198,7 +214,9 @@
         19,
         1599,
         861
-      ]
+      ],
+      "motion": "fish",
+      "fight_pattern": "agile"
     },
     {
       "id": "tuna",
@@ -207,7 +225,7 @@
       "locations": [
         "coast"
       ],
-      "weight": 9000,
+      "weight": 2500,
       "min_cm": 50,
       "max_cm": 300,
       "base_price": 160,
@@ -218,7 +236,9 @@
         96,
         1699,
         702
-      ]
+      ],
+      "motion": "fish",
+      "fight_pattern": "burst"
     },
     {
       "id": "manta",
@@ -227,7 +247,7 @@
       "locations": [
         "coast"
       ],
-      "weight": 1000,
+      "weight": 2500,
       "min_cm": 100,
       "max_cm": 650,
       "base_price": 220,
@@ -238,7 +258,9 @@
         13,
         1772,
         771
-      ]
+      ],
+      "motion": "fish",
+      "fight_pattern": "burst"
     },
     {
       "id": "coelacanth",
@@ -247,7 +269,7 @@
       "locations": [
         "coast"
       ],
-      "weight": 100,
+      "weight": 25,
       "min_cm": 40,
       "max_cm": 200,
       "base_price": 300,
@@ -258,7 +280,1065 @@
         50,
         1719,
         784
-      ]
+      ],
+      "motion": "fish",
+      "fight_pattern": "steady"
+    },
+    {
+      "id": "pale-chub",
+      "name": "피라미",
+      "tier": 0,
+      "locations": [
+        "pond"
+      ],
+      "weight": 72222,
+      "min_cm": 5,
+      "max_cm": 18,
+      "base_price": 6,
+      "display_percent": 22,
+      "image_path": "/world/fishing-059-01/pale-chub.png",
+      "crop": [
+        94,
+        116,
+        1606,
+        634
+      ],
+      "motion": "fish",
+      "fight_pattern": "agile"
+    },
+    {
+      "id": "bitterling",
+      "name": "각시붕어",
+      "tier": 0,
+      "locations": [
+        "pond"
+      ],
+      "weight": 72222,
+      "min_cm": 3,
+      "max_cm": 8,
+      "base_price": 6,
+      "display_percent": 20,
+      "image_path": "/world/fishing-059-01/bitterling.png",
+      "crop": [
+        59,
+        79,
+        1423,
+        847
+      ],
+      "motion": "fish",
+      "fight_pattern": "agile"
+    },
+    {
+      "id": "loach",
+      "name": "미꾸라지",
+      "tier": 0,
+      "locations": [
+        "pond"
+      ],
+      "weight": 72222,
+      "min_cm": 5,
+      "max_cm": 25,
+      "base_price": 8,
+      "display_percent": 25,
+      "image_path": "/world/fishing-059-01/loach.png",
+      "crop": [
+        42,
+        141,
+        2089,
+        429
+      ],
+      "motion": "eel",
+      "fight_pattern": "steady"
+    },
+    {
+      "id": "smelt",
+      "name": "빙어",
+      "tier": 0,
+      "locations": [
+        "pond"
+      ],
+      "weight": 72222,
+      "min_cm": 5,
+      "max_cm": 20,
+      "base_price": 6,
+      "display_percent": 22,
+      "image_path": "/world/fishing-059-01/smelt.png",
+      "crop": [
+        72,
+        75,
+        2033,
+        574
+      ],
+      "motion": "fish",
+      "fight_pattern": "agile"
+    },
+    {
+      "id": "freshwater-shrimp",
+      "name": "민물새우",
+      "tier": 0,
+      "locations": [
+        "pond"
+      ],
+      "weight": 72222,
+      "min_cm": 2,
+      "max_cm": 8,
+      "base_price": 6,
+      "display_percent": 20,
+      "image_path": "/world/fishing-059-01/freshwater-shrimp.png",
+      "crop": [
+        13,
+        15,
+        1724,
+        852
+      ],
+      "motion": "crustacean",
+      "fight_pattern": "agile"
+    },
+    {
+      "id": "freshwater-crab",
+      "name": "참게",
+      "tier": 0,
+      "locations": [
+        "pond"
+      ],
+      "weight": 72222,
+      "min_cm": 3,
+      "max_cm": 12,
+      "base_price": 8,
+      "display_percent": 22,
+      "image_path": "/world/fishing-059-01/freshwater-crab.png",
+      "crop": [
+        39,
+        74,
+        1620,
+        792
+      ],
+      "motion": "crustacean",
+      "fight_pattern": "steady"
+    },
+    {
+      "id": "goby",
+      "name": "망둑어",
+      "tier": 0,
+      "locations": [
+        "pond"
+      ],
+      "weight": 72222,
+      "min_cm": 4,
+      "max_cm": 18,
+      "base_price": 8,
+      "display_percent": 22,
+      "image_path": "/world/fishing-059-01/goby.png",
+      "crop": [
+        35,
+        100,
+        1711,
+        699
+      ],
+      "motion": "fish",
+      "fight_pattern": "steady"
+    },
+    {
+      "id": "perch",
+      "name": "퍼치",
+      "tier": 1,
+      "locations": [
+        "pond"
+      ],
+      "weight": 38572,
+      "min_cm": 10,
+      "max_cm": 60,
+      "base_price": 24,
+      "display_percent": 29,
+      "image_path": "/world/fishing-059-01/perch.png",
+      "crop": [
+        42,
+        16,
+        1695,
+        851
+      ],
+      "motion": "fish",
+      "fight_pattern": "burst"
+    },
+    {
+      "id": "bass",
+      "name": "큰입배스",
+      "tier": 1,
+      "locations": [
+        "pond"
+      ],
+      "weight": 38572,
+      "min_cm": 15,
+      "max_cm": 80,
+      "base_price": 26,
+      "display_percent": 32,
+      "image_path": "/world/fishing-059-01/bass.png",
+      "crop": [
+        43,
+        72,
+        1694,
+        757
+      ],
+      "motion": "fish",
+      "fight_pattern": "burst"
+    },
+    {
+      "id": "bluegill",
+      "name": "블루길",
+      "tier": 1,
+      "locations": [
+        "pond"
+      ],
+      "weight": 38571,
+      "min_cm": 8,
+      "max_cm": 35,
+      "base_price": 20,
+      "display_percent": 25,
+      "image_path": "/world/fishing-059-01/bluegill.png",
+      "crop": [
+        62,
+        31,
+        1438,
+        951
+      ],
+      "motion": "fish",
+      "fight_pattern": "agile"
+    },
+    {
+      "id": "eel",
+      "name": "뱀장어",
+      "tier": 1,
+      "locations": [
+        "pond"
+      ],
+      "weight": 38571,
+      "min_cm": 20,
+      "max_cm": 150,
+      "base_price": 28,
+      "display_percent": 34,
+      "image_path": "/world/fishing-059-01/eel.png",
+      "crop": [
+        57,
+        220,
+        2064,
+        318
+      ],
+      "motion": "eel",
+      "fight_pattern": "steady"
+    },
+    {
+      "id": "crayfish",
+      "name": "민물가재",
+      "tier": 1,
+      "locations": [
+        "pond"
+      ],
+      "weight": 38571,
+      "min_cm": 5,
+      "max_cm": 20,
+      "base_price": 22,
+      "display_percent": 25,
+      "image_path": "/world/fishing-059-01/crayfish.png",
+      "crop": [
+        13,
+        72,
+        1726,
+        716
+      ],
+      "motion": "crustacean",
+      "fight_pattern": "steady"
+    },
+    {
+      "id": "goldfish",
+      "name": "금붕어",
+      "tier": 1,
+      "locations": [
+        "pond"
+      ],
+      "weight": 38571,
+      "min_cm": 5,
+      "max_cm": 35,
+      "base_price": 24,
+      "display_percent": 25,
+      "image_path": "/world/fishing-059-01/goldfish.png",
+      "crop": [
+        46,
+        16,
+        1472,
+        930
+      ],
+      "motion": "fish",
+      "fight_pattern": "steady"
+    },
+    {
+      "id": "mandarin-fish",
+      "name": "쏘가리",
+      "tier": 2,
+      "locations": [
+        "pond"
+      ],
+      "weight": 17500,
+      "min_cm": 15,
+      "max_cm": 65,
+      "base_price": 65,
+      "display_percent": 30,
+      "image_path": "/world/fishing-059-01/mandarin-fish.png",
+      "crop": [
+        45,
+        12,
+        1691,
+        862
+      ],
+      "motion": "fish",
+      "fight_pattern": "burst"
+    },
+    {
+      "id": "snakehead",
+      "name": "가물치",
+      "tier": 2,
+      "locations": [
+        "pond"
+      ],
+      "weight": 17500,
+      "min_cm": 20,
+      "max_cm": 120,
+      "base_price": 70,
+      "display_percent": 35,
+      "image_path": "/world/fishing-059-01/snakehead.png",
+      "crop": [
+        35,
+        103,
+        2109,
+        538
+      ],
+      "motion": "fish",
+      "fight_pattern": "burst"
+    },
+    {
+      "id": "sturgeon",
+      "name": "철갑상어",
+      "tier": 2,
+      "locations": [
+        "pond"
+      ],
+      "weight": 17500,
+      "min_cm": 40,
+      "max_cm": 300,
+      "base_price": 85,
+      "display_percent": 40,
+      "image_path": "/world/fishing-059-01/sturgeon.png",
+      "crop": [
+        40,
+        126,
+        2120,
+        520
+      ],
+      "motion": "fish",
+      "fight_pattern": "steady"
+    },
+    {
+      "id": "arowana",
+      "name": "아로와나",
+      "tier": 3,
+      "locations": [
+        "pond"
+      ],
+      "weight": 4900,
+      "min_cm": 20,
+      "max_cm": 100,
+      "base_price": 180,
+      "display_percent": 37,
+      "image_path": "/world/fishing-059-01/arowana.png",
+      "crop": [
+        12,
+        43,
+        1959,
+        692
+      ],
+      "motion": "fish",
+      "fight_pattern": "burst"
+    },
+    {
+      "id": "platinum-arowana",
+      "name": "백금아로와나",
+      "tier": 4,
+      "locations": [
+        "pond"
+      ],
+      "weight": 100,
+      "min_cm": 25,
+      "max_cm": 100,
+      "base_price": 300,
+      "display_percent": 38,
+      "image_path": "/world/fishing-059-01/platinum-arowana.png",
+      "crop": [
+        42,
+        112,
+        1899,
+        568
+      ],
+      "motion": "fish",
+      "fight_pattern": "burst"
+    },
+    {
+      "id": "sardine",
+      "name": "정어리",
+      "tier": 0,
+      "locations": [
+        "coast"
+      ],
+      "weight": 54159,
+      "min_cm": 8,
+      "max_cm": 30,
+      "base_price": 8,
+      "display_percent": 24,
+      "image_path": "/world/fishing-059-01/sardine.png",
+      "crop": [
+        94,
+        41,
+        1984,
+        641
+      ],
+      "motion": "fish",
+      "fight_pattern": "agile"
+    },
+    {
+      "id": "horse-mackerel",
+      "name": "전갱이",
+      "tier": 0,
+      "locations": [
+        "coast"
+      ],
+      "weight": 54159,
+      "min_cm": 10,
+      "max_cm": 50,
+      "base_price": 9,
+      "display_percent": 26,
+      "image_path": "/world/fishing-059-01/horse-mackerel.png",
+      "crop": [
+        61,
+        117,
+        1668,
+        652
+      ],
+      "motion": "fish",
+      "fight_pattern": "agile"
+    },
+    {
+      "id": "anchovy",
+      "name": "멸치",
+      "tier": 0,
+      "locations": [
+        "coast"
+      ],
+      "weight": 54159,
+      "min_cm": 3,
+      "max_cm": 18,
+      "base_price": 6,
+      "display_percent": 20,
+      "image_path": "/world/fishing-059-02/anchovy.png",
+      "crop": [
+        124,
+        92,
+        1954,
+        539
+      ],
+      "motion": "fish",
+      "fight_pattern": "agile"
+    },
+    {
+      "id": "shrimp",
+      "name": "보리새우",
+      "tier": 0,
+      "locations": [
+        "coast"
+      ],
+      "weight": 54158,
+      "min_cm": 5,
+      "max_cm": 30,
+      "base_price": 8,
+      "display_percent": 24,
+      "image_path": "/world/fishing-059-02/shrimp.png",
+      "crop": [
+        20,
+        54,
+        1735,
+        785
+      ],
+      "motion": "crustacean",
+      "fight_pattern": "agile"
+    },
+    {
+      "id": "swimming-crab",
+      "name": "꽃게",
+      "tier": 0,
+      "locations": [
+        "coast"
+      ],
+      "weight": 54158,
+      "min_cm": 5,
+      "max_cm": 25,
+      "base_price": 10,
+      "display_percent": 26,
+      "image_path": "/world/fishing-059-02/swimming-crab.png",
+      "crop": [
+        26,
+        71,
+        1721,
+        757
+      ],
+      "motion": "crustacean",
+      "fight_pattern": "steady"
+    },
+    {
+      "id": "squid",
+      "name": "살오징어",
+      "tier": 0,
+      "locations": [
+        "coast"
+      ],
+      "weight": 54158,
+      "min_cm": 10,
+      "max_cm": 60,
+      "base_price": 10,
+      "display_percent": 29,
+      "image_path": "/world/fishing-059-02/squid.png",
+      "crop": [
+        37,
+        129,
+        1700,
+        615
+      ],
+      "motion": "cephalopod",
+      "fight_pattern": "agile"
+    },
+    {
+      "id": "flounder",
+      "name": "넙치",
+      "tier": 0,
+      "locations": [
+        "coast"
+      ],
+      "weight": 54158,
+      "min_cm": 15,
+      "max_cm": 100,
+      "base_price": 12,
+      "display_percent": 30,
+      "image_path": "/world/fishing-059-02/flounder.png",
+      "crop": [
+        24,
+        19,
+        1736,
+        849
+      ],
+      "motion": "fish",
+      "fight_pattern": "steady"
+    },
+    {
+      "id": "pufferfish",
+      "name": "복어",
+      "tier": 0,
+      "locations": [
+        "coast"
+      ],
+      "weight": 54158,
+      "min_cm": 10,
+      "max_cm": 60,
+      "base_price": 12,
+      "display_percent": 27,
+      "image_path": "/world/fishing-059-02/pufferfish.png",
+      "crop": [
+        40,
+        118,
+        1702,
+        652
+      ],
+      "motion": "fish",
+      "fight_pattern": "steady"
+    },
+    {
+      "id": "mullet",
+      "name": "숭어",
+      "tier": 0,
+      "locations": [
+        "coast"
+      ],
+      "weight": 54158,
+      "min_cm": 15,
+      "max_cm": 90,
+      "base_price": 10,
+      "display_percent": 30,
+      "image_path": "/world/fishing-059-02/mullet.png",
+      "crop": [
+        34,
+        143,
+        1710,
+        616
+      ],
+      "motion": "fish",
+      "fight_pattern": "steady"
+    },
+    {
+      "id": "starfish",
+      "name": "불가사리",
+      "tier": 0,
+      "locations": [
+        "coast"
+      ],
+      "weight": 54158,
+      "min_cm": 5,
+      "max_cm": 35,
+      "base_price": 6,
+      "display_percent": 23,
+      "image_path": "/world/fishing-059-02/starfish.png",
+      "crop": [
+        85,
+        9,
+        1337,
+        1004
+      ],
+      "motion": "star",
+      "fight_pattern": "steady"
+    },
+    {
+      "id": "sea-cucumber",
+      "name": "해삼",
+      "tier": 0,
+      "locations": [
+        "coast"
+      ],
+      "weight": 54158,
+      "min_cm": 5,
+      "max_cm": 40,
+      "base_price": 6,
+      "display_percent": 23,
+      "image_path": "/world/fishing-059-02/sea-cucumber.png",
+      "crop": [
+        30,
+        176,
+        1700,
+        530
+      ],
+      "motion": "bottom",
+      "fight_pattern": "steady"
+    },
+    {
+      "id": "octopus",
+      "name": "참문어",
+      "tier": 1,
+      "locations": [
+        "coast"
+      ],
+      "weight": 30000,
+      "min_cm": 15,
+      "max_cm": 150,
+      "base_price": 28,
+      "display_percent": 31,
+      "image_path": "/world/fishing-059-02/octopus.png",
+      "crop": [
+        53,
+        82,
+        1440,
+        896
+      ],
+      "motion": "octopus",
+      "fight_pattern": "steady"
+    },
+    {
+      "id": "cuttlefish",
+      "name": "갑오징어",
+      "tier": 1,
+      "locations": [
+        "coast"
+      ],
+      "weight": 30000,
+      "min_cm": 10,
+      "max_cm": 50,
+      "base_price": 26,
+      "display_percent": 28,
+      "image_path": "/world/fishing-059-02/cuttlefish.png",
+      "crop": [
+        36,
+        54,
+        1706,
+        742
+      ],
+      "motion": "cephalopod",
+      "fight_pattern": "steady"
+    },
+    {
+      "id": "lobster",
+      "name": "바닷가재",
+      "tier": 1,
+      "locations": [
+        "coast"
+      ],
+      "weight": 30000,
+      "min_cm": 15,
+      "max_cm": 65,
+      "base_price": 30,
+      "display_percent": 32,
+      "image_path": "/world/fishing-059-02/lobster.png",
+      "crop": [
+        19,
+        20,
+        1736,
+        847
+      ],
+      "motion": "crustacean",
+      "fight_pattern": "steady"
+    },
+    {
+      "id": "seahorse",
+      "name": "해마",
+      "tier": 1,
+      "locations": [
+        "coast"
+      ],
+      "weight": 30000,
+      "min_cm": 5,
+      "max_cm": 30,
+      "base_price": 25,
+      "display_percent": 22,
+      "image_path": "/world/fishing-059-02/seahorse.png",
+      "crop": [
+        358,
+        5,
+        630,
+        1006
+      ],
+      "motion": "seahorse",
+      "fight_pattern": "steady"
+    },
+    {
+      "id": "moon-jelly",
+      "name": "보름달물해파리",
+      "tier": 1,
+      "locations": [
+        "coast"
+      ],
+      "weight": 30000,
+      "min_cm": 5,
+      "max_cm": 40,
+      "base_price": 22,
+      "display_percent": 25,
+      "image_path": "/world/fishing-059-02/moon-jelly.png",
+      "crop": [
+        142,
+        99,
+        1239,
+        840
+      ],
+      "motion": "jelly",
+      "fight_pattern": "steady"
+    },
+    {
+      "id": "spiny-lobster",
+      "name": "닭새우",
+      "tier": 1,
+      "locations": [
+        "coast"
+      ],
+      "weight": 30000,
+      "min_cm": 10,
+      "max_cm": 45,
+      "base_price": 30,
+      "display_percent": 30,
+      "image_path": "/world/fishing-059-02/spiny-lobster.png",
+      "crop": [
+        13,
+        14,
+        1725,
+        868
+      ],
+      "motion": "crustacean",
+      "fight_pattern": "steady"
+    },
+    {
+      "id": "reef-squid",
+      "name": "흰꼴뚜기",
+      "tier": 1,
+      "locations": [
+        "coast"
+      ],
+      "weight": 30000,
+      "min_cm": 10,
+      "max_cm": 50,
+      "base_price": 26,
+      "display_percent": 28,
+      "image_path": "/world/fishing-059-02/reef-squid.png",
+      "crop": [
+        43,
+        111,
+        1688,
+        670
+      ],
+      "motion": "cephalopod",
+      "fight_pattern": "agile"
+    },
+    {
+      "id": "lionfish",
+      "name": "쏠배감펭",
+      "tier": 1,
+      "locations": [
+        "coast"
+      ],
+      "weight": 30000,
+      "min_cm": 10,
+      "max_cm": 45,
+      "base_price": 28,
+      "display_percent": 28,
+      "image_path": "/world/fishing-059-02/lionfish.png",
+      "crop": [
+        80,
+        6,
+        1400,
+        1004
+      ],
+      "motion": "fish",
+      "fight_pattern": "agile"
+    },
+    {
+      "id": "green-turtle",
+      "name": "푸른바다거북",
+      "tier": 2,
+      "locations": [
+        "coast"
+      ],
+      "weight": 10000,
+      "min_cm": 40,
+      "max_cm": 150,
+      "base_price": 80,
+      "display_percent": 35,
+      "image_path": "/world/fishing-059-02/green-turtle.png",
+      "crop": [
+        26,
+        67,
+        1495,
+        916
+      ],
+      "motion": "turtle",
+      "fight_pattern": "steady"
+    },
+    {
+      "id": "hammerhead",
+      "name": "귀상어",
+      "tier": 2,
+      "locations": [
+        "coast"
+      ],
+      "weight": 10000,
+      "min_cm": 80,
+      "max_cm": 420,
+      "base_price": 90,
+      "display_percent": 40,
+      "image_path": "/world/fishing-059-02/hammerhead.png",
+      "crop": [
+        40,
+        78,
+        1716,
+        735
+      ],
+      "motion": "fish",
+      "fight_pattern": "burst"
+    },
+    {
+      "id": "leopard-shark",
+      "name": "표범상어",
+      "tier": 2,
+      "locations": [
+        "coast"
+      ],
+      "weight": 10000,
+      "min_cm": 50,
+      "max_cm": 210,
+      "base_price": 80,
+      "display_percent": 38,
+      "image_path": "/world/fishing-059-02/leopard-shark.png",
+      "crop": [
+        20,
+        55,
+        2144,
+        630
+      ],
+      "motion": "fish",
+      "fight_pattern": "burst"
+    },
+    {
+      "id": "sunfish",
+      "name": "개복치",
+      "tier": 2,
+      "locations": [
+        "coast"
+      ],
+      "weight": 10000,
+      "min_cm": 60,
+      "max_cm": 330,
+      "base_price": 85,
+      "display_percent": 36,
+      "image_path": "/world/fishing-059-03/sunfish.png",
+      "crop": [
+        301,
+        0,
+        896,
+        1024
+      ],
+      "motion": "fish",
+      "fight_pattern": "steady"
+    },
+    {
+      "id": "giant-octopus",
+      "name": "대왕문어",
+      "tier": 2,
+      "locations": [
+        "coast"
+      ],
+      "weight": 10000,
+      "min_cm": 100,
+      "max_cm": 500,
+      "base_price": 90,
+      "display_percent": 39,
+      "image_path": "/world/fishing-059-03/giant-octopus.png",
+      "crop": [
+        38,
+        13,
+        1678,
+        878
+      ],
+      "motion": "octopus",
+      "fight_pattern": "steady"
+    },
+    {
+      "id": "nautilus",
+      "name": "앵무조개",
+      "tier": 2,
+      "locations": [
+        "coast"
+      ],
+      "weight": 10000,
+      "min_cm": 8,
+      "max_cm": 25,
+      "base_price": 75,
+      "display_percent": 25,
+      "image_path": "/world/fishing-059-03/nautilus.png",
+      "crop": [
+        59,
+        43,
+        1417,
+        935
+      ],
+      "motion": "cephalopod",
+      "fight_pattern": "steady"
+    },
+    {
+      "id": "great-white",
+      "name": "백상아리",
+      "tier": 3,
+      "locations": [
+        "coast"
+      ],
+      "weight": 2500,
+      "min_cm": 150,
+      "max_cm": 600,
+      "base_price": 220,
+      "display_percent": 44,
+      "image_path": "/world/fishing-059-03/great-white.png",
+      "crop": [
+        21,
+        75,
+        1745,
+        737
+      ],
+      "motion": "fish",
+      "fight_pattern": "burst"
+    },
+    {
+      "id": "orca",
+      "name": "범고래",
+      "tier": 3,
+      "locations": [
+        "coast"
+      ],
+      "weight": 2500,
+      "min_cm": 300,
+      "max_cm": 950,
+      "base_price": 240,
+      "display_percent": 44,
+      "image_path": "/world/fishing-059-03/orca.png",
+      "crop": [
+        13,
+        17,
+        1752,
+        855
+      ],
+      "motion": "whale",
+      "fight_pattern": "burst"
+    },
+    {
+      "id": "whale-shark",
+      "name": "고래상어",
+      "tier": 4,
+      "locations": [
+        "coast"
+      ],
+      "weight": 25,
+      "min_cm": 400,
+      "max_cm": 1800,
+      "base_price": 300,
+      "display_percent": 45,
+      "image_path": "/world/fishing-059-03/whale-shark.png",
+      "crop": [
+        25,
+        34,
+        2131,
+        658
+      ],
+      "motion": "fish",
+      "fight_pattern": "steady"
+    },
+    {
+      "id": "sperm-whale",
+      "name": "향유고래",
+      "tier": 4,
+      "locations": [
+        "coast"
+      ],
+      "weight": 25,
+      "min_cm": 600,
+      "max_cm": 2000,
+      "base_price": 300,
+      "display_percent": 45,
+      "image_path": "/world/fishing-059-03/sperm-whale.png",
+      "crop": [
+        12,
+        98,
+        2149,
+        551
+      ],
+      "motion": "whale",
+      "fight_pattern": "steady"
+    },
+    {
+      "id": "white-humpback",
+      "name": "흰혹등고래",
+      "tier": 4,
+      "locations": [
+        "coast"
+      ],
+      "weight": 25,
+      "min_cm": 600,
+      "max_cm": 1800,
+      "base_price": 300,
+      "display_percent": 45,
+      "image_path": "/world/fishing-059-03/white-humpback.png",
+      "crop": [
+        27,
+        94,
+        1933,
+        654
+      ],
+      "motion": "whale",
+      "fight_pattern": "steady"
     }
   ],
   "baits": [
@@ -275,7 +1355,7 @@
         1
       ],
       "size_bias": 0,
-      "effect": "무료·무제한. 모든 물고기 출현."
+      "effect": "무료·무제한. 모든 수중 생물 출현."
     },
     {
       "id": "premium",
@@ -290,7 +1370,7 @@
         2
       ],
       "size_bias": 0,
-      "effect": "드문 물고기와 희귀종의 출현 비중 증가."
+      "effect": "드문 수중 생물와 희귀종의 출현 비중 증가."
     },
     {
       "id": "large",
@@ -320,8 +1400,8 @@
         4
       ],
       "size_bias": 0,
-      "effect": "희귀·초희귀·특별 희귀종의 출현 비중 증가."
+      "effect": "희귀·매우 희귀·극희귀 생물의 출현 비중 증가."
     }
   ],
-  "migration": "027_fishing_and_aquarium.sql"
+  "migration": "029_fishing_species_060.sql"
 }

@@ -7,3 +7,14 @@ for(const f of catalog.species){if(ids.has(f.id))throw Error('Duplicate fish ID'
 for(const folder of folders)if(readdirSync(folder).filter(f=>f.endsWith('.png')).length>20)throw Error('Fish image folder exceeds 20 files.');
 for(const b of catalog.baits)if(b.modifiers.length!==5||b.modifiers.some(n=>n<=0)||b.size_bias<0||b.size_bias>1||(b.pack_price>0&&(b.pack_size<=0||b.pack_price%b.pack_size!==0)))throw Error(`Invalid bait: ${b.id}`);
 execFileSync(process.execPath,[resolve(root,'scripts/sync-fishing-catalog.mjs'),'--check'],{stdio:'inherit'});console.log(`Fishing checks passed: ${ids.size} fish images, sizes, locations, bait effects and SQL seed.`);
+// V058 first-person layers are runtime assets; SQL migrations remain optional in the deployment tree.
+for(const name of ['pond','coast','hands']){
+ const file=resolve(root,`public/world/fishing-058/${name}.png`),bytes=readFileSync(file);
+ if(bytes.length>=25*1024*1024||bytes[24]!==8||![2,6].includes(bytes[25]))throw Error(`Invalid fishing scene: ${name}`);
+ if(name==='hands'&&bytes[25]!==6)throw Error('Hands need a transparent RGBA layer.');
+ let end=false,parts=[];for(let p=8;p<bytes.length;){const n=bytes.readUInt32BE(p),type=bytes.toString('ascii',p+4,p+8);if(p+n+12>bytes.length)throw Error('Truncated scene PNG');if(type==='IDAT')parts.push(bytes.subarray(p+8,p+8+n));p+=n+12;if(type==='IEND'){end=p===bytes.length;break;}}
+ const channels=bytes[25]===6?4:3;if(!end||inflateSync(Buffer.concat(parts)).length!==(bytes.readUInt32BE(16)*channels+1)*bytes.readUInt32BE(20))throw Error(`Incomplete fishing scene: ${name}`);
+}
+const fightSource=readFileSync(resolve(root,'src/data/fishingFight.ts'),'utf8'),tierSource=readFileSync(resolve(root,'src/services/fishing.ts'),'utf8');
+if(!fightSource.includes('stepFishingFight')||!tierSource.includes("['일반','고급','희귀','매우 희귀','극희귀']")||JSON.stringify(catalog.tiers)!==JSON.stringify(['일반','고급','희귀','매우 희귀','극희귀']))throw Error('Fishing fight/grade configuration mismatch.');
+console.log('V058 POV layers and grade labels checked.');

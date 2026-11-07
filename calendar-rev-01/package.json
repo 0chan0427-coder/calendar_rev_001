@@ -8,7 +8,7 @@
     "build": "vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "prebuild": "node scripts/check-avatar-assets.mjs"
+    "prebuild": "node scripts/check-avatar-assets.mjs && node scripts/check-fishing-assets.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.8",

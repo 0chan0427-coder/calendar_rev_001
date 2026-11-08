@@ -92,7 +92,9 @@ export function avatarSvgMarkup(gender:'male'|'female',input:Equipment={},uid='a
  const accessoryInner=fittedAccessory(c.accessory,uid,resolve,id('alpha'),'under-outer');
  const accessory=fittedAccessory(c.accessory,uid,resolve,id('alpha'),'over-outer');
  const ribbon=e.accessory==='ribbon-avatar'?`<svg x="675" y="110" width="145" height="110" viewBox="0 0 1536 1024" preserveAspectRatio="xMidYMid meet"><image href="${safe(resolve('/world/wearables/shared/ribbon-red.png'))}" width="1536" height="1024" filter="url(#${id('alpha')})"/></svg>`:'';
- return `<svg class="raster-avatar-svg" viewBox="0 0 1024 1536" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="--avatar-phase:${phase}s"><defs>
+ const costumeHeadwear=c.hat?.id.startsWith('c02-')===true;
+ const cameraTop=costumeHeadwear?-150:0;
+ return `<svg class="raster-avatar-svg" width="1024" height="1536" preserveAspectRatio="xMidYMax meet" viewBox="0 ${cameraTop} 1024 ${1536-cameraTop}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="--avatar-phase:${phase}s"><defs>
  ${collectionCuffMask(c.shoes,id('collection-cuff'))}
  ${cape?hairLayerMasks(c.outer!.width,c.outer!.height,CAPE_FIT.backPath,id('cape-rear'),id('cape-front')):''}
  ${headwearDefs(c.hat,uid)}
@@ -110,6 +112,7 @@ export function avatarSvgMarkup(gender:'male'|'female',input:Equipment={},uid='a
  @media(prefers-reduced-motion:reduce){.raster-avatar-svg .avatar-breathe,.raster-avatar-svg .avatar-eye-open,.raster-avatar-svg .avatar-eye-closed{animation:none}.raster-avatar-svg .avatar-eye-open{visibility:visible}.raster-avatar-svg .avatar-eye-closed{visibility:hidden}}
  </style>
  <filter id="${id('alpha')}" color-interpolation-filters="sRGB"><feComponentTransfer><feFuncA type="linear" slope="1.045" intercept="-0.025"/></feComponentTransfer></filter>
+ <filter id="${id('alpha')}-costume" color-interpolation-filters="sRGB"><feComponentTransfer><feFuncA type="linear" slope="2" intercept="-0.8"/></feComponentTransfer></filter>
  <filter id="${id('warm')}" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values=".96 0 0 0 0 0 .86 0 0 .015 0 0 .78 0 .025 0 0 0 1 0"/></filter>
  <!-- Native-image coordinates: the rear cuff goes behind the shin, while the tongue/laces stay in front. -->
  <mask id="${id('boot-front')}" maskUnits="userSpaceOnUse" x="0" y="0" width="1774" height="887">

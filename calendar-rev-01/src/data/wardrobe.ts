@@ -1,11 +1,12 @@
 import {COLLECTION_01} from './collection01';
+import {COLLECTION_02} from './collection02';
 export type WearSlot='hair'|'face'|'skin'|'makeup'|'glasses'|'hat'|'outer'|'top'|'bottom'|'shoes'|'accessory'|'special'|'coat';
 export type Equipment=Partial<Record<WearSlot,string>>;
 export interface Wearable {id:string;name:string;target:'avatar'|'cat'|'companion';slot:WearSlot;species?:string;price:number;mode:'image'|'tint'|'base'|'feature';image?:string;color?:string;region?:[number,number,number,number];z?:number;renderKey?:string;hidden?:boolean;}
 export const WEAR_SLOTS:[WearSlot,string][]=[['hair','헤어'],['hat','모자'],['top','상의'],['outer','겉옷'],['bottom','하의'],['shoes','신발'],['face','눈'],['skin','피부'],['makeup','메이크업'],['glasses','안경'],['accessory','장식']];
 const art='/world/avatar-v3';
 export const WEARABLES:Wearable[]=[
- ...COLLECTION_01.map((item):Wearable=>({id:item.id,name:item.name,target:'avatar',slot:item.slot,price:item.price,mode:'image',image:item.image})),
+ ...[...COLLECTION_01,...COLLECTION_02].map((item):Wearable=>({id:item.id,name:item.name,target:'avatar',slot:item.slot,price:item.price,mode:'image',image:item.image})),
  {id:'outer-none',name:'겉옷 해제',target:'avatar',slot:'outer',price:0,mode:'base'},
  {id:'hat-none',name:'모자 해제',target:'avatar',slot:'hat',price:0,mode:'base'},
  {id:'hair-chestnut',name:'기본 헤어',target:'avatar',slot:'hair',price:0,mode:'image',image:`${art}/hair-short.png`,renderKey:'hair-short'},

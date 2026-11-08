@@ -14,6 +14,11 @@ export const ACCESSORY_FITS:Record<string,AccessoryFit>={
  'acc-bow':{anchor:'collar',box:[414,615,196,112],surface:'over-outer'},
  'acc-moon':{anchor:'neck',box:[439,593,146,210],surface:'under-outer',rearPath:'M0 0H1536V75H0Z'},
  'acc-star':{anchor:'chest',box:[589,686,68,75],surface:'over-outer'},
+ 'c02-acc-chef':{anchor:'collar',box:[420,615,184,108],surface:'over-outer'},
+ 'c02-acc-space':{anchor:'chest',box:[583,685,75,87],surface:'over-outer'},
+ 'c02-acc-academy':{anchor:'collar',box:[476,622,72,235],surface:'under-outer'},
+ 'c02-acc-pirate':{anchor:'neck',box:[437,596,150,210],surface:'under-outer',rearPath:'M0 0H1536V75H0Z'},
+ 'c02-acc-knight':{anchor:'chest',box:[552,660,137,91],surface:'over-outer'},
 };
 export function accessoryDefs(item:CollectionItem|undefined,uid:string){
  const fit=item&&ACCESSORY_FITS[item.id];

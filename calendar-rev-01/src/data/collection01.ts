@@ -1,3 +1,4 @@
+import {COLLECTION_02} from './collection02';
 import type {WearSlot} from './wardrobe';
 export type Box=[number,number,number,number];
 /** Source-image coordinates. Back paths identify rear locks only, never a face cutout. */
@@ -988,4 +989,4 @@ export const COLLECTION_01:CollectionItem[]=[
     ]
   }
 ];
-export const collectionItem=(id?:string)=>COLLECTION_01.find(item=>item.id===id);
+export const collectionItem=(id?:string)=>[...COLLECTION_01,...COLLECTION_02].find(item=>item.id===id);

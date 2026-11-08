@@ -49,6 +49,11 @@ export const GARMENT_FITS: Record<string, GarmentFit> = {
     'outer-cardigan': { wearingClass: 'cardigan', center: 768, scaleX: .52, bodyPath: body, bands: [[140, 583], [320, 662], [870, 1000]], sleevePath: sleeve, shoulder: [490, 300], cuff: [200, 800], targetCuff: [244, 962], backPath: neck(640, 895, 214, 232), innerTopClip: 'M458 540H566V620Q606 630 636 665L690 800V1100H334V800L388 665Q418 630 458 620Z', sleeveJoinX: 480 },
     'outer-denim': { wearingClass: 'jacket', center: 768, scaleX: .54, bodyPath: body, bands: [[126, 580], [330, 659], [775, 988]], sleevePath: sleeve, shoulder: [480, 270], cuff: [180, 830], targetCuff: [244, 962], backPath: neck(640, 895, 230, 244), innerTopClip: 'M454 540H570V620Q610 635 640 670L690 800V1100H334V800L384 670Q414 635 454 620Z', sleeveJoinX: 480 },
     'outer-detective': { wearingClass: 'coat', center: 600, scaleX: .62, widthBands: [[70,.51],[260,.62],[650,.74],[1171,.68]], bodyPath: 'M345 0H855V390Q825 500 850 650L1040 1312H160L350 650Q375 500 345 390Z', bands: [[70, 563], [260, 657], [1171, 1285]], sleevePath: 'M0 0H380V400L380 580L310 1312H0Z', shoulder: [360, 250], cuff: [120, 820], targetCuff: [244, 962], backPath: 'M490 0H714V140H490Z', innerTopClip: 'M456 540H568V622Q610 642 636 680L690 820V1250H334V820L388 680Q414 642 456 622Z', sleeveJoinX: 380 },
+    'c02-top-chef': { center:768, scaleX:.46, bodyPath:body, bands:[[140,585],[310,651],[775,978]], sleevePath:sleeve, shoulder:[470,300], cuff:[185,820], targetCuff:[244,962], backPath:'M620 0H914V160Q920 230 895 294Q768 325 640 294Q615 230 620 160Z', sleeveJoinX:480 },
+    'c02-top-space': { center:768, scaleX:.48, bodyPath:body, bands:[[108,585],[310,651],[775,978]], sleevePath:sleeve, shoulder:[470,300], cuff:[185,820], targetCuff:[244,962], backPath:'M605 0H930V125Q915 200 886 250Q768 282 650 250Q620 200 605 125Z', sleeveJoinX:480 },
+    'c02-top-academy': { center:768, scaleX:.46, bodyPath:body, bands:[[140,585],[310,651],[775,978]], sleevePath:sleeve, shoulder:[470,300], cuff:[185,820], targetCuff:[244,962], backPath:'M635 0H900V147Q900 307 768 307Q635 307 635 147Z', sleeveJoinX:480 },
+    'c02-top-pirate': { center:768, scaleX:.46, bodyPath:body, bands:[[140,585],[310,651],[775,978]], sleevePath:sleeve, shoulder:[470,300], cuff:[185,820], targetCuff:[244,962], backPath:'M630 0H905V147Q905 300 768 300Q630 300 630 147Z', sleeveJoinX:480 },
+    'c02-top-knight': { center:768, scaleX:.48, bodyPath:body, bands:[[140,585],[310,651],[775,978]], sleevePath:sleeve, shoulder:[470,300], cuff:[185,820], targetCuff:[244,962], backPath:'M610 0H925V147Q925 290 768 302Q610 290 610 147Z', sleeveJoinX:480 },
 };
 function mappedY(f: GarmentFit, y: number) { let i = 0; while (i < f.bands.length - 2 && y > f.bands[i + 1][0])
     i++; const [a, b] = f.bands[i], [c, d] = f.bands[i + 1]; return b + (y - a) * (d - b) / (c - a); }
@@ -137,7 +142,7 @@ export function fittedGarment(item: CollectionItem | undefined, uid: string, res
             }
         }
     }
-    return `<g data-collection="${item.id}" data-garment-layer="${layer}" filter="url(#${alphaId})"><defs>${defs}</defs>${showSleeves ? sleeves : ''}${onlySleeves ? '' : bodice}</g>`;
+    return `<g data-collection="${item.id}" data-garment-layer="${layer}" filter="url(#${item.id.startsWith('c02-')?alphaId+'-costume':alphaId})"><defs>${defs}</defs>${showSleeves ? sleeves : ''}${onlySleeves ? '' : bodice}</g>`;
 }
 export interface HeadwearFit {
     box?: Box;
@@ -152,6 +157,11 @@ export const HEADWEAR_FITS: Record<string, HeadwearFit> = {
     'hat-detective': { backPath: 'M-200 920Q350 930 768 835Q1180 930 1750 920V2500H-200Z', headPath: 'M-1000 760H2500V4000H-1000Z' },
     'hat-cap': { backPath: 'M-200 900Q350 920 768 782Q1180 920 1750 900V2500H-200Z', headPath: 'M-1000 900Q350 920 768 782Q1180 920 2500 900V4000H-1000Z' },
     'hat-cat': { box: [207, -48, 610, 355], backPath: 'M0 500H450V1200H0Z M1086 500H1600V1200H1086Z' },
+    'c02-hat-chef': {backPath:'M-200 930Q300 900 768 790Q1250 900 1750 930V2200H-200Z',headPath:'M-1000 820Q350 800 768 700Q1180 800 2500 820V4000H-1000Z'},
+    'c02-hat-space': {backPath:'M-200 900Q350 920 768 782Q1180 920 1750 900V2500H-200Z',headPath:'M-1000 800Q350 800 768 650Q1180 800 2500 800V4000H-1000Z'},
+    'c02-hat-academy': {backPath:'M-200 805Q350 800 768 718Q1160 800 1750 805V2500H-200Z',headPath:'M-1000 780Q350 740 768 650Q1180 740 2500 780V4000H-1000Z'},
+    'c02-hat-pirate': {backPath:'M-200 930Q350 930 768 825Q1180 930 1750 930V2500H-200Z',headPath:'M-1000 800Q350 780 768 690Q1180 780 2500 800V4000H-1000Z'},
+    'c02-hat-knight': {backPath:'M-200 940Q350 900 768 780Q1180 900 1750 940V2500H-200Z'},
 };
 export function headwearDefs(item: CollectionItem | undefined, uid: string) { if (!item)
     return ''; const f = HEADWEAR_FITS[item.id]; if (!f)

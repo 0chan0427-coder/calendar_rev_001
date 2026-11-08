@@ -4,7 +4,8 @@ const safe=(s:string)=>s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/<
 export function collectionAsset(item:CollectionItem|undefined,resolve:AssetResolver,alphaId:string,box?:Box,crop?:Box,imageExtra=''){
  if(!item)return '';
  const b=box||item.box;
- return `<svg data-collection="${item.id}" x="${b[0]}" y="${b[1]}" width="${b[2]}" height="${b[3]}" viewBox="${(crop||item.crop).join(' ')}" preserveAspectRatio="none" overflow="hidden"><image href="${safe(resolve(item.image))}" width="${item.width}" height="${item.height}" filter="url(#${alphaId})" ${imageExtra}/></svg>`;
+ const opacityId=item.id.startsWith('c02-')?alphaId+'-costume':alphaId;
+ return `<svg data-collection="${item.id}" x="${b[0]}" y="${b[1]}" width="${b[2]}" height="${b[3]}" viewBox="${(crop||item.crop).join(' ')}" preserveAspectRatio="none" overflow="hidden"><image href="${safe(resolve(item.image))}" width="${item.width}" height="${item.height}" filter="url(#${opacityId})" ${imageExtra}/></svg>`;
 }
 /** Complementary masks split source art without cutting a generic hole around the face. */
 export function hairLayerMasks(width:number,height:number,backPath:string,backId:string,frontId:string,frontKeepPath=''){

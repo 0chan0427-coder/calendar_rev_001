@@ -169,3 +169,7 @@ export const saveWorldGarden=(itemId:string)=>supabase.rpc('set_world_garden_the
 export const saveWorldHomeScene=(scene:'interior'|'exterior')=>supabase.rpc('set_world_home_scene',{p_scene:scene});
 
 export const saveWorldRoomSkin=(id:string|null)=>supabase.rpc('set_world_room_skin',{p_item_id:id});
+
+export interface RankingEntry{user_id:string;display_name:string;week_start:string;weekly_score:number;attendance_point:number;chat_point:number;rank:number;updated_at:string}
+export interface RankingBoard{weekStart:string;weekEnd:string;asOf:string;rows:RankingEntry[];lastWeekRows:RankingEntry[];history:RankingEntry[]}
+export const getWorldRankingBoard=()=>supabase.rpc('get_world_ranking_board');

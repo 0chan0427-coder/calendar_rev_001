@@ -74,3 +74,5 @@ for(const path of ['WorldScene.tsx','InventoryPanel.tsx']){
 console.log('Companion rendering/equipment checks passed: canvas, explicit decorations, scene and inventory state.');
 
 await import('./check-pet-battle-assets.mjs');
+
+await import('./check-companion-thumbnails.mjs');

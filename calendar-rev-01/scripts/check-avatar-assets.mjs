@@ -61,3 +61,5 @@ await import("./check-costume-02.mjs");
 await import('./check-costume-03.mjs');
 
 await import('./check-costume-sets.mjs');
+
+await import("./check-world-069.mjs");

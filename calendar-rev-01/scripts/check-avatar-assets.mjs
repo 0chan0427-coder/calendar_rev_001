@@ -55,3 +55,5 @@ for(const item of items){
 }
 for(const dir of dirs){const count=readdirSync(dir).filter(n=>n.endsWith('.png')).length;const limit=basename(dir)==='wardrobe-01'?40:20;if(count>limit)fail(dir,`folder has ${count} images; upload groups must contain at most ${limit}`);}
 console.log(`Avatar source/fitting checks passed: ${items.length} designs. Visual fit review is also required.`);
+
+await import("./check-costume-02.mjs");

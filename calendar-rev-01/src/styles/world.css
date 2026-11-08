@@ -475,3 +475,5 @@
 .surface-sample.floor-wood{background:repeating-linear-gradient(0deg,#c59a6b 0 30px,#ab7f50 30px 32px)}
 
 .thumbnail-error{position:absolute;inset:0;display:grid;place-items:center;font-size:10px;line-height:1.4;color:#8d4951;text-align:center}
+
+.home-entry-setting{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 16px;background:#f5f1f8;font-size:12px}.home-entry-setting button{padding:7px 14px;border:1px solid #d6c7e2;border-radius:8px;background:#fff;color:#5d496b}.home-entry-setting button[aria-pressed=true]{background:#735687;color:#fff}.home-entry-setting small{color:#7d7086}

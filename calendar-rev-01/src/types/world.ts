@@ -29,6 +29,7 @@ export interface WorldProfile {
   likes: number;
   world_points: number;
   scene_type: WorldSceneType;
+  home_scene?: WorldSceneType;
   wallpaper_id: string;
   floor_id: string;
   window_id: string;

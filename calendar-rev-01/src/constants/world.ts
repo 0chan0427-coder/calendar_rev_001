@@ -1,6 +1,6 @@
 import type { WorldItem } from '../types/world';
 
-export const WORLD_WELCOME_POINTS = 3000;
+export const WORLD_WELCOME_POINTS = 50000;
 export const WORLD_DAILY_POINTS = {
   attendance: 100,
   chat: 100,

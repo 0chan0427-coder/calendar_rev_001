@@ -460,3 +460,18 @@
 .world-art-retry{position:absolute;inset:20% 4%;font-size:11px;padding:4px;z-index:1}
 .inventory-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}
 @media(max-width:760px){.inventory-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+/* V070: thumbnails own a finite pixel box, independent from full-avatar dimensions. */
+.wearable-thumbnail.thumbnail-canvas{position:relative;display:block;min-width:0;min-height:0}
+.thumbnail-canvas>canvas{display:block!important;width:100%!important;height:100%!important;object-fit:contain;opacity:1!important;filter:none!important;mix-blend-mode:normal!important;color-scheme:only light}
+.thumbnail-status{position:absolute;inset:0;display:grid;place-items:center;font-size:10px;color:#817489}
+.thumbnail-canvas>button{position:absolute;inset:0;border:0;background:transparent;font-size:11px;pointer-events:auto}
+.shop-item-card .item-art>.companion-art{width:100%;height:100%;padding:12px;box-sizing:border-box;min-width:0;overflow:hidden}
+
+.surface-sample{border:1px solid #cdbda6;border-radius:6px;box-sizing:border-box;background:#f7f0e8}
+.surface-sample.wallpaper-check{background:repeating-linear-gradient(0deg,#0000 0 28px,#c9b6c533 28px 30px),repeating-linear-gradient(90deg,#f7f0e8 0 28px,#c9b6c555 28px 30px)}
+.surface-sample.wallpaper-flower{background:radial-gradient(ellipse at 30% 30%,#e6a5b488 0 4px,#0000 5px),radial-gradient(ellipse at 65% 65%,#9cbd9988 0 3px,#0000 4px),#fff5ed;background-size:40px 40px}
+.surface-sample.floor-check{background:conic-gradient(#ead3b2 25%,#ccb18b 0 50%,#ead3b2 0 75%,#ccb18b 0);background-size:65px 65px}
+.surface-sample.floor-wood{background:repeating-linear-gradient(0deg,#c59a6b 0 30px,#ab7f50 30px 32px)}
+
+.thumbnail-error{position:absolute;inset:0;display:grid;place-items:center;font-size:10px;line-height:1.4;color:#8d4951;text-align:center}

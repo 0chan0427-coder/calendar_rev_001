@@ -42,7 +42,7 @@ export default function InventoryPanel(p:Props){
  const backgrounds=entries.filter(r=>!furniture.includes(r)&&r.item.type!=='animal'&&!isWindowFrame(r.item)&&!WINDOW_SCENERY.some(v=>v.id===r.item.id)&&!isGardenTheme(r.item.id));
  const tabList:[Tab,string,number][]=[['garden','정원 테마',GARDEN_ITEMS.filter(i=>i.price===0||p.inventory.some(v=>v.item_id===i.id&&v.quantity>0)).length],['avatar','미니미',clothes.length],['furniture','가구·소품',furniture.length],['animals','동물',p.companions.length],['window','창문·풍경',WINDOW_SCENERY.filter(v=>v.price===0||p.inventory.some(i=>i.item_id===v.id&&i.quantity>0)).length],['background','배경·기타',backgrounds.length]];
  const changeTab=(t:Tab)=>{setTab(t);setQuery('');setFilter('all');};
- const art=(item:WorldItem)=><div className="inventory-art"><FurnitureArt item={item}/></div>;
+ const art=(item:WorldItem)=><div className="inventory-art"><FurnitureArt thumbnail item={item}/></div>;
  const empty=<div className="inventory-empty"><b>표시할 아이템이 없어요.</b><p>{query||filter!=='all'||slot?'검색어나 필터를 바꿔보세요.':'구매한 품목이 여기에 모여요.'}</p><button onClick={()=>{setQuery('');setFilter('all');setSlot('');}}>필터 초기화</button><button onClick={p.onShop}>포인트샵</button></div>;
  const shownClothes=clothes.filter(i=>(!slot||i.slot===slot)&&match(i.name)&&(filter!=='using'||avatarItemVisible(i,eq))&&(filter!=='purchased'||i.price>0));
  const shownFurniture=furniture.filter(r=>match(r.item.name)&&(filter!=='available'||r.available>0)&&(filter!=='placed'||r.placed.length>0));

@@ -1,21 +1,22 @@
 import {collectionItem} from '../../data/collection01';
 import {useId} from 'react';
-import type {Wearable,Equipment} from '../../data/wardrobe';
+import type {Wearable} from '../../data/wardrobe';
 import {RASTER_ASSETS} from '../../data/avatarRaster';
 import type {RasterKey} from '../../data/avatarRaster';
-import {avatarSvgMarkup} from '../../lib/avatarRaster';
+import {wearableThumbnailSvg} from '../../lib/wearableThumbnail';
+import WorldImageCanvas from './WorldImageCanvas';
+import SvgThumbnailCanvas from './SvgThumbnailCanvas';
 export default function WearableThumbnail({item,gender}:{item:Wearable;gender:'male'|'female'}){
  const uid=useId().replace(/[^a-z0-9]/gi,'');
  const collection=collectionItem(item.id);
- if(collection)return <svg className="wearable-thumbnail" viewBox={collection.crop.join(' ')} aria-hidden="true"><defs><filter id={`collection${uid}`}><feComponentTransfer><feFuncA type="linear" slope={/^c0[23]-/.test(item.id)?'2':'1.045'} intercept={/^c0[23]-/.test(item.id)?'-0.8':'-0.025'}/></feComponentTransfer></filter></defs><image href={collection.image} width={collection.width} height={collection.height} filter={`url(#collection${uid})`}/></svg>;
- if(item.slot==='costume'&&item.image)return <span className="wearable-thumbnail" dangerouslySetInnerHTML={{__html:avatarSvgMarkup(gender,{costume:item.id},`costume-thumb-${uid}`)}}/>;
  const key=item.id==='hair-chestnut'&&gender==='female'?'hair-bob':item.renderKey;
- if(key){const a=RASTER_ASSETS[key as RasterKey];return <svg className="wearable-thumbnail" viewBox={a.crop.join(' ')} aria-hidden="true"><defs><filter id={`thumb${uid}`}><feComponentTransfer><feFuncA type="linear" slope="1.045" intercept="-0.025"/></feComponentTransfer></filter></defs><image href={a.image} width={a.width} height={a.height} filter={`url(#thumb${uid})`}/></svg>;}
- if(item.id==='sunglasses-dog')return <svg viewBox="0 0 100 60" aria-hidden="true"><g fill="#44382d" stroke="#70543a" strokeWidth="3"><rect x="8" y="15" width="35" height="28" rx="7"/><rect x="57" y="15" width="35" height="28" rx="7"/><path d="M43 23Q50 17 57 23" fill="none"/></g></svg>;
- if(item.target==='cat')return item.mode==='tint'?<span className="wearable-swatch" style={{background:item.color}}/>:<img src={item.image} alt=""/>;
- if(item.slot==='accessory')return <img src={item.image} alt=""/>;
- const equipment:Equipment={hair:'hair-none',[item.slot]:item.id};
- const viewBox=['face','skin','makeup','glasses'].includes(item.slot)?'235 235 550 360':'100 0 824 1536';
- const markup=avatarSvgMarkup(gender,equipment,`thumb${uid}`).replace('viewBox="0 0 1024 1536"',`viewBox="${viewBox}"`);
- return <span className="wearable-thumbnail" dangerouslySetInnerHTML={{__html:markup}}/>;
+ const art=collection||(key?RASTER_ASSETS[key as RasterKey]:undefined);
+ if(art)return <WorldImageCanvas interactive={false} src={art.image} crop={art.crop} sourceSize={[art.width,art.height]} className="wearable-thumbnail" label={item.name} opaque/>;
+ if(item.target!=='avatar'){
+  if(item.mode==='tint')return <span className="wearable-swatch" style={{background:item.color}} role="img" aria-label={item.name}/>;
+  if(item.image)return <WorldImageCanvas interactive={false} src={item.image} className="wearable-thumbnail" label={item.name}/>;
+  if(item.id==='sunglasses-dog')return <SvgThumbnailCanvas label={item.name} markup={'<svg xmlns="http://www.w3.org/2000/svg" width="320" height="240" viewBox="0 0 100 65"><g fill="#44382d" stroke="#70543a" stroke-width="3"><rect x="8" y="15" width="35" height="28" rx="7"/><rect x="57" y="15" width="35" height="28" rx="7"/><path d="M43 23Q50 17 57 23" fill="none"/></g></svg>'}/>;
+ }
+ if(item.slot==='accessory'&&item.image)return <WorldImageCanvas interactive={false} src={item.image} className="wearable-thumbnail" label={item.name}/>;
+ return <SvgThumbnailCanvas label={item.name} markup={wearableThumbnailSvg(item,gender,'thumb'+uid)}/>;
 }

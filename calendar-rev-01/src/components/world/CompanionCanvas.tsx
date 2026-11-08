@@ -7,7 +7,7 @@ const thumbnailFrames=new Map<string,HTMLCanvasElement>();
 const thumbnailImages=new Map<string,Promise<HTMLImageElement>>();
 function thumbnailImage(src:string){let pending=thumbnailImages.get(src);if(!pending){pending=new Promise<HTMLImageElement>((resolve,reject)=>{const image=new Image();image.decoding='async';image.onload=()=>resolve(image);image.onerror=()=>reject(Error('Thumbnail unavailable'));image.src=src;});thumbnailImages.set(src,pending);pending.catch(()=>thumbnailImages.delete(src));if(thumbnailImages.size>48)thumbnailImages.delete(thumbnailImages.keys().next().value!);}return pending;}
 export async function warmCompanionSources(sources:string[]){await Promise.allSettled(sources.map(embedded));}
-interface FlatSource{image:string;width:number;height:number;crop:number[]}
+interface FlatSource{fallbackImage?:string;image:string;width:number;height:number;crop:number[]}
 
 function embedded(src:string){
  if(src.startsWith('data:'))return Promise.resolve(src);
@@ -40,7 +40,7 @@ export default function CompanionCanvas({children,recipeKey,className='',label,a
   if(cached){target.width=cached.width;target.height=cached.height;const context=target.getContext('2d');if(!context)throw Error('Canvas unavailable');context.drawImage(cached,0,0);setReady(true);return;}
   const box=svg.viewBox.baseVal;const resolution=Math.min(1,(thumbnail?240:1024)/Math.max(box.width,box.height));const width=Math.max(1,Math.ceil(box.width*resolution)),height=Math.max(1,Math.ceil(box.height*resolution));
   const remember=()=>{if(!thumbnail)return;const frame=document.createElement('canvas');frame.width=target.width;frame.height=target.height;frame.getContext('2d')?.drawImage(target,0,0);thumbnailFrames.delete(recipeKey);thumbnailFrames.set(recipeKey,frame);if(thumbnailFrames.size>48)thumbnailFrames.delete(thumbnailFrames.keys().next().value!);};
-  if(thumbnail&&flatSource){const image=await thumbnailImage(flatSource.image);if(!live)return;target.width=width;target.height=height;const context=target.getContext('2d');if(!context)throw Error('Canvas unavailable');const sx=image.naturalWidth/flatSource.width,sy=image.naturalHeight/flatSource.height;context.drawImage(image,flatSource.crop[0]*sx,flatSource.crop[1]*sy,flatSource.crop[2]*sx,flatSource.crop[3]*sy,0,0,width,height);remember();setReady(true);return;}
+  if(thumbnail&&flatSource){const image=await thumbnailImage(flatSource.image).catch(error=>{if(flatSource.fallbackImage&&flatSource.fallbackImage!==flatSource.image)return thumbnailImage(flatSource.fallbackImage);throw error;});if(!live)return;target.width=width;target.height=height;const context=target.getContext('2d');if(!context)throw Error('Canvas unavailable');const sx=image.naturalWidth/flatSource.width,sy=image.naturalHeight/flatSource.height;context.drawImage(image,flatSource.crop[0]*sx,flatSource.crop[1]*sy,flatSource.crop[2]*sx,flatSource.crop[3]*sy,0,0,width,height);remember();setReady(true);return;}
   svg.setAttribute('width',String(width));svg.setAttribute('height',String(height));
   const body=svg.cloneNode(true) as SVGSVGElement;body.querySelectorAll('[data-pet-part]').forEach(el=>el.remove());
   const layers=await Promise.all(parts.map(async part=>{const layer=svg.cloneNode(true) as SVGSVGElement;Array.from(layer.children).forEach(el=>{if(el.tagName.toLowerCase()!=='defs'&&el.getAttribute('data-pet-part')!==part.id)el.remove();});return {part,image:await raster(layer)};}));

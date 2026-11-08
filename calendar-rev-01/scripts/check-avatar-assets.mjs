@@ -57,3 +57,5 @@ for(const dir of dirs){const count=readdirSync(dir).filter(n=>n.endsWith('.png')
 console.log(`Avatar source/fitting checks passed: ${items.length} designs. Visual fit review is also required.`);
 
 await import("./check-costume-02.mjs");
+
+await import('./check-costume-03.mjs');

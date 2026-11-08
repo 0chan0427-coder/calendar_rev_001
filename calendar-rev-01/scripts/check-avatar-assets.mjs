@@ -59,3 +59,5 @@ console.log(`Avatar source/fitting checks passed: ${items.length} designs. Visua
 await import("./check-costume-02.mjs");
 
 await import('./check-costume-03.mjs');
+
+await import('./check-costume-sets.mjs');

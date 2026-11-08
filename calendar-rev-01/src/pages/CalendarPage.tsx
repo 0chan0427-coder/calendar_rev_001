@@ -61,6 +61,7 @@ export default function CalendarApp() {
 
   // 정산 관련 상태 (수정됨)
   const [settlements, setSettlements] = useState<any[]>([]);
+  const [settlementListError,setSettlementListError]=useState('');
   const [settlementModalOpen, setSettlementModalOpen] = useState(false);
   const [newSettlementTitle, setNewSettlementTitle] = useState('');
   const [settlementRows, setSettlementRows] = useState<{ desc: string; amount: string }[]>([
@@ -298,16 +299,12 @@ export default function CalendarApp() {
   };
 
   const fetchSettlements = async () => {
-    if (selectedRoomIds.length === 0) {
-      setSettlements([]);
-      return;
-    }
     const requested=selectedRoomIds.join(',');
     const { data, error } = await listSettlements(selectedRoomIds);
     if(requested!==currentSelectedRooms.current.join(','))return;
     if (!error && data) {
-      setSettlements(data);
-    }
+      setSettlements(data);setSettlementListError('');
+    }else{setSettlementListError('정산 내역을 불러오지 못했습니다. 다시 시도해주세요.');}
   };
 
   const fetchSettlementDetails = async (settlementId: string) => {
@@ -1310,7 +1307,7 @@ export default function CalendarApp() {
             <div style={{ padding: '10px 0', borderBottom: '1px solid #eee', marginBottom: '15px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div>
                 <h2 style={{ margin: 0, fontSize: '18px', color: '#222' }}>💰 지출 및 정산 관리</h2>
-                <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#666' }}>전체 정산 내역을 확인하고 송금 상태를 관리할 수 있습니다.</p>
+                <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#666' }}>{selectedRoomIds.length?'선택한 방의 정산 내역입니다.':'접근 가능한 모든 방의 정산 내역입니다.'}</p>
               </div>
               <button 
                 onClick={openSettlementModal}
@@ -1330,7 +1327,8 @@ export default function CalendarApp() {
             </div>
 
             <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px', paddingBottom: '20px' }}>
-              {filteredSettlements.length === 0 ? (
+              {settlementListError?<div className="calendar-inline-error" role="alert">{settlementListError}<button onClick={()=>void fetchSettlements()}>다시 불러오기</button></div>:null}
+              {!settlementListError&&filteredSettlements.length === 0 ? (
                 <div style={{ textAlign: 'center', color: '#888', marginTop: '40px' }}>등록된 정산 내역이 없습니다. 우측 상단의 '정산 등록하기'를 눌러 시작해보세요!</div>
               ) : (
                 filteredSettlements.map((st) => {
@@ -1357,7 +1355,7 @@ export default function CalendarApp() {
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#888' }}>{new Date(st.created_at).toLocaleDateString()}</span>
-                        <div className="settlement-progress"><span className="settlement-state" data-state={progress.status}>{progress.label}</span><span>{progress.total?`${progress.paid}/${progress.total}명 완료`:progress.status==='unregistered'?'참여자를 확인해주세요':'송금 대상 없음'}</span></div>
+                        <div className="settlement-progress"><span className="settlement-state" data-state={st.progress_unavailable?'unavailable':progress.status}>{st.progress_unavailable?'진행 상태 조회 실패':progress.label}</span><span>{st.progress_unavailable?'상세에서 확인해주세요':progress.total?`${progress.paid}/${progress.total}명 완료`:progress.status==='unregistered'?'참여자를 확인해주세요':'송금 대상 없음'}</span></div>
                       </div>
 
                       <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#333' }}>

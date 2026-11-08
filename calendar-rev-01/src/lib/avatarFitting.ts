@@ -1,3 +1,4 @@
+import {helmetDefs} from './avatarHelmets';
 import type { CollectionItem, Box } from '../data/collection01';
 import { collectionAsset, hairLayerMasks } from './avatarCollection';
 import type { AssetResolver } from './avatarRaster';
@@ -54,6 +55,11 @@ export const GARMENT_FITS: Record<string, GarmentFit> = {
     'c02-top-academy': { center:768, scaleX:.46, bodyPath:body, bands:[[140,585],[310,651],[775,978]], sleevePath:sleeve, shoulder:[470,300], cuff:[185,820], targetCuff:[244,962], backPath:'M635 0H900V147Q900 307 768 307Q635 307 635 147Z', sleeveJoinX:480 },
     'c02-top-pirate': { center:768, scaleX:.46, bodyPath:body, bands:[[140,585],[310,651],[775,978]], sleevePath:sleeve, shoulder:[470,300], cuff:[185,820], targetCuff:[244,962], backPath:'M630 0H905V147Q905 300 768 300Q630 300 630 147Z', sleeveJoinX:480 },
     'c02-top-knight': { center:768, scaleX:.48, bodyPath:body, bands:[[140,585],[310,651],[775,978]], sleevePath:sleeve, shoulder:[470,300], cuff:[185,820], targetCuff:[244,962], backPath:'M610 0H925V147Q925 290 768 302Q610 290 610 147Z', sleeveJoinX:480 },
+    'c03-top-orbit': {center:768,scaleX:.48,bodyPath:body,bands:[[140,585],[310,651],[775,978]],sleevePath:sleeve,shoulder:[470,300],cuff:[185,820],targetCuff:[244,962],backPath:'M620 0H915V147Q915 300 768 315Q620 300 620 147Z',sleeveJoinX:480},
+    'c03-top-warden': {center:768,scaleX:.48,bodyPath:body,bands:[[140,585],[310,651],[775,978]],sleevePath:sleeve,shoulder:[470,300],cuff:[185,820],targetCuff:[244,962],backPath:'M620 0H915V147Q915 300 768 315Q620 300 620 147Z',sleeveJoinX:480},
+    'c03-top-rescue': {center:768,scaleX:.46,bodyPath:body,bands:[[140,585],[310,651],[775,978]],sleevePath:sleeve,shoulder:[470,300],cuff:[185,820],targetCuff:[244,962],backPath:'M620 0H915V147Q915 300 768 315Q620 300 620 147Z',sleeveJoinX:480},
+    'c03-top-racer': {center:768,scaleX:.46,bodyPath:body,bands:[[140,585],[310,651],[775,978]],sleevePath:sleeve,shoulder:[470,300],cuff:[185,820],targetCuff:[244,962],backPath:'M620 0H915V147Q915 300 768 315Q620 300 620 147Z',sleeveJoinX:480},
+    'c03-top-abyss': {center:768,scaleX:.46,bodyPath:body,bands:[[140,585],[310,651],[775,978]],sleevePath:sleeve,shoulder:[470,300],cuff:[185,820],targetCuff:[244,962],backPath:'M620 0H915V147Q915 300 768 315Q620 300 620 147Z',sleeveJoinX:480},
 };
 function mappedY(f: GarmentFit, y: number) { let i = 0; while (i < f.bands.length - 2 && y > f.bands[i + 1][0])
     i++; const [a, b] = f.bands[i], [c, d] = f.bands[i + 1]; return b + (y - a) * (d - b) / (c - a); }
@@ -142,7 +148,7 @@ export function fittedGarment(item: CollectionItem | undefined, uid: string, res
             }
         }
     }
-    return `<g data-collection="${item.id}" data-garment-layer="${layer}" filter="url(#${item.id.startsWith('c02-')?alphaId+'-costume':alphaId})"><defs>${defs}</defs>${showSleeves ? sleeves : ''}${onlySleeves ? '' : bodice}</g>`;
+    return `<g data-collection="${item.id}" data-garment-layer="${layer}" filter="url(#${/^c0[23]-/.test(item.id)?alphaId+'-costume':alphaId})"><defs>${defs}</defs>${showSleeves ? sleeves : ''}${onlySleeves ? '' : bodice}</g>`;
 }
 export interface HeadwearFit {
     box?: Box;
@@ -164,10 +170,10 @@ export const HEADWEAR_FITS: Record<string, HeadwearFit> = {
     'c02-hat-knight': {backPath:'M-200 940Q350 900 768 780Q1180 900 1750 940V2500H-200Z'},
 };
 export function headwearDefs(item: CollectionItem | undefined, uid: string) { if (!item)
-    return ''; const f = HEADWEAR_FITS[item.id]; if (!f)
+    return ''; if(item.helmet)return helmetDefs(item,uid);const f = HEADWEAR_FITS[item.id]; if (!f)
     return ''; const [x, y, w, h] = f.box || item.box, [cx, cy, cw, ch] = item.crop; return hairLayerMasks(item.width, item.height, f.backPath, uid + '-hat-back', uid + '-hat-front', f.frontKeepPath) + (f.headPath ? `<clipPath id="${uid}-head-visible"><path d="${f.headPath}" transform="matrix(${w / cw} 0 0 ${h / ch} ${x - cx * w / cw} ${y - cy * h / ch})"/></clipPath>` : ''); }
 export function fittedHeadwear(item: CollectionItem | undefined, uid: string, resolve: AssetResolver, alphaId: string, layer: 'front' | 'back') { if (!item)
-    return ''; const f = HEADWEAR_FITS[item.id]; return collectionAsset(item, resolve, alphaId, f?.box, undefined, f ? `mask="url(#${uid}-hat-${layer})"` : ''); }
+    return ''; if(item.helmet)return layer==='front'?collectionAsset(item,resolve,alphaId):'';const f = HEADWEAR_FITS[item.id]; return collectionAsset(item, resolve, alphaId, f?.box, undefined, f ? `mask="url(#${uid}-hat-${layer})"` : ''); }
 
 /** High collar is seated at the actual shoulder/neck, not below the baked tank straps. */
 export const CAPE_FIT={box:[150,550,724,705] as Box,backPath:'M552 70Q655 62 762 70L756 94Q736 105 718 114L715 158H597L594 114Q575 105 557 94Z'};

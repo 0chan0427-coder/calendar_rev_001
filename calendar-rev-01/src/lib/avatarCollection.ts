@@ -4,7 +4,7 @@ const safe=(s:string)=>s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/<
 export function collectionAsset(item:CollectionItem|undefined,resolve:AssetResolver,alphaId:string,box?:Box,crop?:Box,imageExtra=''){
  if(!item)return '';
  const b=box||item.box;
- const opacityId=item.id.startsWith('c02-')?alphaId+'-costume':alphaId;
+ const opacityId=/^c0[23]-/.test(item.id)?alphaId+'-costume':alphaId;
  return `<svg data-collection="${item.id}" x="${b[0]}" y="${b[1]}" width="${b[2]}" height="${b[3]}" viewBox="${(crop||item.crop).join(' ')}" preserveAspectRatio="none" overflow="hidden"><image href="${safe(resolve(item.image))}" width="${item.width}" height="${item.height}" filter="url(#${opacityId})" ${imageExtra}/></svg>`;
 }
 /** Complementary masks split source art without cutting a generic hole around the face. */
@@ -30,7 +30,7 @@ export function collectionCuffMask(item:CollectionItem|undefined,id:string){
  if(item.id==='shoes-oxford')custom='M390 260H660V355Q580 345 535 378Q465 358 400 371Z M876 260H1146V371Q1071 358 1001 378Q956 345 876 355Z';
  if(item.id==='shoes-slippers')custom='M330 180H680V420Q590 360 474 348Q410 330 330 345Z M856 180H1206V345Q1126 330 1062 348Q946 360 856 420Z';
  if(item.kind!=='boot'&&!custom)return '';
- const paths=custom||item.feet.map(([x,y,w,h],i)=>{
+ const paths=item.cuffPath||custom||item.feet.map(([x,y,w,h],i)=>{
   const left=i===0?x+w*.34:x+w*.06,right=i===0?x+w*.94:x+w*.66;
   return `M${left} ${y-12}H${right}V${y+h*.07}Q${(left+right)/2} ${y+h*.25} ${left} ${y+h*.07}Z`;
  }).join(' ');

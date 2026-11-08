@@ -8,6 +8,7 @@ export default function WearableThumbnail({item,gender}:{item:Wearable;gender:'m
  const uid=useId().replace(/[^a-z0-9]/gi,'');
  const collection=collectionItem(item.id);
  if(collection)return <svg className="wearable-thumbnail" viewBox={collection.crop.join(' ')} aria-hidden="true"><defs><filter id={`collection${uid}`}><feComponentTransfer><feFuncA type="linear" slope={/^c0[23]-/.test(item.id)?'2':'1.045'} intercept={/^c0[23]-/.test(item.id)?'-0.8':'-0.025'}/></feComponentTransfer></filter></defs><image href={collection.image} width={collection.width} height={collection.height} filter={`url(#collection${uid})`}/></svg>;
+ if(item.slot==='costume'&&item.image)return <span className="wearable-thumbnail" dangerouslySetInnerHTML={{__html:avatarSvgMarkup(gender,{costume:item.id},`costume-thumb-${uid}`)}}/>;
  const key=item.id==='hair-chestnut'&&gender==='female'?'hair-bob':item.renderKey;
  if(key){const a=RASTER_ASSETS[key as RasterKey];return <svg className="wearable-thumbnail" viewBox={a.crop.join(' ')} aria-hidden="true"><defs><filter id={`thumb${uid}`}><feComponentTransfer><feFuncA type="linear" slope="1.045" intercept="-0.025"/></feComponentTransfer></filter></defs><image href={a.image} width={a.width} height={a.height} filter={`url(#thumb${uid})`}/></svg>;}
  if(item.id==='sunglasses-dog')return <svg viewBox="0 0 100 60" aria-hidden="true"><g fill="#44382d" stroke="#70543a" strokeWidth="3"><rect x="8" y="15" width="35" height="28" rx="7"/><rect x="57" y="15" width="35" height="28" rx="7"/><path d="M43 23Q50 17 57 23" fill="none"/></g></svg>;

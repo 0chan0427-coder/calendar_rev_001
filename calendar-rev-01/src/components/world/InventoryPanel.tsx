@@ -3,7 +3,7 @@ import type {WindowUpdate} from './WindowPanel';
 import {isWindowFrame,WINDOW_SCENERY} from '../../data/windows';
 import {useMemo,useState} from 'react';
 import type {WorldCompanion,WorldItem,WorldProfile,WorldRoomItem} from '../../types/world';
-import {WEARABLES,WEAR_SLOTS,normalizeAvatarEquipment,companionWearTarget} from '../../data/wardrobe';
+import {WEARABLES,WEAR_SLOTS,avatarItemVisible,normalizeAvatarEquipment,companionWearTarget} from '../../data/wardrobe';
 import type {Equipment,WearSlot,Wearable} from '../../data/wardrobe';
 import FurnitureArt from './FurnitureArt';
 import WearableThumbnail from './WearableThumbnail';
@@ -42,7 +42,7 @@ export default function InventoryPanel(p:Props){
  const changeTab=(t:Tab)=>{setTab(t);setQuery('');setFilter('all');};
  const art=(item:WorldItem)=><div className="inventory-art"><FurnitureArt item={item}/></div>;
  const empty=<div className="inventory-empty"><b>표시할 아이템이 없어요.</b><p>{query||filter!=='all'||slot?'검색어나 필터를 바꿔보세요.':'구매한 품목이 여기에 모여요.'}</p><button onClick={()=>{setQuery('');setFilter('all');setSlot('');}}>필터 초기화</button><button onClick={p.onShop}>포인트샵</button></div>;
- const shownClothes=clothes.filter(i=>(!slot||i.slot===slot)&&match(i.name)&&(filter!=='using'||eq[i.slot]===i.id)&&(filter!=='purchased'||i.price>0));
+ const shownClothes=clothes.filter(i=>(!slot||i.slot===slot)&&match(i.name)&&(filter!=='using'||avatarItemVisible(i,eq))&&(filter!=='purchased'||i.price>0));
  const shownFurniture=furniture.filter(r=>match(r.item.name)&&(filter!=='available'||r.available>0)&&(filter!=='placed'||r.placed.length>0));
  return <aside className="decorate-panel side-item-panel inventory-panel" aria-label="내 아이템 관리">
   <div className="inventory-heading"><div><small>MY COLLECTION</small><h3>내 아이템</h3><p>구매한 옷부터 배치한 가구까지</p></div><button onClick={p.onClose} disabled={p.busy}>닫기</button></div>
@@ -54,7 +54,7 @@ export default function InventoryPanel(p:Props){
    <div className="inventory-filters"><select aria-label="미니미 부위" value={slot} onChange={e=>setSlot(e.target.value as WearSlot|'')}><option value="">모든 부위</option>{WEAR_SLOTS.map(([id,label])=><option key={id} value={id}>{label}</option>)}</select><select aria-label="미니미 상태" value={filter} onChange={e=>setFilter(e.target.value)}><option value="all">전체 보유</option><option value="purchased">구매한 아이템</option><option value="using">착용 중</option></select></div>
    <div className="inventory-avatar-tools"><button className="wardrobe-open" onClick={()=>p.onWear()}>미니미 옷·헤어·장식 꾸미기</button><div className="inventory-gender" role="group" aria-label="미니미 성별"><button aria-pressed={p.gender==='male'} onClick={()=>p.onGender('male')}>남성</button><button aria-pressed={p.gender==='female'} onClick={()=>p.onGender('female')}>여성</button></div></div>
    <p className="inventory-caption">{shownClothes.length}종 · 기본 제공 품목도 함께 보여요.</p>
-   <div className="inventory-grid">{shownClothes.map(i=><article key={i.id} className={eq[i.slot]===i.id?'in-use':''}><WearableThumbnail item={i} gender={p.gender}/><b>{i.name}</b><small>{WEAR_SLOTS.find(s=>s[0]===i.slot)?.[1]} · {i.price===0?'기본 제공':'구매 보유'}</small><span className="inventory-badge">{eq[i.slot]===i.id?'착용 중':'보유'}</span><button onClick={()=>p.onWear(i)}>{eq[i.slot]===i.id?'착용 확인':'입어보기'}</button></article>)}</div>{!shownClothes.length&&empty}
+   <div className="inventory-grid">{shownClothes.map(i=><article key={i.id} className={avatarItemVisible(i,eq)?'in-use':''}><WearableThumbnail item={i} gender={p.gender}/><b>{i.name}</b><small>{WEAR_SLOTS.find(s=>s[0]===i.slot)?.[1]} · {i.price===0?'기본 제공':'구매 보유'}</small><span className="inventory-badge">{avatarItemVisible(i,eq)?'착용 중':eq[i.slot]===i.id?'보관 착장':'보유'}</span><button onClick={()=>p.onWear(i)}>{avatarItemVisible(i,eq)?'착용 확인':'입어보기'}</button></article>)}</div>{!shownClothes.length&&empty}
   </>}
   {tab==='furniture'&&<>
    <div className="inventory-filters"><select aria-label="가구 상태" value={filter} onChange={e=>setFilter(e.target.value)}><option value="all">전체 보유</option><option value="available">배치 가능</option><option value="placed">배치 중</option></select><span className="inventory-save" role="status">{p.saveState==='saving'?'저장 중…':p.saveState==='error'?'저장 실패 · 다시 시도해주세요':p.saveState==='saved'?'저장됨':'변경 시 자동 저장'}</span></div>

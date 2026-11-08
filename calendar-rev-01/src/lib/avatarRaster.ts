@@ -1,3 +1,4 @@
+import {costumeSvg,mukuroIris} from './avatarCostumes';
 import {helmetLining,helmetFaceClip} from './avatarHelmets';
 import {accessoryDefs,fittedAccessory} from './avatarAccessories';
 import {CAPE_FIT,GARMENT_FITS,HEADWEAR_FITS,fittedGarment,headwearDefs,fittedHeadwear} from './avatarFitting';
@@ -15,6 +16,7 @@ const safe=(s:string)=>s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/<
 export function avatarSvgMarkup(gender:'male'|'female',input:Equipment={},uid='avatar',resolve:AssetResolver=identity,options:AvatarRenderOptions={}){
  const valid=Object.fromEntries(Object.entries(input).filter(([slot,id])=>WEARABLES.some(i=>i.target==='avatar'&&i.id===id&&i.slot===slot)));
  const e={...AVATAR_DEFAULTS,...valid};
+ const fullCostume=costumeSvg(e,uid,resolve,options);if(fullCostume)return fullCostume;
  const id=(s:string)=>`${uid}-${s}`;
  const animate=options.animate===true;
  const blinking=animate&&options.blink!==false&&e.face!=='eyes-smile';
@@ -40,8 +42,9 @@ export function avatarSvgMarkup(gender:'male'|'female',input:Equipment={},uid='a
  const hairSource=c.hair||RASTER_ASSETS[hair];
  const hairBackPath=c.hair?.hairLayers?.backPath||(hair==='hair-bob'?'M550 750 Q768 875 1000 750 L1000 1024 H550Z':'M420 795 Q700 1030 1000 795 L1000 1143 H420Z');
  const eyeY=gender==='female'?-6:0;
- const eyeSprite=asset('eyes-open',[305,293,414,176]);
- const brows=`<g clip-path="url(#${id('brows')})">${eyeSprite}</g>`;
+ const bareEyeSprite=asset('eyes-open',[305,293,414,176]);
+ const eyeSprite=bareEyeSprite+(e.makeup==='makeup-mukuro-six'?mukuroIris(id('mukuro')):'');
+ const brows=`<g clip-path="url(#${id('brows')})">${bareEyeSprite}</g>`;
  const closedEyes=`${brows}<g transform="translate(0 ${eyeY})" stroke="#673521" stroke-width="11" fill="none" stroke-linecap="round"><path d="M329 399 Q387 435 446 399 M568 399 Q628 435 688 399"/><path d="M332 401L323 395 M443 401L451 395 M571 401L562 395 M685 401L694 395" stroke-width="7"/></g>`;
  const smileEyes=`${brows}<g transform="translate(0 ${eyeY})" stroke="#673521" stroke-width="13" fill="none" stroke-linecap="round"><path d="M329 420 Q387 359 446 420 M568 420 Q628 359 688 420"/></g>`;
  const eyes=e.face==='eyes-smile'?smileEyes:blinking

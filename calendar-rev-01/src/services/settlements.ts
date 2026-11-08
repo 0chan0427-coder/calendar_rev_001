@@ -1,7 +1,7 @@
 import { supabase } from '../lib/supabase';
 
 export const listSettlements = (roomIds: string[]) => roomIds.length
-  ? supabase.from('settlements').select('*').in('room_id', roomIds).order('created_at', { ascending: false })
+  ? supabase.from('settlements').select('*, settlement_items(id,user_id,amount,is_paid)').in('room_id', roomIds).order('created_at', { ascending: false })
   : Promise.resolve({ data: [], error: null });
 export const getSettlementItems = (settlementId: string) => supabase.from('settlement_items').select('*').eq('settlement_id', settlementId);
 export const createSettlement = (settlement: Record<string, unknown>) => supabase.from('settlements').insert([settlement]).select().single();

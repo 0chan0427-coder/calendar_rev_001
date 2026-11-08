@@ -1,7 +1,7 @@
 import { supabase } from '../lib/supabase';
 
 export const listVotes = (roomIds?: string[]) => {
-  let query = supabase.from('votes').select('*').order('created_at', { ascending: false });
+  let query = supabase.from('votes').select('*, vote_comments(count)').order('created_at', { ascending: false });
   if (roomIds?.length) query = query.in('room_id', roomIds);
   return query;
 };

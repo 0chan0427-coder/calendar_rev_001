@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface CalendarGridProps {
   year: number;
   month: number;

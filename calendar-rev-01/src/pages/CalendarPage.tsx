@@ -12,6 +12,11 @@ import { listSettlements, getSettlementItems, createSettlement as createSettleme
 import { getProfile, getProfiles, getPendingProfiles, updateOwnNameRequest, updateProfileColor, approveUser as approveUserRecord, approveNameChange as approveNameChangeRecord, rejectNameChange as rejectNameChangeRecord } from '../services/profiles';
 import { ensureWorldProfile, recordWorldActivity } from '../services/world';
 
+import VoteComments from '../components/votes/VoteComments';
+import {restoreCalendarSelection,saveCalendarSelection} from '../lib/calendarPreferences';
+import {settlementProgress} from '../lib/settlementProgress';
+import '../styles/calendar-updates.css';
+
 export default function CalendarApp() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
@@ -69,6 +74,9 @@ export default function CalendarApp() {
   const [settlementDetailModalOpen, setSettlementDetailModalOpen] = useState(false);
 
   const [selectedRoomIds, setSelectedRoomIds] = useState<string[]>([]);
+  const selectionUser = useRef<string|null>(null);
+  const currentUser = useRef<string|null>(null); currentUser.current=session?.user?.id||null;
+  const currentSelectedRooms=useRef(selectedRoomIds);currentSelectedRooms.current=selectedRoomIds;
   const [targetRoomIdForAdd, setTargetRoomIdForAdd] = useState<string | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
 
@@ -76,7 +84,7 @@ export default function CalendarApp() {
     return localStorage.getItem('keepLoggedIn') !== 'false';
   });
 
-  const handleAutoLoginChange = (e) => {
+  const handleAutoLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAutoLogin(e.target.checked);
     localStorage.setItem('keepLoggedIn', e.target.checked.toString());
   };
@@ -124,16 +132,16 @@ export default function CalendarApp() {
   
   const [touchStartX, setTouchStartX] = useState(0);
   const [touchEndX, setTouchEndX] = useState(0);
-  const handleTouchStart = (e) => {
+  const handleTouchStart = (e: React.TouchEvent) => {
     setTouchStartX(e.targetTouches[0].clientX);
   };
 
-  const handleTouchMove = (e) => {
+  const handleTouchMove = (e: React.TouchEvent) => {
     setTouchEndX(e.targetTouches[0].clientX);
   };
   
   const [newEventColor, setNewEventColor] = useState(PRESET_COLORS[0]);
-  const [customPickerColor, setCustomPickerColor] = useState('#ff0000');
+  const [customPickerColor] = useState('#ff0000');
   const [customColorLabel, setCustomColorLabel] = useState('');
 
   const [colorLabels, setColorLabels] = useState<Record<string, string>>(() => {
@@ -166,7 +174,7 @@ export default function CalendarApp() {
       }
     });
 
-    const { data: { subscription } } = onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = onAuthStateChange(async (_event, session) => {
       setSession(session);
       if (session?.user) {
         fetchProfile(session.user.id);
@@ -181,17 +189,20 @@ export default function CalendarApp() {
   }, []);
 
   useEffect(() => {
-    const roomId = new URLSearchParams(window.location.search).get('room');
-    if (roomId && rooms.some(room => room.id === roomId)) {
-      setSelectedRoomIds([roomId]);
-      setTargetRoomIdForAdd(roomId);
-      setTargetRoomIdForSettlement(roomId);
-    }
-  }, [rooms]);
+    const uid=session?.user?.id;
+    if(uid&&selectionUser.current===uid)saveCalendarSelection(uid,selectedRoomIds);
+    setTargetRoomIdForAdd(selectedRoomIds[0]||null);
+    setTargetRoomIdForSettlement(selectedRoomIds[0]||null);
+  },[selectedRoomIds,session?.user?.id]);
+
+  useEffect(() => {
+    selectionUser.current=null;
+    setSelectedRoomIds([]);setRooms([]);setSelectedEvent(null);setRightSidebarOpen(false);
+    if(session&&profile?.status==='approved')void fetchRooms();
+  },[session?.user?.id,profile?.status]);
 
   useEffect(() => {
     if (session && profile && profile.status === 'approved') {
-      fetchRooms();
       fetchEvents();
       fetchProfilesMap();
       fetchVotes();
@@ -291,7 +302,9 @@ export default function CalendarApp() {
       setSettlements([]);
       return;
     }
+    const requested=selectedRoomIds.join(',');
     const { data, error } = await listSettlements(selectedRoomIds);
+    if(requested!==currentSelectedRooms.current.join(','))return;
     if (!error && data) {
       setSettlements(data);
     }
@@ -402,8 +415,9 @@ export default function CalendarApp() {
   const toggleItemPaid = async (itemId: string, currentPaid: boolean) => {
     const { error } = await updateSettlementItemPaid(itemId, !currentPaid);
     if (!error && selectedSettlement) {
-      fetchSettlementDetails(selectedSettlement.id);
-    }
+      await fetchSettlementDetails(selectedSettlement.id);
+      await fetchSettlements();
+    } else if(error) {alert("송금 상태를 변경하지 못했습니다: "+error.message);}
   };
 
   const deleteSettlement = async (settlementId: string) => {
@@ -577,18 +591,24 @@ export default function CalendarApp() {
   };
   
   const fetchRooms = async () => {
+    const uid=session?.user?.id;if(!uid)return;
     const { data, error } = await listRooms();
+    if(currentUser.current!==uid)return;
     if (!error && data) {
       setRooms(data);
-      if (selectedRoomIds.length === 0 && data.length > 0) {
-        setSelectedRoomIds([data[0].id]);
-        setTargetRoomIdForAdd(data[0].id);
-        setTargetRoomIdForSettlement(data[0].id);
+      const valid=data.map(r=>r.id);
+      if(selectionUser.current!==uid){
+        const url=new URL(window.location.href);
+        const restored=restoreCalendarSelection(uid,valid,url.searchParams.get('room'));
+        if(url.searchParams.has('room')){url.searchParams.delete('room');window.history.replaceState(window.history.state,'',url);}
+        selectionUser.current=uid;setSelectedRoomIds(restored);
+      }else{
+        setSelectedRoomIds(previous=>{const next=previous.filter(id=>valid.includes(id));return next.length===previous.length?previous:next;});
       }
     }
   };
 
-  const updateRoomName = async (roomId) => {
+  const updateRoomName = async (roomId: string) => {
     if (!editRoomNameText.trim()) {
       alert('변경할 방 이름을 입력해주세요.');
       return;
@@ -606,7 +626,7 @@ export default function CalendarApp() {
     setEditRoomNameText('');
   };
 
-  const moveRoomOrder = async (index, direction) => {
+  const moveRoomOrder = async (index: number, direction: 'up' | 'down') => {
     const newRooms = [...rooms];
     const targetIndex = direction === 'up' ? index - 1 : index + 1;
 
@@ -1275,7 +1295,7 @@ export default function CalendarApp() {
                       </div>
 
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px', fontSize: '12px', color: '#666' }}>
-                        <span>작성자: {author}</span>
+                        <span>작성자: {author} · 댓글 {vote.vote_comments?.[0]?.count||0}</span>
                         <span style={{ fontWeight: 'bold', color: '#007bff' }}>참여하기 &gt;</span>
                       </div>
                     </div>
@@ -1315,6 +1335,7 @@ export default function CalendarApp() {
               ) : (
                 filteredSettlements.map((st) => {
                   const author = profilesMap[st.user_id]?.name || '알 수 없음';
+                  const progress=settlementProgress(st.user_id,st.settlement_items);
                   return (
                     <div 
                       key={st.id}
@@ -1336,6 +1357,7 @@ export default function CalendarApp() {
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#888' }}>{new Date(st.created_at).toLocaleDateString()}</span>
+                        <div className="settlement-progress"><span className="settlement-state" data-state={progress.status}>{progress.label}</span><span>{progress.total?`${progress.paid}/${progress.total}명 완료`:progress.status==='unregistered'?'참여자를 확인해주세요':'송금 대상 없음'}</span></div>
                       </div>
 
                       <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#333' }}>
@@ -1365,6 +1387,7 @@ export default function CalendarApp() {
                     ({selectedRoomIds.map(id => rooms.find(r => r.id === id)?.name).filter(Boolean).join(', ')})
                   </span>
                 </h2>
+                <button className="calendar-close" onClick={()=>{setSelectedRoomIds([]);setSelectedEvent(null);setRightSidebarOpen(false);}}>캘린더 모두 닫기 ×</button>
               </div>
 
               <div style={{ margin: '4px 0 8px' }}>
@@ -1426,7 +1449,7 @@ export default function CalendarApp() {
               />
             </div>
           ) : (
-            <h3 style={{ textAlign: 'center', marginTop: '50px', color: '#666' }}>하단 메뉴에서 좌측 바를 열어 캘린더에 표시할 방을 선택해주세요.</h3>
+            <section className="calendar-empty"><h3>{rooms.length?'확인할 방을 선택해주세요':'참여 중인 방이 없습니다'}</h3><p className="calendar-muted">{rooms.length?'아래에서 방을 선택하면 캘린더가 열립니다. 마지막으로 열거나 닫은 상태는 이 기기에 저장됩니다.':'왼쪽 메뉴에서 방 목록과 방 만들기를 확인해주세요.'}</p><div className="calendar-empty-rooms">{rooms.map(r=><button key={r.id} onClick={()=>{toggleRoomSelection(r.id);setCurrentViewMode('calendar');}}>{r.name}</button>)}<button onClick={()=>setLeftSidebarOpen(true)}>방 메뉴 열기</button></div></section>
           )
         )}
       </div>
@@ -1858,7 +1881,7 @@ export default function CalendarApp() {
       {/* 투표 상세 및 참여 모달 */}
       {voteDetailModalOpen && selectedVote && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1100 }}>
-          <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', width: '480px', maxHeight: '85vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '15px', boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
+          <div className="calendar-update-modal" style={{ background: '#fff', padding: '24px', borderRadius: '12px', width: '480px', maxHeight: '85vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '15px', boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
               <div style={{ display: 'flex', gap: '6px' }}>
                 <span style={{ fontSize: '11px', fontWeight: 'bold', padding: '3px 8px', borderRadius: '4px', background: selectedVote.status === 'active' ? '#e7f5ff' : '#f1f3f5', color: selectedVote.status === 'active' ? '#1c7ed6' : '#495057' }}>
@@ -1958,6 +1981,8 @@ export default function CalendarApp() {
                 투표하기 / 변경하기
               </button>
             )}
+
+            <VoteComments key={selectedVote.id} voteId={selectedVote.id} userId={session.user.id} profiles={profilesMap} onCountChange={count=>setVotes(previous=>previous.map(v=>v.id===selectedVote.id?{...v,vote_comments:[{count}]}:v))}/>
 
             {(selectedVote.user_id === session?.user?.id || profile?.role === 'admin') && (
               <div style={{ display: 'flex', gap: '8px', marginTop: '5px' }}>

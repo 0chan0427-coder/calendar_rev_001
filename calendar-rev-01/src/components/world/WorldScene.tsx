@@ -1,3 +1,4 @@
+import {interiorDesign} from '../../data/roomSkins';
 import {gardenTheme,gardenPosition} from '../../data/gardens';
 import WorldImageCanvas from './WorldImageCanvas';
 import SceneControls from './SceneControls';
@@ -51,9 +52,11 @@ export default function WorldScene({ profile, isOwner, onToggleScene, roomItems 
   const [roomWidth,setRoomWidth]=useState(640);
   useEffect(()=>{const root=roomRef.current;if(!root)return;const measure=()=>setRoomWidth(Math.max(1,root.clientWidth));measure();const observer=new ResizeObserver(measure);observer.observe(root);return()=>observer.disconnect();},[]);
   const canvasWidth=Math.max(640,roomWidth),canvasScale=roomWidth/canvasWidth;
+  const roomSkin=profile.scene_type==='interior'?interiorDesign(profile.room_theme_id):undefined;
+  const wallArt=interiorDesign(profile.wallpaper_id),floorArt=interiorDesign(profile.floor_id);
   const garden=profile.scene_type==='exterior'?gardenTheme(profile.garden_theme_id):undefined;
-  const canvasHeight=profile.scene_type==='exterior'?(garden?Math.round(canvasWidth*garden.height/garden.width):620):560;
-  const sceneUnit=garden?canvasHeight/620:1;
+  const canvasHeight=profile.scene_type==='exterior'?(garden?Math.round(canvasWidth*garden.height/garden.width):620):roomSkin?Math.round(canvasWidth*roomSkin.height/roomSkin.width):560;
+  const sceneUnit=garden?canvasHeight/620:roomSkin?canvasHeight/560:1;
   const [now,setNow]=useState(()=>new Date());
   useEffect(()=>{const timer=setInterval(()=>setNow(new Date()),60000);return()=>clearInterval(timer);},[]);
   const editMode = decorate;
@@ -92,12 +95,11 @@ export default function WorldScene({ profile, isOwner, onToggleScene, roomItems 
     if(id==='floor-check')return {backgroundImage:'conic-gradient(#ead3b2 25%,#ccb18b 0 50%,#ead3b2 0 75%,#ccb18b 0)',backgroundSize:'65px 65px'};
     return undefined;
   };
-  return <><section ref={roomRef} className={`world-scene-real cyworld-room responsive-room ${sceneClass}`} style={{height:canvasHeight*canvasScale+68}}><div className="room-canvas" style={{'--garden-avatar-scale':String(.85*sceneUnit),width:canvasWidth,height:canvasHeight,transform:`scale(${canvasScale})`} as React.CSSProperties}>
+  return <><section ref={roomRef} className={`world-scene-real cyworld-room responsive-room ${sceneClass} ${roomSkin?'themed-room':''}`} style={{height:canvasHeight*canvasScale+68}}><div className="room-canvas" style={{'--garden-avatar-scale':String(.85*sceneUnit),width:canvasWidth,height:canvasHeight,transform:`scale(${canvasScale})`} as React.CSSProperties}>
     {scene === 'interior' ? <>
-      <div className="cy-room-wall" style={styleFor(profile.wallpaper_id,'wallpaper')} aria-hidden="true"/>
-      <div className="cy-room-floor" style={styleFor(profile.floor_id,'floor')} aria-hidden="true"/>
+      {roomSkin?<WorldImageCanvas className="room-skin-background" src={roomSkin.image} label={roomSkin.name}/>:<><div className="cy-room-wall" style={wallArt?undefined:styleFor(profile.wallpaper_id,'wallpaper')} aria-hidden="true">{wallArt&&<WorldImageCanvas src={wallArt.image} className="room-surface-art"/>}</div><div className="cy-room-floor" style={floorArt?undefined:styleFor(profile.floor_id,'floor')} aria-hidden="true">{floorArt&&<WorldImageCanvas src={floorArt.image} className="room-surface-art"/>}</div></>}
       {profile.window_frame_id!==null&&<RoomWindow profile={{...profile,window_x:windowPosition.x,window_y:windowPosition.y}} editing={editMode&&isOwner} selected={selectedId==='@window'} onClick={()=>editMode&&isOwner&&setSelectedId('@window')} onKeyDown={e=>{setSelectedId('@window');keyMove(e,windowMove);}} onPointerDown={e=>{if(!editMode||!isOwner||busy)return;setSelectedId('@window');drag.start(e,{id:'@window',...windowPosition,minX:15,maxX:85,minY:14,maxY:45},p=>onWindow?.(p));}}/>}
-      <div className="cy-room-overlay" aria-hidden="true" />
+      {!roomSkin&&<div className="cy-room-overlay" aria-hidden="true" />}
     </> : <div className="scene-garden-field" aria-label={garden?.name||'기본 잔디 정원'}>{garden&&<WorldImageCanvas src={garden.image} className="garden-scene-art" label={garden.name}/>}</div>}
 
     {roomItems.filter(item=>(item.scene_type||'interior')===scene&&!isWindowFrame(catalog.find(i=>i.id===item.item_id)||{id:item.item_id})).map((item,index) => { const meta=getMeta(item.item_id); const pos=positionOf(item); return <div key={item.id} className={`scene-furniture ${meta.kind} ${meta.kind==='curtain'?'scene-room-curtain':''} ${editMode&&isOwner?'editing':''} ${selectedId===item.id?'selected':''}`} style={{width:meta.sceneSize?.[0],height:meta.sceneSize?.[1],left:`${pos.x}%`,top:`${pos.y}%`,transform:`translate(-50%,-50%) scale(${item.scale*sceneUnit})`,zIndex:item.z_index??index+12}} role={editMode&&isOwner?'button':undefined} tabIndex={editMode&&isOwner?0:undefined} aria-label={editMode&&isOwner?`${meta.label} 선택`:undefined} aria-pressed={editMode&&isOwner?selectedId===item.id:undefined} title={meta.label} onKeyDown={e=>{if(!editMode||!isOwner||busy)return;setSelectedId(item.id);if(e.key==='Enter'||e.key===' '){e.preventDefault();return;}const delta:Record<string,[number,number]>={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};if(delta[e.key]){e.preventDefault();const [x,y]=delta[e.key];const next=gardenPosition(garden?.id,{x:Math.max(4,Math.min(96,pos.x+x)),y:Math.max(5,Math.min(92,pos.y+y))},'item');onMoveItem?.(item.id,next.x,next.y);}}} onPointerDown={e=>startDrag(e,item)} onClick={()=>editMode&&isOwner&&setSelectedId(item.id)}>

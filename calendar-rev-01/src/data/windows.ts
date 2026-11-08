@@ -1,3 +1,4 @@
+import {INTERIOR_ITEMS} from './roomSkins';
 import type {WorldItem} from '../types/world';
 export const WINDOW_SCENERY=[
  ['view-garden','내 정원 · 시간에 맞추기','garden-day',0,'기본'],
@@ -10,7 +11,8 @@ export const WINDOW_SCENERY=[
  ['view-future','네온 미래도시','future-city',5000,'미래'],
  ['view-space','우주에서 바라본 지구','space',5000,'우주'],
 ].map(([id,name,key,price,theme])=>({id:String(id),name:String(name),key:String(key),price:Number(price),theme:String(theme),image:`/world/window-views/${key}.png`}));
-export const WINDOW_ITEMS:WorldItem[]=[{id:'window-oak',name:'기본 원목 창문',type:'props',category:'창문',subcategory:'프레임',price:0,image:'/world/window-views/window-oak.png',placement_type:'none'},...WINDOW_SCENERY.map(v=>({...v,type:'theme',category:'창밖 풍경',subcategory:v.theme,description:v.price===0?'시간에 따라 낮·노을·밤으로 바뀌는 잔디밭':'한 번 구매하면 계속 사용할 수 있는 창밖 풍경',placement_type:'none'}))];
+export const WINDOW_FRAMES=INTERIOR_ITEMS.filter(i=>i.category==='창문');
+export const WINDOW_ITEMS:WorldItem[]=[...WINDOW_FRAMES,{id:'window-oak',name:'기본 원목 창문',type:'props',category:'창문',subcategory:'프레임',price:0,image:'/world/window-views/window-oak.png',placement_type:'none'},...WINDOW_SCENERY.map(v=>({...v,type:'theme',category:'창밖 풍경',subcategory:v.theme,description:v.price===0?'시간에 따라 낮·노을·밤으로 바뀌는 잔디밭':'한 번 구매하면 계속 사용할 수 있는 창밖 풍경',placement_type:'none'}))];
 export const isWindowFrame=(item:Pick<WorldItem,'id'|'category'|'subcategory'>)=>item.id==='window-oak'||item.category==='창문'&&item.subcategory!=='풍경';
 export function sceneryImage(id:string|undefined,date=new Date()){
  const v=WINDOW_SCENERY.find(v=>v.id===id)||WINDOW_SCENERY[0];

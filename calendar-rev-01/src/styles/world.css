@@ -477,3 +477,5 @@
 .thumbnail-error{position:absolute;inset:0;display:grid;place-items:center;font-size:10px;line-height:1.4;color:#8d4951;text-align:center}
 
 .home-entry-setting{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 16px;background:#f5f1f8;font-size:12px}.home-entry-setting button{padding:7px 14px;border:1px solid #d6c7e2;border-radius:8px;background:#fff;color:#5d496b}.home-entry-setting button[aria-pressed=true]{background:#735687;color:#fff}.home-entry-setting small{color:#7d7086}
+
+.room-skin-background{position:absolute!important;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}.room-skin-background canvas,.room-surface-art canvas{object-fit:fill!important}.room-surface-art{position:absolute!important;inset:0;pointer-events:none}.room-window-frame.world-canvas-art{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}.room-window-frame canvas{object-fit:fill!important}.themed-room .scene-character-wrap{scale:var(--garden-avatar-scale,.85)}.basic-room-thumb{background:linear-gradient(#f4e8d9 0 60%,#bd946b 60%);border-radius:6px}

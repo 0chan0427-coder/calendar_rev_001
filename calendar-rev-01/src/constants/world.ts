@@ -39,8 +39,6 @@ export const WORLD_ITEMS: WorldItem[] = [
   { id: 'dragon-gold', name: '황금 용', type: 'animal', image: '🐉✨', price: 7000 },
   { id: 'unicorn', name: '유니콘', type: 'animal', image: '🦄', price: 5000 },
   { id: 'piano', name: '작은 피아노', type: 'furniture', image: '🎹', price: 5000 },
-  { id: 'christmas-room', name: '크리스마스 방', type: 'theme', image: '🎄', price: 10000 },
-  { id: 'special-garden', name: '특별한 정원', type: 'theme', image: '🌳✨', price: 15000 },
 ];
 
 export const WORLD_EARNING_ROWS = [

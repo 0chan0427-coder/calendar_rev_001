@@ -34,6 +34,7 @@ export interface WorldProfile {
   floor_id: string;
   window_id: string;
   garden_theme_id?:string;
+  room_theme_id?:string|null;
   window_frame_id?: string|null;
   window_scenery_id?:string;
   window_x?:number;

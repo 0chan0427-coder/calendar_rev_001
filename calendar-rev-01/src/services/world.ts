@@ -167,3 +167,5 @@ export const saveWorldCompanionLayout=(companionId:string,scene:'interior'|'exte
 export const saveWorldGarden=(itemId:string)=>supabase.rpc('set_world_garden_theme',{p_item_id:itemId});
 
 export const saveWorldHomeScene=(scene:'interior'|'exterior')=>supabase.rpc('set_world_home_scene',{p_scene:scene});
+
+export const saveWorldRoomSkin=(id:string|null)=>supabase.rpc('set_world_room_skin',{p_item_id:id});

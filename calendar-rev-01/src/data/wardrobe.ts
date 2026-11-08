@@ -1,3 +1,4 @@
+import {EYE_STYLES} from '../lib/avatarEyes';
 import {COSTUMES} from './costumes';
 import {COLLECTION_03} from './collection03';
 import {COLLECTION_01} from './collection01';
@@ -8,6 +9,7 @@ export interface Wearable {id:string;name:string;target:'avatar'|'cat'|'companio
 export const WEAR_SLOTS:[WearSlot,string][]=[['costume','전체 코스튬'],['hair','헤어'],['hat','모자'],['top','상의'],['outer','겉옷'],['bottom','하의'],['shoes','신발'],['face','눈'],['skin','피부'],['makeup','메이크업'],['glasses','안경'],['accessory','장식']];
 const art='/world/avatar-v3';
 export const WEARABLES:Wearable[]=[
+ ...EYE_STYLES.map((i):Wearable=>({...i,target:'avatar',slot:'face',mode:'feature'})),
  ...COSTUMES.map((i):Wearable=>({id:i.id,name:i.name,target:'avatar',slot:'costume',price:i.price,mode:'image',image:i.image})),
  {id:'costume-none',name:'전체 코스튬 해제',target:'avatar',slot:'costume',price:0,mode:'base'},
  {id:'makeup-mukuro-six',name:'무쿠로 六 오드아이',target:'avatar',slot:'makeup',price:1000,mode:'feature'},

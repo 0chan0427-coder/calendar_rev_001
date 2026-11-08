@@ -1,3 +1,5 @@
+import GardenPanel from './GardenPanel';
+import {GARDEN_ITEMS,isGardenTheme} from '../../data/gardens';
 import WindowPanel from './WindowPanel';
 import type {WindowUpdate} from './WindowPanel';
 import {isWindowFrame,WINDOW_SCENERY} from '../../data/windows';
@@ -9,7 +11,7 @@ import FurnitureArt from './FurnitureArt';
 import WearableThumbnail from './WearableThumbnail';
 import CompanionAvatar from './CompanionAvatar';
 
-type Tab='avatar'|'furniture'|'animals'|'background'|'window';
+type Tab='garden'|'avatar'|'furniture'|'animals'|'background'|'window';
 interface Props {
  inventory:{item_id:string;quantity:number}[];owned:string[];catalog:WorldItem[];roomItems:WorldRoomItem[];
  companions:WorldCompanion[];equipment:Record<string,Equipment>;profile:WorldProfile;gender:'male'|'female';
@@ -37,8 +39,8 @@ export default function InventoryPanel(p:Props){
  const meta=(id:string):WorldItem=>p.catalog.find(i=>i.id===id)||{id,name:`아이템 ${id}`,type:'unknown',image:'📦',price:0};
  const entries=[...amounts].map(([id,row])=>({item:meta(id),...row})).filter(r=>r.available+r.placed.length>0);
  const furniture=entries.filter(r=>!isWindowFrame(r.item)&&(['room','garden'].includes(r.item.placement_type||'')||['furniture','props','unknown'].includes(r.item.type)||r.placed.length>0));
- const backgrounds=entries.filter(r=>!furniture.includes(r)&&r.item.type!=='animal'&&!isWindowFrame(r.item)&&!WINDOW_SCENERY.some(v=>v.id===r.item.id));
- const tabList:[Tab,string,number][]=[['avatar','미니미',clothes.length],['furniture','가구·소품',furniture.length],['animals','동물',p.companions.length],['window','창문·풍경',WINDOW_SCENERY.filter(v=>v.price===0||p.inventory.some(i=>i.item_id===v.id&&i.quantity>0)).length],['background','배경·기타',backgrounds.length]];
+ const backgrounds=entries.filter(r=>!furniture.includes(r)&&r.item.type!=='animal'&&!isWindowFrame(r.item)&&!WINDOW_SCENERY.some(v=>v.id===r.item.id)&&!isGardenTheme(r.item.id));
+ const tabList:[Tab,string,number][]=[['garden','정원 테마',GARDEN_ITEMS.filter(i=>i.price===0||p.inventory.some(v=>v.item_id===i.id&&v.quantity>0)).length],['avatar','미니미',clothes.length],['furniture','가구·소품',furniture.length],['animals','동물',p.companions.length],['window','창문·풍경',WINDOW_SCENERY.filter(v=>v.price===0||p.inventory.some(i=>i.item_id===v.id&&i.quantity>0)).length],['background','배경·기타',backgrounds.length]];
  const changeTab=(t:Tab)=>{setTab(t);setQuery('');setFilter('all');};
  const art=(item:WorldItem)=><div className="inventory-art"><FurnitureArt item={item}/></div>;
  const empty=<div className="inventory-empty"><b>표시할 아이템이 없어요.</b><p>{query||filter!=='all'||slot?'검색어나 필터를 바꿔보세요.':'구매한 품목이 여기에 모여요.'}</p><button onClick={()=>{setQuery('');setFilter('all');setSlot('');}}>필터 초기화</button><button onClick={p.onShop}>포인트샵</button></div>;
@@ -50,6 +52,7 @@ export default function InventoryPanel(p:Props){
   <div className="inventory-tabs" role="group" aria-label="아이템 종류">{tabList.map(([id,label,count])=><button key={id} aria-pressed={tab===id} onClick={()=>changeTab(id)}>{label}<small>{count}</small></button>)}</div>
   <label className="inventory-search"><span>이름 검색</span><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="아이템 이름으로 찾기"/></label>
   {p.error&&<div className="inventory-error" role="alert">{p.error}<button onClick={p.onRefresh}>다시 불러오기</button></div>}
+  {tab==='garden'&&<GardenPanel profile={p.profile} inventory={p.inventory} busy={p.busy} onApply={p.onBackground} onShop={p.onShop}/>}
   {tab==='avatar'&&<>
    <div className="inventory-filters"><select aria-label="미니미 부위" value={slot} onChange={e=>setSlot(e.target.value as WearSlot|'')}><option value="">모든 부위</option>{WEAR_SLOTS.map(([id,label])=><option key={id} value={id}>{label}</option>)}</select><select aria-label="미니미 상태" value={filter} onChange={e=>setFilter(e.target.value)}><option value="all">전체 보유</option><option value="purchased">구매한 아이템</option><option value="using">착용 중</option></select></div>
    <div className="inventory-avatar-tools"><button className="wardrobe-open" onClick={()=>p.onWear()}>미니미 옷·헤어·장식 꾸미기</button><div className="inventory-gender" role="group" aria-label="미니미 성별"><button aria-pressed={p.gender==='male'} onClick={()=>p.onGender('male')}>남성</button><button aria-pressed={p.gender==='female'} onClick={()=>p.onGender('female')}>여성</button></div></div>

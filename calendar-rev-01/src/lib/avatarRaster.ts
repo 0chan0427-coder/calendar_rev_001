@@ -1,3 +1,4 @@
+import {renderEyeStyle} from './avatarEyes';
 import {costumeSvg,mukuroIris} from './avatarCostumes';
 import {helmetLining,helmetFaceClip} from './avatarHelmets';
 import {accessoryDefs,fittedAccessory} from './avatarAccessories';
@@ -47,7 +48,8 @@ export function avatarSvgMarkup(gender:'male'|'female',input:Equipment={},uid='a
  const brows=`<g clip-path="url(#${id('brows')})">${bareEyeSprite}</g>`;
  const closedEyes=`${brows}<g transform="translate(0 ${eyeY})" stroke="#673521" stroke-width="11" fill="none" stroke-linecap="round"><path d="M329 399 Q387 435 446 399 M568 399 Q628 435 688 399"/><path d="M332 401L323 395 M443 401L451 395 M571 401L562 395 M685 401L694 395" stroke-width="7"/></g>`;
  const smileEyes=`${brows}<g transform="translate(0 ${eyeY})" stroke="#673521" stroke-width="13" fill="none" stroke-linecap="round"><path d="M329 420 Q387 359 446 420 M568 420 Q628 359 688 420"/></g>`;
- const eyes=e.face==='eyes-smile'?smileEyes:blinking
+ const customOpen=renderEyeStyle(e.face!,e.makeup!,id('custom-eyes'),'open'),customClosed=renderEyeStyle(e.face!,e.makeup!,id('custom-eyes'),'closed');
+ const eyes=customOpen?(blinking?`<g class="${stateClass('open')}">${customOpen}</g><g class="${stateClass('closed')}">${customClosed}</g>`:options.eyeState==='closed'?customClosed:customOpen):e.face==='eyes-smile'?smileEyes:blinking
   ?`<g data-eye-state="open" class="${stateClass('open')}">${eyeSprite}</g><g data-eye-state="closed" class="${stateClass('closed')}">${closedEyes}</g>`:options.eyeState==='closed'&&e.face!=='eyes-smile'?closedEyes:eyeSprite;
  const faceBody=`<g id="${id('body')}">${base}</g>`;
  const skin=e.skin==='skin-warm'?`<use href="#${id('body')}" clip-path="url(#${id('skin')})" filter="url(#${id('warm')})" data-layer="skin"/>`:'';

@@ -32,6 +32,7 @@ export interface WorldProfile {
   wallpaper_id: string;
   floor_id: string;
   window_id: string;
+  garden_theme_id?:string;
   window_frame_id?: string|null;
   window_scenery_id?:string;
   window_x?:number;

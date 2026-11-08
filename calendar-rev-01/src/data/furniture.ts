@@ -1,3 +1,4 @@
+import {FURNISHINGS_01} from './furnishings01';
 import {FURNITURE_GEOMETRY as geometry} from './furnitureGeometry';
 import type {WorldItem} from '../types/world';
 export interface FurnitureDesign {key:string;name:string;ids:string[];legacyPaths:string[];sceneSize:[number,number];image:string;width:number;height:number;crop:number[];}
@@ -273,7 +274,7 @@ const rows:[string,string,string[],string[],[number,number]][]=[
     ]
   ]
 ];
-export const FURNITURE_DESIGNS:FurnitureDesign[]=rows.map(([key,name,ids,legacyPaths,sceneSize])=>({key,name,ids,legacyPaths,sceneSize,image:`/world/furniture-v2/${key}.png`,...(geometry as Record<string,{width:number;height:number;crop:number[]}>)[key]}));
+export const FURNITURE_DESIGNS:FurnitureDesign[]=rows.map(([key,name,ids,legacyPaths,sceneSize])=>({key,name,ids,legacyPaths,sceneSize,image:`/world/furniture-v2/${key}.png`,...(geometry as Record<string,{width:number;height:number;crop:number[]}>)[key]})).concat(FURNISHINGS_01.map(i=>({key:i.id,name:i.name,ids:[i.id],legacyPaths:[],sceneSize:i.sceneSize,image:i.image,width:i.width,height:i.height,crop:i.crop})));
 export function furnitureDesign(item:{id?:string;item_id?:string;image?:string|null;image_url?:string|null}):FurnitureDesign|undefined{
  const id=(item.id||item.item_id||'').replaceAll('_','-');
  const byId=FURNITURE_DESIGNS.find(d=>d.ids.includes(id));if(byId)return byId;

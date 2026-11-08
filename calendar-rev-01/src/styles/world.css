@@ -445,3 +445,18 @@
 .companion-bond-special>svg{display:block;width:100%;height:100%;overflow:visible}
 .bond-header{position:sticky;top:0;z-index:2;background:#fbf8f2}
 @media(max-width:380px){.bond-hero{grid-template-columns:1fr;gap:8px}.bond-animal{height:210px}.bond-summary{text-align:center}.bond-summary p{margin:8px 0}}
+
+/* V069: fixed art colors, complete garden scenes, independent furniture and theme inventory. */
+.world-canvas-art{position:relative;display:block;width:100%;height:100%;min-width:0;min-height:0;color-scheme:only light;opacity:1!important;mix-blend-mode:normal;isolation:isolate}
+.world-canvas-art>canvas{display:block;width:100%;height:100%;object-fit:contain;opacity:1!important;filter:none!important;mix-blend-mode:normal!important;color-scheme:only light}
+.garden-scene-art,.garden-scene-art>canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
+.themed-garden .scene-character-wrap{scale:var(--garden-avatar-scale,.85)}
+.room-window-view>.world-canvas-art,.window-view-thumb>.world-canvas-art{position:absolute;inset:0}
+.room-window-view .world-canvas-art>canvas,.window-view-thumb .world-canvas-art>canvas{object-fit:cover}
+.window-view-thumb{position:relative;overflow:hidden}
+.garden-theme-thumb{height:100px;width:100%;overflow:hidden;border-radius:10px;background:#d9e8c8}
+.garden-theme-thumb .furniture-art,.garden-theme-thumb canvas{width:100%;height:100%;object-fit:cover}
+.basic-garden-thumb{display:block;width:100%;height:100%;background:linear-gradient(#d5edfa 0 38%,#a6ce7e 39%,#d5e6a2 100%);border-radius:10px}
+.world-art-retry{position:absolute;inset:20% 4%;font-size:11px;padding:4px;z-index:1}
+.inventory-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:760px){.inventory-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}}

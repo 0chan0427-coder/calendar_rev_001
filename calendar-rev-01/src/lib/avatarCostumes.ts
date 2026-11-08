@@ -1,3 +1,4 @@
+import {renderEyeStyle} from './avatarEyes';
 import {COSTUMES} from '../data/costumes';
 import {RASTER_ASSETS} from '../data/avatarRaster';
 import type {Equipment} from '../data/wardrobe';
@@ -11,7 +12,7 @@ const id=(s:string)=>`${uid}-set-${s}`,alpha=`<filter id="${id('alpha')}" color-
 // Masked costumes never request or render hidden face assets.
 if(item.face==='closed')return `<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1536" viewBox="0 0 1024 1536" preserveAspectRatio="xMidYMax meet"><defs>${alpha}</defs><g data-costume="${item.id}" data-face="covered">${art}</g></svg>`;
 const a=RASTER_ASSETS['eyes-open'],sprite=`<svg x="305" y="293" width="414" height="176" viewBox="${a.crop.join(' ')}" preserveAspectRatio="none" overflow="hidden"><image href="${escape(resolve(a.image))}" width="${a.width}" height="${a.height}"/></svg>`,brows=`<g clip-path="url(#${id('brows')})">${sprite}</g>`;
-const closed=options.eyeState==='closed',smile=e.face==='eyes-smile',eyes=closed||smile?`${brows}<path d="${smile?'M329 420Q387 359 446 420 M568 420Q628 359 688 420':'M329 399Q387 435 446 399 M568 399Q628 435 688 399'}" fill="none" stroke="#673521" stroke-width="11" stroke-linecap="round"/>`:`${sprite}${e.makeup==='makeup-mukuro-six'?mukuroIris(id('iris')):''}`;
+const closed=options.eyeState==='closed',smile=e.face==='eyes-smile',eyes=renderEyeStyle(e.face||'eyes-default',e.makeup||'',id('custom-eyes'),closed?'closed':'open')||(closed||smile?`${brows}<path d="${smile?'M329 420Q387 359 446 420 M568 420Q628 359 688 420':'M329 399Q387 435 446 399 M568 399Q628 435 688 399'}" fill="none" stroke="#673521" stroke-width="11" stroke-linecap="round"/>`:`${sprite}${e.makeup==='makeup-mukuro-six'?mukuroIris(id('iris')):''}`);
 const blush=['makeup-blush','makeup-rose','makeup-peach','makeup-freckles','makeup-mauve'].includes(e.makeup||'')?`<g opacity=".35" fill="url(#${id('blush')})"><ellipse cx="350" cy="503" rx="63" ry="33"/><ellipse cx="674" cy="503" rx="63" ry="33"/></g>`:'';
 const freckles=e.makeup==='makeup-freckles'?`<g fill="#a46e4f" opacity=".65">${[[323,491],[344,504],[367,490],[389,505],[635,505],[657,490],[680,504],[701,491]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="4.5"/>`).join('')}</g>`:'';
 const shadow=e.makeup==='makeup-mauve'?`<g opacity=".22" fill="#b68a9e"><ellipse cx="387" cy="${closed?409:365}" rx="69" ry="${closed?20:29}"/><ellipse cx="628" cy="${closed?409:365}" rx="69" ry="${closed?20:29}"/></g>`:'';

@@ -163,3 +163,5 @@ export const saveWorldWindow = (values:import('../components/world/WindowPanel')
 export const buyWorldWindowView = (itemId:string) => supabase.rpc('purchase_world_window_view',{p_item_id:itemId});
 
 export const saveWorldCompanionLayout=(companionId:string,scene:'interior'|'exterior',values:Partial<import('../types/world').CompanionLayout>&{hide?:boolean})=>supabase.rpc('set_world_companion_layout',{p_companion_id:companionId,p_scene_type:scene,p_values:values});
+
+export const saveWorldGarden=(itemId:string)=>supabase.rpc('set_world_garden_theme',{p_item_id:itemId});

@@ -1,3 +1,5 @@
+import {gardenTheme,gardenPosition} from '../../data/gardens';
+import WorldImageCanvas from './WorldImageCanvas';
 import SceneControls from './SceneControls';
 import {useSceneDrag} from '../../lib/useSceneDrag';
 import type {WindowUpdate} from './WindowPanel';
@@ -49,7 +51,9 @@ export default function WorldScene({ profile, isOwner, onToggleScene, roomItems 
   const [roomWidth,setRoomWidth]=useState(640);
   useEffect(()=>{const root=roomRef.current;if(!root)return;const measure=()=>setRoomWidth(Math.max(1,root.clientWidth));measure();const observer=new ResizeObserver(measure);observer.observe(root);return()=>observer.disconnect();},[]);
   const canvasWidth=Math.max(640,roomWidth),canvasScale=roomWidth/canvasWidth;
-  const canvasHeight=profile.scene_type==='exterior'?620:560;
+  const garden=profile.scene_type==='exterior'?gardenTheme(profile.garden_theme_id):undefined;
+  const canvasHeight=profile.scene_type==='exterior'?(garden?Math.round(canvasWidth*garden.height/garden.width):620):560;
+  const sceneUnit=garden?canvasHeight/620:1;
   const [now,setNow]=useState(()=>new Date());
   useEffect(()=>{const timer=setInterval(()=>setNow(new Date()),60000);return()=>clearInterval(timer);},[]);
   const editMode = decorate;
@@ -62,21 +66,21 @@ export default function WorldScene({ profile, isOwner, onToggleScene, roomItems 
   const season = seasonByMonth(now.getMonth() + 1);
   const time = timeByHour(now.getHours());
   const scene: WorldSceneType = profile.scene_type;
-  const sceneClass = useMemo(() => `${scene} ${season} ${time}`, [scene, season, time]);
+  const sceneClass = useMemo(() => `${scene} ${season} ${time} ${garden?'themed-garden':''}`, [scene, season, time,garden]);
 
   const getMeta=(itemId:string)=>{
     const db=catalog.find(x=>x.id===itemId),item=db||{id:itemId,name:undefined,image:undefined,image_url:undefined,type:undefined};
     const design=furnitureDesign(item),label=db?.name||design?.name||itemId;
     return {item:{...item,name:label},design,sceneSize:db?.type==='animal'?companionSceneSize(itemId,db.image_url):design?.sceneSize,label,kind:(db?.category==='커튼'||db?.subcategory==='커튼')?'curtain':design?.key||db?.type||'props'};
   };
-  const positionOf = (item:RoomItem) => dragPositions[item.id] || { x:item.x, y:item.y };
-  const startDrag=(e:React.PointerEvent<HTMLDivElement>,item:RoomItem)=>{if(!editMode||!isOwner||busy)return;setSelectedId(item.id);drag.start(e,item,p=>onMoveItem?.(item.id,p.x,p.y));};
+  const positionOf = (item:RoomItem) => gardenPosition(garden?.id,dragPositions[item.id] || { x:item.x, y:item.y },'item');
+  const startDrag=(e:React.PointerEvent<HTMLDivElement>,item:RoomItem)=>{if(!editMode||!isOwner||busy)return;setSelectedId(item.id);drag.start(e,{...item,...positionOf(item),minX:garden?.bounds[0],maxX:garden?.bounds[1],minY:garden?.bounds[2],maxY:garden?92:undefined},p=>onMoveItem?.(item.id,p.x,p.y));};
   const petLayout={x:68,y:94,scale:1,z_index:16,...companion?.scene_layout?.[scene]};
-  const petPosition=dragPositions['@pet']||petLayout;
+  const petPosition=gardenPosition(garden?.id,dragPositions['@pet']||petLayout); 
   const windowPosition=dragPositions['@window']||{x:Number(profile.window_x)||50,y:Number(profile.window_y)||27};
   const petSize=companion?companionSceneSize(companion.item_id,catalog.find(i=>i.id===companion.item_id)?.image_url):[72,72];
-  const petMinY=scene==='interior'?64:15;
-  const petMove=(dx:number,dy:number)=>onPetLayout?.({x:Math.max(6,Math.min(94,petLayout.x+dx)),y:Math.max(petMinY,Math.min(94,petLayout.y+dy))});
+  const petMinY=scene==='interior'?64:garden?.bounds[2]||15;
+  const petMove=(dx:number,dy:number)=>onPetLayout?.(gardenPosition(garden?.id,{x:Math.max(6,Math.min(94,petPosition.x+dx)),y:Math.max(petMinY,Math.min(94,petPosition.y+dy))}));
   const windowMove=(dx:number,dy:number)=>onWindow?.({x:Math.max(15,Math.min(85,windowPosition.x+dx)),y:Math.max(14,Math.min(45,windowPosition.y+dy))});
   const keyMove=(e:React.KeyboardEvent,move:(dx:number,dy:number)=>void)=>{if(!editMode||!isOwner||busy)return;const deltas:Record<string,[number,number]>={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};if(deltas[e.key]){e.preventDefault();move(...deltas[e.key]);}else if(e.key===' '||e.key==='Enter')e.preventDefault();};
 
@@ -88,15 +92,15 @@ export default function WorldScene({ profile, isOwner, onToggleScene, roomItems 
     if(id==='floor-check')return {backgroundImage:'conic-gradient(#ead3b2 25%,#ccb18b 0 50%,#ead3b2 0 75%,#ccb18b 0)',backgroundSize:'65px 65px'};
     return undefined;
   };
-  return <><section ref={roomRef} className={`world-scene-real cyworld-room responsive-room ${sceneClass}`} style={{height:canvasHeight*canvasScale+68}}><div className="room-canvas" style={{width:canvasWidth,height:canvasHeight,transform:`scale(${canvasScale})`}}>
+  return <><section ref={roomRef} className={`world-scene-real cyworld-room responsive-room ${sceneClass}`} style={{height:canvasHeight*canvasScale+68}}><div className="room-canvas" style={{'--garden-avatar-scale':String(.85*sceneUnit),width:canvasWidth,height:canvasHeight,transform:`scale(${canvasScale})`} as React.CSSProperties}>
     {scene === 'interior' ? <>
       <div className="cy-room-wall" style={styleFor(profile.wallpaper_id,'wallpaper')} aria-hidden="true"/>
       <div className="cy-room-floor" style={styleFor(profile.floor_id,'floor')} aria-hidden="true"/>
       {profile.window_frame_id!==null&&<RoomWindow profile={{...profile,window_x:windowPosition.x,window_y:windowPosition.y}} editing={editMode&&isOwner} selected={selectedId==='@window'} onClick={()=>editMode&&isOwner&&setSelectedId('@window')} onKeyDown={e=>{setSelectedId('@window');keyMove(e,windowMove);}} onPointerDown={e=>{if(!editMode||!isOwner||busy)return;setSelectedId('@window');drag.start(e,{id:'@window',...windowPosition,minX:15,maxX:85,minY:14,maxY:45},p=>onWindow?.(p));}}/>}
       <div className="cy-room-overlay" aria-hidden="true" />
-    </> : <div className="scene-garden-field" aria-label="비어 있는 정원" />}
+    </> : <div className="scene-garden-field" aria-label={garden?.name||'기본 잔디 정원'}>{garden&&<WorldImageCanvas src={garden.image} className="garden-scene-art" label={garden.name}/>}</div>}
 
-    {roomItems.filter(item=>(item.scene_type||'interior')===scene&&!isWindowFrame(catalog.find(i=>i.id===item.item_id)||{id:item.item_id})).map((item,index) => { const meta=getMeta(item.item_id); const pos=positionOf(item); return <div key={item.id} className={`scene-furniture ${meta.kind} ${meta.kind==='curtain'?'scene-room-curtain':''} ${editMode&&isOwner?'editing':''} ${selectedId===item.id?'selected':''}`} style={{width:meta.sceneSize?.[0],height:meta.sceneSize?.[1],left:`${pos.x}%`,top:`${pos.y}%`,transform:`translate(-50%,-50%) scale(${item.scale})`,zIndex:item.z_index??index+12}} role={editMode&&isOwner?'button':undefined} tabIndex={editMode&&isOwner?0:undefined} aria-label={editMode&&isOwner?`${meta.label} 선택`:undefined} aria-pressed={editMode&&isOwner?selectedId===item.id:undefined} title={meta.label} onKeyDown={e=>{if(!editMode||!isOwner||busy)return;setSelectedId(item.id);if(e.key==='Enter'||e.key===' '){e.preventDefault();return;}const delta:Record<string,[number,number]>={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};if(delta[e.key]){e.preventDefault();const [x,y]=delta[e.key];onMoveItem?.(item.id,Math.max(4,Math.min(96,pos.x+x)),Math.max(5,Math.min(92,pos.y+y)));}}} onPointerDown={e=>startDrag(e,item)} onClick={()=>editMode&&isOwner&&setSelectedId(item.id)}>
+    {roomItems.filter(item=>(item.scene_type||'interior')===scene&&!isWindowFrame(catalog.find(i=>i.id===item.item_id)||{id:item.item_id})).map((item,index) => { const meta=getMeta(item.item_id); const pos=positionOf(item); return <div key={item.id} className={`scene-furniture ${meta.kind} ${meta.kind==='curtain'?'scene-room-curtain':''} ${editMode&&isOwner?'editing':''} ${selectedId===item.id?'selected':''}`} style={{width:meta.sceneSize?.[0],height:meta.sceneSize?.[1],left:`${pos.x}%`,top:`${pos.y}%`,transform:`translate(-50%,-50%) scale(${item.scale*sceneUnit})`,zIndex:item.z_index??index+12}} role={editMode&&isOwner?'button':undefined} tabIndex={editMode&&isOwner?0:undefined} aria-label={editMode&&isOwner?`${meta.label} 선택`:undefined} aria-pressed={editMode&&isOwner?selectedId===item.id:undefined} title={meta.label} onKeyDown={e=>{if(!editMode||!isOwner||busy)return;setSelectedId(item.id);if(e.key==='Enter'||e.key===' '){e.preventDefault();return;}const delta:Record<string,[number,number]>={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};if(delta[e.key]){e.preventDefault();const [x,y]=delta[e.key];const next=gardenPosition(garden?.id,{x:Math.max(4,Math.min(96,pos.x+x)),y:Math.max(5,Math.min(92,pos.y+y))},'item');onMoveItem?.(item.id,next.x,next.y);}}} onPointerDown={e=>startDrag(e,item)} onClick={()=>editMode&&isOwner&&setSelectedId(item.id)}>
       {meta.item.type==='animal'?<CompanionAvatar itemId={item.item_id} image={meta.item.image_url} name={meta.label} animate={!editMode}/>:<FurnitureArt item={meta.item}/>}
       {editMode&&isOwner&&<span className="furniture-label">{meta.label}</span>}
 
@@ -105,9 +109,9 @@ export default function WorldScene({ profile, isOwner, onToggleScene, roomItems 
 
 
     <div className="scene-character-wrap" title="내 미니미"><CharacterAvatar gender={avatarGender} equipment={equipment.avatar} className="scene-character" /></div>
-    {companion && <div className={`scene-companion ${editMode&&isOwner?'editing':''} ${selectedId==='@pet'?'selected':''}`} style={{width:'var(--companion-width)',height:'auto','--companion-width':`min(${petSize[0]*petLayout.scale}px, calc(100% - 12px))`,'--companion-ratio':`${petSize[0]} / ${petSize[1]}`,left:`clamp(calc(var(--companion-width) / 2 + 6px), ${petPosition.x}%, calc(100% - var(--companion-width) / 2 - 6px))`,top:`${petPosition.y}%`,bottom:'auto',transform:'translate(-50%,-100%)',zIndex:petLayout.z_index} as React.CSSProperties} title={companion.name} role={editMode&&isOwner?'button':undefined} tabIndex={editMode&&isOwner?0:undefined} aria-label={editMode&&isOwner?`${companion.name} 동물 선택`:undefined} aria-pressed={editMode&&isOwner?selectedId==='@pet':undefined} onClick={()=>editMode&&isOwner&&setSelectedId('@pet')} onKeyDown={e=>{setSelectedId('@pet');keyMove(e,petMove);}} onPointerDown={e=>{if(!editMode||!isOwner||busy)return;setSelectedId('@pet');drag.start(e,{id:'@pet',...petPosition,minX:6,maxX:94,minY:petMinY,maxY:94},p=>onPetLayout?.(p));}}><CompanionAvatar rewardAccessory={companion.reward_accessory} specialForm={companion.special_form} itemId={companion.item_id} equipment={equipment[companion.id]} name={companion.name} image={catalog.find(i=>i.id===companion.item_id)?.image_url} animate={!editMode}/><span className="companion-nameplate">{companion.name}</span></div>}
+    {companion && <div className={`scene-companion ${editMode&&isOwner?'editing':''} ${selectedId==='@pet'?'selected':''}`} style={{width:'var(--companion-width)',height:'auto','--companion-width':`min(${petSize[0]*petLayout.scale*sceneUnit}px, calc(100% - 12px))`,'--companion-ratio':`${petSize[0]} / ${petSize[1]}`,left:`clamp(calc(var(--companion-width) / 2 + 6px), ${petPosition.x}%, calc(100% - var(--companion-width) / 2 - 6px))`,top:`${petPosition.y}%`,bottom:'auto',transform:'translate(-50%,-100%)',zIndex:petLayout.z_index} as React.CSSProperties} title={companion.name} role={editMode&&isOwner?'button':undefined} tabIndex={editMode&&isOwner?0:undefined} aria-label={editMode&&isOwner?`${companion.name} 동물 선택`:undefined} aria-pressed={editMode&&isOwner?selectedId==='@pet':undefined} onClick={()=>editMode&&isOwner&&setSelectedId('@pet')} onKeyDown={e=>{setSelectedId('@pet');keyMove(e,petMove);}} onPointerDown={e=>{if(!editMode||!isOwner||busy)return;setSelectedId('@pet');drag.start(e,{id:'@pet',...petPosition,minX:garden?.bounds[0]||6,maxX:garden?.bounds[1]||94,minY:petMinY,maxY:94},p=>onPetLayout?.(p));}}><CompanionAvatar rewardAccessory={companion.reward_accessory} specialForm={companion.special_form} itemId={companion.item_id} equipment={equipment[companion.id]} name={companion.name} image={catalog.find(i=>i.id===companion.item_id)?.image_url} animate={!editMode}/><span className="companion-nameplate">{companion.name}</span></div>}
 
-    </div><div className="scene-toolbar"><div className="scene-info"><b>{seasonLabel[season]} · {timeLabel[time]}</b><span>{scene==='interior'?'나만의 미니룸':'나만의 정원'}</span></div>
+    </div><div className="scene-toolbar"><div className="scene-info"><b>{garden?'정원 테마':`${seasonLabel[season]} · ${timeLabel[time]}`}</b><span>{scene==='interior'?'나만의 미니룸':garden?.name||'나만의 정원'}</span></div>
 
     {isOwner && <div className="scene-tools">
       <button disabled={busy} onClick={()=>{setSelectedId(null);onToggleDecorate?.();}}>{editMode?'✓ 꾸미기 완료':'✏️ 방 꾸미기'}</button>
@@ -118,7 +122,7 @@ export default function WorldScene({ profile, isOwner, onToggleScene, roomItems 
   </section>
     {editMode&&isOwner&&selectedId==='@window'&&scene==='interior'&&profile.window_frame_id!==null&&<SceneControls name="원목 창문" scale={Number(profile.window_scale)||1} busy={busy} saveState={saveState} onClose={()=>setSelectedId(null)} onMove={windowMove} onScale={d=>onWindow?.({scale:Math.max(.6,Math.min(1.2,Number(profile.window_scale||1)+d))})} onRemove={()=>{onWindow?.({frame:null});setSelectedId(null);}}/>}
     {editMode&&isOwner&&selectedId==='@pet'&&companion&&<SceneControls name={companion.name} scale={petLayout.scale} busy={busy} saveState={saveState} onClose={()=>setSelectedId(null)} onMove={petMove} onScale={d=>onPetLayout?.({scale:Math.max(.6,Math.min(1.5,petLayout.scale+d))})} onFront={()=>onPetLayout?.({z_index:Math.min(60,Math.max(petLayout.z_index,...roomItems.map(i=>i.z_index),20)+1)})} onBack={()=>onPetLayout?.({z_index:Math.max(4,Math.min(petLayout.z_index,...roomItems.map(i=>i.z_index),20)-1)})} onRemove={()=>{onPetLayout?.({hide:true});setSelectedId(null);}} removeLabel="함께하기 해제"/>}
-    {editMode&&isOwner&&roomItems.filter(i=>i.id===selectedId&&(i.scene_type||'interior')===scene).map(item=><SceneControls key={item.id} name={getMeta(item.item_id).label} scale={Number(item.scale)} busy={busy} saveState={saveState} onClose={()=>setSelectedId(null)} onMove={(dx,dy)=>onMoveItem?.(item.id,Math.max(4,Math.min(96,item.x+dx)),Math.max(5,Math.min(92,item.y+dy)))} onScale={d=>onScaleItem?.(item.id,Number(item.scale)+d)} onFront={()=>onFrontItem?.(item.id)} onBack={()=>onBackItem?.(item.id)} onRemove={()=>onRemoveItem?.(item.id)}/>)}
+    {editMode&&isOwner&&roomItems.filter(i=>i.id===selectedId&&(i.scene_type||'interior')===scene).map(item=><SceneControls key={item.id} name={getMeta(item.item_id).label} scale={Number(item.scale)} busy={busy} saveState={saveState} onClose={()=>setSelectedId(null)} onMove={(dx,dy)=>{const p=positionOf(item),next=gardenPosition(garden?.id,{x:Math.max(4,Math.min(96,p.x+dx)),y:Math.max(5,Math.min(92,p.y+dy))},'item');onMoveItem?.(item.id,next.x,next.y);}} onScale={d=>onScaleItem?.(item.id,Number(item.scale)+d)} onFront={()=>onFrontItem?.(item.id)} onBack={()=>onBackItem?.(item.id)} onRemove={()=>onRemoveItem?.(item.id)}/>)}
 
   </>;
 }

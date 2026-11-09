@@ -173,3 +173,7 @@ export const saveWorldRoomSkin=(id:string|null)=>supabase.rpc('set_world_room_sk
 export interface RankingEntry{user_id:string;display_name:string;week_start:string;weekly_score:number;attendance_point:number;chat_point:number;rank:number;updated_at:string}
 export interface RankingBoard{weekStart:string;weekEnd:string;asOf:string;rows:RankingEntry[];lastWeekRows:RankingEntry[];history:RankingEntry[]}
 export const getWorldRankingBoard=()=>supabase.rpc('get_world_ranking_board');
+
+// V079: only the signed-in account can read/write its three outfit presets.
+export const listWorldAvatarPresets079=(userId:string)=>supabase.from('world_avatar_presets').select('slot,equipment,updated_at').eq('user_id',userId);
+export const saveWorldAvatarPreset079=(slot:'A'|'B'|'C',equipment:Record<string,string>)=>supabase.rpc('save_world_avatar_preset',{p_slot:slot,p_equipment:equipment});

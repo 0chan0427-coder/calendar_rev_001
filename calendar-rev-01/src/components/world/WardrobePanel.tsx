@@ -1,3 +1,7 @@
+import {AvatarPresets079,AvatarColors079} from './AvatarOptions079';
+import {loadOwnedPreset079,ownsDraft079} from '../../lib/avatarPresets079';
+import type {AvatarPreset079,AvatarPresetSlot079} from '../../lib/avatarPresets079';
+import {listWorldAvatarPresets079,saveWorldAvatarPreset079} from '../../services/world';
 import {collectionItem} from '../../data/collection01';
 import PurchaseDialog from './PurchaseDialog';
 import RefundPanel from './RefundPanel';
@@ -19,6 +23,10 @@ export default function WardrobePanel({userId,targetId='avatar',itemId='',gender
  const [slot,setSlot]=useState<WearSlot>(initialSlot||(target==='avatar'?'hair':target==='companion'?(slots[0]?.[0]||'accessory'):'coat'));
  const [owned,setOwned]=useState<string[]>([]);const [busy,setBusy]=useState(false);const [ready,setReady]=useState(false);const [error,setError]=useState('');const [notice,setNotice]=useState('');
  useEffect(()=>{let live=true;listWorldWardrobe(userId).then(r=>{if(!live)return;if(r.error)setError('보유 아이템을 불러오지 못했어요. 잠시 후 다시 열어주세요.');else{setOwned((r.data||[]).map(i=>i.item_id));setReady(true);}});return()=>{live=false;};},[userId]);
+ const [presets,setPresets]=useState<AvatarPreset079[]>([]),[presetsReady,setPresetsReady]=useState(false);
+ useEffect(()=>{if(target!=='avatar')return;let live=true;setPresetsReady(false);listWorldAvatarPresets079(userId).then(r=>{if(!live)return;if(r.error)setError('프리셋을 불러오지 못했어요. 잠시 후 다시 열어주세요.');else{setPresets((r.data||[]) as AvatarPreset079[]);setPresetsReady(true);}});return()=>{live=false;};},[userId,target]);
+ const savePreset=async(presetSlot:AvatarPresetSlot079)=>{if(!ready||!ownsDraft079(draft,owned))return;setBusy(true);setError('');try{const r=await saveWorldAvatarPreset079(presetSlot,draft as Record<string,string>);if(r.error||r.data?.success!==true)throw r.error||new Error('preset save failed');setPresets(p=>[...p.filter(i=>i.slot!==presetSlot),{slot:presetSlot,equipment:{...draft}}]);setNotice(`${presetSlot} 프리셋에 현재 착장과 색상을 저장했어요.`);}catch{setError('프리셋을 저장하지 못했어요. 보유 품목과 연결 상태를 확인해주세요.');}finally{setBusy(false);}};
+ const loadPreset=async(preset:AvatarPreset079)=>{setBusy(true);setError('');try{const inventory=await listWorldWardrobe(userId);if(inventory.error)throw inventory.error;const currentOwned=(inventory.data||[]).map(i=>i.item_id);setOwned(currentOwned);const result=loadOwnedPreset079(preset.equipment,currentOwned);setDraft(result.equipment);setNotice(`${preset.slot} 프리셋을 불러왔어요. 착용 저장을 누르면 적용돼요.${result.removed?' 보유하지 않은 품목은 기본 모습으로 대체했어요.':''}`);}catch{setError('프리셋을 불러오지 못했어요. 다시 시도해주세요.');}finally{setBusy(false);}};
  const [ownedOnly,setOwnedOnly]=useState(Boolean(initialItemId));const [query,setQuery]=useState('');
  const items=WEARABLES.filter(i=>i.target===target&&(target!=='companion'||i.species===companionFamily(itemId))&&i.slot===slot&&(!i.hidden||owned.includes(i.id))&&(!ownedOnly||i.price===0||owned.includes(i.id))&&i.name.includes(query.trim()));
  const remove=()=>{setDraft(p=>{const n={...p};if(target==='avatar'&&!['costume','face','makeup','glasses'].includes(slot))n.costume='costume-none';if(target==='avatar'&&AVATAR_DEFAULTS[slot])n[slot]=AVATAR_DEFAULTS[slot];else delete n[slot];return n;});setNotice('기본 모습으로 미리보고 있어요. 저장하면 적용돼요.');};
@@ -27,8 +35,9 @@ export default function WardrobePanel({userId,targetId='avatar',itemId='',gender
  if(!target)return null;
  const helmet=target==='avatar'?collectionItem(draft.hat)?.helmet:undefined;
  return <><div className="modal-backdrop"><section className="wardrobe-modal" role="dialog" aria-modal="true" aria-label={target==='avatar'?'미니미 꾸미기':'동물 꾸미기'}><div className="wardrobe-heading"><div><small>DRESS ROOM</small><h2>{target==='avatar'?'미니미 꾸미기':'동물 꾸미기'}</h2><p>{target==='avatar'?'헤어·모자·상의·겉옷을 따로 조합해요. 구매 전에도 미리 입어볼 수 있어요.':'구매한 아이템을 장착하거나 해제할 수 있어요.'}</p></div><button disabled={busy} onClick={onClose} aria-label="닫기">닫기</button></div>
- <div className="wardrobe-layout"><div className="wardrobe-preview">{target==='avatar'?<CharacterAvatar gender={gender} equipment={draft}/>:<CompanionAvatar itemId={itemId} equipment={draft} specialForm={specialForm} rewardAccessory={rewardAccessory&&draft.accessory!=='ribbon-cat'}/>}<span>미리보기</span></div><div className="wardrobe-choices"><div className="wardrobe-tabs" role="group" aria-label="꾸미기 부위">{slots.map(([id,label])=><button key={id} aria-pressed={slot===id} className={slot===id?'active':''} onClick={()=>setSlot(id)}>{label}</button>)}</div>
+ <div className="wardrobe-layout"><div className="wardrobe-preview">{target==='avatar'?<CharacterAvatar gender={gender} equipment={draft}/>:<CompanionAvatar itemId={itemId} equipment={draft} specialForm={specialForm} rewardAccessory={rewardAccessory&&draft.accessory!=='ribbon-cat'}/>}<span>미리보기</span></div><div className="wardrobe-choices">{target==='avatar'&&<AvatarPresets079 presets={presets} busy={busy} ready={ready&&presetsReady} canSave={ownsDraft079(draft,owned)} onSave={savePreset} onLoad={loadPreset}/>}<div className="wardrobe-tabs" role="group" aria-label="꾸미기 부위">{slots.map(([id,label])=><button key={id} aria-pressed={slot===id} className={slot===id?'active':''} onClick={()=>setSlot(id)}>{label}</button>)}</div>
  {target==='avatar'&&<button className="wardrobe-motion" aria-pressed={motion} onClick={()=>setAvatarMotionEnabled(!motion)}>움직임 {motion?'켜짐':'꺼짐'}</button>}
+ {target==='avatar'&&<AvatarColors079 draft={draft} slot={slot} busy={busy} onChange={(part,value)=>setDraft(p=>({...p,[part]:value}))}/>}
  <button className="refund-open" disabled={busy} onClick={()=>setRefundOpen(true)}>구매·환불 내역</button>
  <div className="wardrobe-filters"><label><input type="checkbox" checked={ownedOnly} onChange={e=>setOwnedOnly(e.target.checked)}/> 보유 아이템만</label><input aria-label="꾸미기 아이템 검색" placeholder="이름 검색" value={query} onChange={e=>setQuery(e.target.value)}/></div>
  <p className="wardrobe-count">{items.length}가지 선택지</p>

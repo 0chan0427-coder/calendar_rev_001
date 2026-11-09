@@ -1,3 +1,5 @@
+import {HAIR_COLORS_079,EYE_COLORS_079,HAIR_COLOR_ORIGINAL_079,EYE_COLOR_ORIGINAL_079} from './avatarColors079';
+import {ANIME_EYES_079} from '../lib/avatarAnimeEyes079';
 import {COLLECTION_077} from './collection077';
 import {SKIN_TONES_077,MAKEUP_077} from '../lib/avatarCosmetics077';
 import {EYE_STYLES} from '../lib/avatarEyes';
@@ -5,12 +7,15 @@ import {COSTUMES} from './costumes';
 import {COLLECTION_03} from './collection03';
 import {COLLECTION_01} from './collection01';
 import {COLLECTION_02} from './collection02';
-export type WearSlot='costume'|'hair'|'face'|'skin'|'makeup'|'glasses'|'hat'|'outer'|'top'|'bottom'|'shoes'|'accessory'|'special'|'coat';
+export type WearSlot='hairColor'|'eyeColor'|'costume'|'hair'|'face'|'skin'|'makeup'|'glasses'|'hat'|'outer'|'top'|'bottom'|'shoes'|'accessory'|'special'|'coat';
 export type Equipment=Partial<Record<WearSlot,string>>;
 export interface Wearable {id:string;name:string;target:'avatar'|'cat'|'companion';slot:WearSlot;species?:string;price:number;mode:'image'|'tint'|'base'|'feature';image?:string;color?:string;region?:[number,number,number,number];z?:number;renderKey?:string;hidden?:boolean;}
 export const WEAR_SLOTS:[WearSlot,string][]=[['costume','전체 코스튬'],['hair','헤어'],['hat','모자'],['top','상의'],['outer','겉옷'],['bottom','하의'],['shoes','신발'],['face','눈'],['skin','피부'],['makeup','메이크업'],['glasses','안경'],['accessory','장식']];
 const art='/world/avatar-v3';
 export const WEARABLES:Wearable[]=[
+ ...ANIME_EYES_079.map((i):Wearable=>({...i,target:'avatar',slot:'face',mode:'feature'})),
+ ...[{id:HAIR_COLOR_ORIGINAL_079,name:'헤어 원본 색상',color:''},...HAIR_COLORS_079].map((i):Wearable=>({...i,target:'avatar',slot:'hairColor',price:0,mode:'feature',hidden:true})),
+ ...[{id:EYE_COLOR_ORIGINAL_079,name:'눈 원본 색상',color:''},...EYE_COLORS_079].map((i):Wearable=>({...i,target:'avatar',slot:'eyeColor',price:0,mode:'feature',hidden:true})),
  ...SKIN_TONES_077.map((i):Wearable=>({id:i.id,name:i.name,target:'avatar',slot:'skin',price:0,mode:'feature',image:'/world/skin-077/'+i.id+'.png'})),
  ...MAKEUP_077.map((i):Wearable=>({id:i.id,name:i.name,target:'avatar',slot:'makeup',price:800,mode:'feature',image:'/world/makeup-077/'+i.id+'.png'})),
  ...EYE_STYLES.map((i):Wearable=>({...i,target:'avatar',slot:'face',mode:'feature'})),
@@ -56,7 +61,7 @@ export const WEARABLES:Wearable[]=[
  {id:'cat-gray',name:'회색 고양이',target:'cat',slot:'coat',price:1500,mode:'tint',color:'#9b9ba8'},
  {id:'ribbon-cat',name:'고양이 빨간 리본',target:'cat',slot:'accessory',price:500,mode:'image',image:'/world/wearables/shared/ribbon-red.png',region:[30,59,40,18],z:35},
 ];
-export const AVATAR_DEFAULTS:Equipment={costume:'costume-none',hair:'hair-chestnut',hat:'hat-none',outer:'outer-none',top:'top-base',bottom:'bottom-base',shoes:'shoes-none',face:'eyes-default',skin:'skin-default',makeup:'makeup-blush',glasses:'glasses-none'};
+export const AVATAR_DEFAULTS:Equipment={hairColor:HAIR_COLOR_ORIGINAL_079,eyeColor:EYE_COLOR_ORIGINAL_079,costume:'costume-none',hair:'hair-chestnut',hat:'hat-none',outer:'outer-none',top:'top-base',bottom:'bottom-base',shoes:'shoes-none',face:'eyes-default',skin:'skin-default',makeup:'makeup-blush',glasses:'glasses-none'};
 export function normalizeAvatarEquipment(equipment:Equipment={}):Equipment{return {...AVATAR_DEFAULTS,...Object.fromEntries(Object.entries(equipment).filter(([slot,id])=>WEARABLES.some(i=>i.target==='avatar'&&i.slot===slot&&i.id===id)))};}
 export const selectedWearables=(equipment:Equipment={},target:'avatar'|'cat'|'companion')=>{const merged=target==='avatar'?normalizeAvatarEquipment(equipment):equipment;return WEARABLES.filter(i=>i.target===target&&merged[i.slot]===i.id);};
 export const isCat=(id:string)=>/cat|고양/i.test(id);

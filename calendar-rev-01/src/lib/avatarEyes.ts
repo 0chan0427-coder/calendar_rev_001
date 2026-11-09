@@ -1,3 +1,5 @@
+import {renderAnimeEye079} from './avatarAnimeEyes079';
+import {irisPalette079} from './avatarColors079';
 /** Native eye shapes share the established face anchors; iris art is clipped inside each eyelid. */
 export const EYE_STYLES=[
  {id:'eyes-sharp',name:'날카로운 눈매',price:600},
@@ -18,7 +20,8 @@ const shapes:Record<string,{path:string;brow:string;cy:number;rx:number;ry:numbe
  'eyes-sleepy':{path:'M330 413Q389 406 450 413Q442 445 390 448Q340 446 330 429Z',brow:'M332 339Q388 333 446 339',cy:427,rx:30,ry:34},
  'eyes-villain':{path:'M327 386L451 410L440 444Q380 461 337 431Z',brow:'M326 326L449 370',cy:421,rx:26,ry:38,weight:14},
 };
-export function renderEyeStyle(style:string,makeup:string,uid:string,state:'open'|'closed'='open'):string|undefined{
+export function renderEyeStyle(style:string,makeup:string,uid:string,state:'open'|'closed'='open',colorId?:string):string|undefined{
+ const anime=renderAnimeEye079(style,makeup,uid,state,colorId);if(anime)return anime;
  if(!EYE_STYLES.some(s=>s.id===style))return;
  const closed=state==='closed';
  if(style==='eyes-slit')return `<g data-eye-style="${style}" data-eye-frame="${state}" fill="none" stroke="#673521" stroke-linecap="round"><path d="M330 333Q389 321 448 333 M576 333Q635 321 694 333" stroke-width="9"/><path d="${closed?'M331 410Q390 432 449 410 M575 410Q634 432 693 410':'M330 419Q390 383 450 419 M574 419Q634 383 694 419'}" stroke-width="12"/></g>`;
@@ -26,7 +29,7 @@ export function renderEyeStyle(style:string,makeup:string,uid:string,state:'open
  const pair=[0,1].map(side=>{
   const transform=side?'translate(1024 0) scale(-1 1)':'';
   const key=uid+'-'+side,red=makeup==='makeup-mukuro-six'&&side===0,blue=makeup==='makeup-mukuro-six'&&side===1;
-  const colors=red?['#471826','#b82d42','#e46766']:blue?['#173047','#367dac','#86c7e9']:['#3f231b','#8c5039','#d18d61'];
+  const colors=red?['#471826','#b82d42','#e46766']:blue?['#173047','#367dac','#86c7e9']:irisPalette079(colorId)||['#3f231b','#8c5039','#d18d61'];
   const pupil=red?`<g transform="translate(372 ${s.cy-21}) scale(.4)" fill="none" stroke="#24131a" stroke-width="9" stroke-linecap="round"><path d="M48 0L56 14 M9 29H91 M38 48Q29 70 9 85 M63 48Q76 66 88 85"/></g>`:`<ellipse cx="390" cy="${s.cy}" rx="${s.rx*.38}" ry="${s.ry*.48}" fill="#2d1c19"/>`;
   // Mirror iris shine and the Six glyph back independently, so the glyph itself is never mirrored.
   const iris=`<g ${side?`transform="translate(780 0) scale(-1 1)"`:''}><ellipse cx="390" cy="${s.cy}" rx="${s.rx}" ry="${s.ry}" fill="url(#${key}-iris)" stroke="#653622" stroke-width="3"/>${pupil}<circle cx="${side?376:404}" cy="${s.cy-19}" r="8" fill="#fff9ed"/><circle cx="${side?407:373}" cy="${s.cy+17}" r="3.5" fill="#ffe5c0" opacity=".8"/></g>`;

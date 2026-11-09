@@ -1,0 +1,6 @@
+export interface AvatarColor079 {id:string;name:string;color:string}
+const hair=[['black','블랙','#25232b'],['softblack','소프트 블랙','#44404b'],['darkbrown','다크 브라운','#49322e'],['chocolate','초콜릿 브라운','#735044'],['chestnut','체스트넛 브라운','#a76b46'],['ashbrown','애쉬 브라운','#86756d'],['milktea','밀크티 베이지','#c6aa87'],['honey','허니 블론드','#d5a454'],['platinum','플래티넘 블론드','#e9d9b3'],['silver','실버','#b7bdcf'],['white','화이트','#eae6ef'],['ashgray','애쉬 그레이','#858995'],['rose','로즈 핑크','#d18fa9'],['lavender','라벤더','#ab94cd'],['navy','네이비 블루','#3c517a'],['burgundy','버건디 레드','#873b53']];
+const eyes=[['brown','다크 브라운','#75442e'],['amber','앰버','#ba791e'],['gold','골드','#d5b339'],['orange','오렌지','#d57531'],['emerald','에메랄드','#38966c'],['teal','청록','#379da0'],['sky','하늘색','#69b9df'],['blue','블루','#427ddd'],['sapphire','사파이어','#3d4caa'],['lavender','라벤더','#a597d9'],['violet','바이올렛','#8250b2'],['pink','핑크','#d77da7'],['ruby','루비','#bd395d'],['burgundy','버건디','#87384e'],['silver','실버 그레이','#aab4c5'],['charcoal','차콜 그레이','#575964']];
+export const HAIR_COLORS_079:AvatarColor079[]=hair.map(([key,name,color])=>({id:'haircolor079-'+key,name,color}));
+export const EYE_COLORS_079:AvatarColor079[]=eyes.map(([key,name,color])=>({id:'eyecolor079-'+key,name,color}));
+export const HAIR_COLOR_ORIGINAL_079='haircolor079-original',EYE_COLOR_ORIGINAL_079='eyecolor079-original';

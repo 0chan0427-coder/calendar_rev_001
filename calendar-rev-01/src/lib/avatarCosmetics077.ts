@@ -29,13 +29,14 @@ export function cosmetic077(makeup:string|undefined,face:string|undefined,closed
  closed=closed||face==='eyes-smile';
  const m=MAKEUP_077.find(i=>i.id===makeup);if(!m)return '';
  const soft=face==='eyes-slit'||face==='eyes-sleepy',cy=m.highBlush?474:500;
+ const anime=face?.startsWith('eyes079-'),accentOffset=({'eyes079-clear':10,'eyes079-soft':12,'eyes079-cat':4,'eyes079-almond':0,'eyes079-doll':22,'eyes079-heroine':8} as Record<string,number>)[face||'']||0;
  const gradient=uid+'-'+m.id+'-'+(closed?'closed':'open');
  const cheeks=`<defs><radialGradient id="${gradient}"><stop stop-color="${m.color}" stop-opacity=".7"/><stop offset="1" stop-color="${m.color}" stop-opacity="0"/></radialGradient></defs><g fill="url(#${gradient})"><ellipse cx="350" cy="${cy}" rx="58" ry="27"/><ellipse cx="674" cy="${cy}" rx="58" ry="27"/></g>`;
  // The under-eye accents stay below the moving lids, never drawn as a second eye.
- const accents=m.white?`<g fill="none" stroke="#fff0d8" stroke-width="5" stroke-linecap="round" opacity=".8"><path d="M344 455Q385 476 427 455 M597 455Q638 476 679 455"/></g>`:'';
- const sparkle=m.glitter?`<g fill="#fff4d1"><circle cx="340" cy="469" r="4"/><circle cx="421" cy="468" r="3"/><circle cx="603" cy="468" r="3"/><circle cx="684" cy="469" r="4"/></g>`:'';
+ const accents=m.white?`<g transform="translate(0 ${accentOffset})" fill="none" stroke="#fff0d8" stroke-width="5" stroke-linecap="round" opacity=".8"><path d="M344 455Q385 476 427 455 M597 455Q638 476 679 455"/></g>`:'';
+ const sparkle=m.glitter?`<g transform="translate(0 ${accentOffset})" fill="#fff4d1"><circle cx="340" cy="469" r="4"/><circle cx="421" cy="468" r="3"/><circle cx="603" cy="468" r="3"/><circle cx="684" cy="469" r="4"/></g>`:'';
  const lip=showLip?`<path data-makeup-lip="${gender}" d="${gender==='female'?'M465 493Q509 516 554 493':'M469 498Q507 523 547 498'}" fill="none" stroke="${m.lip}" stroke-width="7" stroke-linecap="round"/>`:'';
- const eyes=[false,true].map(right=>{
+ const eyes=anime?'':[false,true].map(right=>{
   const lashes=Array.from({length:soft?1:m.lashes},(_,i)=>`<path d="M${331+i*7} ${(closed?408:soft?419:399)+i*4}l${-14+i*2} ${-9-i*2}"/>`).join('');
   return `<g ${right?'transform="translate(1024 0) scale(-1 1)"':''} fill="none" stroke="${m.liner}" stroke-width="${m.lashes>2?7:5}" stroke-linecap="round">${lashes}</g>`;
  }).join('');

@@ -127,14 +127,14 @@ export const COLLECTION_077:CollectionItem[]=[
   },
   {
     "id": "hair077-06",
-    "image": "/world/hair-077/hair077-06.png",
+    "image": "/world/hair-079/hime.png",
     "width": 1376,
     "height": 1143,
     "crop": [
-      131,
-      27,
-      1114,
-      1104
+      125,
+      20,
+      1126,
+      1112
     ],
     "slot": "hair",
     "name": "블랙 히메컷",
@@ -147,7 +147,7 @@ export const COLLECTION_077:CollectionItem[]=[
       1120.7272727272727
     ],
     "hairLayers": {
-      "backPath": "M522.88 960.12H853.12V1143H522.88Z"
+      "backPath": "M0 582.9300000000001H1376V1143H0Z"
     }
   },
   {

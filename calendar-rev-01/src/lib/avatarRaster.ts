@@ -1,3 +1,4 @@
+import {hairColorFilter079,defaultEyeColor079} from './avatarColors079';
 import {originalBaseHair078} from '../data/hair078';
 import {skinFilter077,cosmetic077,cosmeticShadow077,SKIN_TONES_077} from './avatarCosmetics077';
 import {renderEyeStyle} from './avatarEyes';
@@ -29,7 +30,7 @@ export function avatarSvgMarkup(gender:'male'|'female',input:Equipment={},uid='a
  const newAsset=(item:typeof c.top)=>collectionAsset(item,resolve,id('alpha'));
  const innerTopClip=c.outer?GARMENT_FITS[c.outer.id]?.innerTopClip:undefined;
  const innerTopAttr=innerTopClip?`clip-path="url(#${id('inner-top')})"`:'';
- const hairArt=(layer:'front'|'back')=>c.hair?collectionHair(c.hair,resolve,id('alpha'),id('hair-'+layer),layer):asset(hair,hairBox,'',undefined,`mask="url(#${id('hair-'+layer)})"`);
+ const hairArt=(layer:'front'|'back')=>tintHair(c.hair?collectionHair(c.hair,resolve,id('alpha'),id('hair-'+layer),layer):asset(hair,hairBox,'',undefined,`mask="url(#${id('hair-'+layer)})"`));
  
  const hatClip=c.hat&&(c.hat.helmet||HEADWEAR_FITS[c.hat.id]?.headPath)?`clip-path="url(#${id('head-visible')})"`:'';
  const clean=RASTER_ASSETS[`${gender}-clean`];
@@ -43,14 +44,16 @@ export function avatarSvgMarkup(gender:'male'|'female',input:Equipment={},uid='a
  const faceVisible=c.hat?.helmet?.mode!=='closed';
  const faceClip=helmetFaceClip(c.hat,uid);
  const hairSource=c.hair||RASTER_ASSETS[hair];
+ const hairColourDef=hairColorFilter079(e.hairColor,hairSource.image,id('hair-color'));
+ const tintHair=(art:string)=>hairColourDef?`<g filter="url(#${id('hair-color')})">${art}</g>`:art;
  const hairBackPath=c.hair?.hairLayers?.backPath||(hair==='hair-bob'?'M550 750 Q768 875 1000 750 L1000 1024 H550Z':'M420 795 Q700 1030 1000 795 L1000 1143 H420Z');
  const eyeY=gender==='female'?-6:0;
  const bareEyeSprite=asset('eyes-open',[305,293,414,176]);
- const eyeSprite=bareEyeSprite+(e.makeup==='makeup-mukuro-six'?mukuroIris(id('mukuro')):'');
+ const eyeSprite=defaultEyeColor079(bareEyeSprite,e.eyeColor,e.makeup,id('iris-color'))+(e.makeup==='makeup-mukuro-six'?mukuroIris(id('mukuro')):'');
  const brows=`<g clip-path="url(#${id('brows')})">${bareEyeSprite}</g>`;
  const closedEyes=`${brows}<g transform="translate(0 ${eyeY})" stroke="#673521" stroke-width="11" fill="none" stroke-linecap="round"><path d="M329 399 Q387 435 446 399 M568 399 Q628 435 688 399"/><path d="M332 401L323 395 M443 401L451 395 M571 401L562 395 M685 401L694 395" stroke-width="7"/></g>`;
  const smileEyes=`${brows}<g transform="translate(0 ${eyeY})" stroke="#673521" stroke-width="13" fill="none" stroke-linecap="round"><path d="M329 420 Q387 359 446 420 M568 420 Q628 359 688 420"/></g>`;
- const customOpen=renderEyeStyle(e.face!,e.makeup!,id('custom-eyes'),'open'),customClosed=renderEyeStyle(e.face!,e.makeup!,id('custom-eyes'),'closed');
+ const customOpen=renderEyeStyle(e.face!,e.makeup!,id('custom-eyes'),'open',e.eyeColor),customClosed=renderEyeStyle(e.face!,e.makeup!,id('custom-eyes'),'closed',e.eyeColor);
  const eyes=customOpen?(blinking?`<g class="${stateClass('open')}">${customOpen}</g><g class="${stateClass('closed')}">${customClosed}</g>`:options.eyeState==='closed'?customClosed:customOpen):e.face==='eyes-smile'?smileEyes:blinking
   ?`<g data-eye-state="open" class="${stateClass('open')}">${eyeSprite}</g><g data-eye-state="closed" class="${stateClass('closed')}">${closedEyes}</g>`:options.eyeState==='closed'&&e.face!=='eyes-smile'?closedEyes:eyeSprite;
  const faceBody=`<g id="${id('body')}">${base}</g>`;
@@ -130,7 +133,7 @@ export function avatarSvgMarkup(gender:'male'|'female',input:Equipment={},uid='a
  </style>
  <filter id="${id('alpha')}" color-interpolation-filters="sRGB"><feComponentTransfer><feFuncA type="linear" slope="1.045" intercept="-0.025"/></feComponentTransfer></filter>
  <filter id="${id('alpha')}-costume" color-interpolation-filters="sRGB"><feComponentTransfer><feFuncA type="linear" slope="2" intercept="-0.8"/></feComponentTransfer></filter>
- ${skinFilter077(e.skin,id('skin-tone'))}
+ ${skinFilter077(e.skin,id('skin-tone'))}${hairColourDef}
  <filter id="${id('warm')}" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values=".96 0 0 0 0 0 .86 0 0 .015 0 0 .78 0 .025 0 0 0 1 0"/></filter>
  <!-- Native-image coordinates: the rear cuff goes behind the shin, while the tongue/laces stay in front. -->
  <mask id="${id('boot-front')}" maskUnits="userSpaceOnUse" x="0" y="0" width="1774" height="887">

@@ -1,3 +1,4 @@
+import {originalBaseHair078} from '../data/hair078';
 import {skinFilter077,cosmetic077,cosmeticShadow077,SKIN_TONES_077} from './avatarCosmetics077';
 import {renderEyeStyle} from './avatarEyes';
 import {costumeSvg,mukuroIris} from './avatarCostumes';
@@ -24,7 +25,7 @@ export function avatarSvgMarkup(gender:'male'|'female',input:Equipment={},uid='a
  const blinking=animate&&options.blink!==false&&e.face!=='eyes-smile';
  const phase=Number.isFinite(options.phase)?options.phase!:0;
  const stateClass=(state:'open'|'closed')=>blinking?`avatar-eye-${state}`:'';
- const c={hair:collectionItem(e.hair),hat:collectionItem(e.hat),top:collectionItem(e.top),outer:collectionItem(e.outer),bottom:collectionItem(e.bottom),shoes:collectionItem(e.shoes),accessory:collectionItem(e.accessory)};
+ const c={hair:originalBaseHair078(e.hair,gender)||collectionItem(e.hair),hat:collectionItem(e.hat),top:collectionItem(e.top),outer:collectionItem(e.outer),bottom:collectionItem(e.bottom),shoes:collectionItem(e.shoes),accessory:collectionItem(e.accessory)};
  const newAsset=(item:typeof c.top)=>collectionAsset(item,resolve,id('alpha'));
  const innerTopClip=c.outer?GARMENT_FITS[c.outer.id]?.innerTopClip:undefined;
  const innerTopAttr=innerTopClip?`clip-path="url(#${id('inner-top')})"`:'';

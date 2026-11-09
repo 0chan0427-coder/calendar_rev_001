@@ -1,3 +1,4 @@
+import {ORIGINAL_HAIR_IDS_078} from '../../data/hair078';
 import {collectionItem} from '../../data/collection01';
 import {useId} from 'react';
 import type {Wearable} from '../../data/wardrobe';
@@ -9,6 +10,7 @@ import SvgThumbnailCanvas from './SvgThumbnailCanvas';
 export default function WearableThumbnail({item,gender}:{item:Wearable;gender:'male'|'female'}){
  const uid=useId().replace(/[^a-z0-9]/gi,'');
  const collection=collectionItem(item.id);
+ if(ORIGINAL_HAIR_IDS_078.has(item.id))return <SvgThumbnailCanvas label={item.name} markup={wearableThumbnailSvg(item,gender,'thumb'+uid)}/>;
  const key=item.id==='hair-chestnut'&&gender==='female'?'hair-bob':item.renderKey;
  if(item.image&&/^(makeup077-|skin077-)/.test(item.id))return <WorldImageCanvas interactive={false} src={item.image} className="wearable-thumbnail" label={item.name}/>;
  const art=collection||(key?RASTER_ASSETS[key as RasterKey]:undefined);

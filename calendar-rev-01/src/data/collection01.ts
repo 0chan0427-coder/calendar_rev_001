@@ -15,22 +15,22 @@ export const COLLECTION_01:CollectionItem[]=[
     "price": 2500,
     "kind": "hair",
     "box": [
-      167.495,
-      5.0,
-      685.15,
-      627.25
+      142.949721,
+      6.120805,
+      738.100559,
+      563.758389
     ],
-    "image": "/world/wardrobe-01/hair-wave.png",
-    "width": 1536,
-    "height": 1024,
+    "image": "/world/hair-078/wave.png",
+    "width": 1254,
+    "height": 1254,
     "crop": [
-      192,
-      40,
-      1149,
-      872
+      73,
+      48,
+      1080,
+      900
     ],
     "hairLayers": {
-      "backPath": "M583.6800000000001 901.12H952.3199999999999V1024H583.6800000000001Z"
+      "backPath": "M438.9 1003.2Q627.0 1103.52 815.1 1003.2L902.88 1254H351.12000000000006Z"
     }
   },
   {
@@ -40,22 +40,22 @@ export const COLLECTION_01:CollectionItem[]=[
     "price": 2500,
     "kind": "hair",
     "box": [
-      191.62,
-      -1.755,
-      636.9,
-      434.25
+      164.832461,
+      -2.020498,
+      694.335079,
+      464.040996
     ],
-    "image": "/world/wardrobe-01/hair-sidepart.png",
-    "width": 1536,
-    "height": 1024,
+    "image": "/world/hair-078/sidepart.png",
+    "width": 1254,
+    "height": 1254,
     "crop": [
-      229,
-      24,
-      1074,
-      943
+      131,
+      45,
+      961,
+      689
     ],
     "hairLayers": {
-      "backPath": "M583.6800000000001 901.12H952.3199999999999V1024H583.6800000000001Z"
+      "backPath": "M438.9 1003.2Q627.0 1103.52 815.1 1003.2L902.88 1254H351.12000000000006Z"
     }
   },
   {
@@ -65,22 +65,22 @@ export const COLLECTION_01:CollectionItem[]=[
     "price": 2500,
     "kind": "hair",
     "box": [
-      177.14500000000004,
-      -4.65,
-      665.85,
-      472.84999999999997
+      171.754153,
+      -2.207278,
+      680.491694,
+      469.414557
     ],
-    "image": "/world/wardrobe-01/hair-curls.png",
-    "width": 1536,
-    "height": 1024,
+    "image": "/world/hair-078/curls.png",
+    "width": 1254,
+    "height": 1254,
     "crop": [
-      140,
-      45,
-      1244,
-      895
+      168,
+      36,
+      909,
+      638
     ],
     "hairLayers": {
-      "backPath": "M583.6800000000001 901.12H952.3199999999999V1024H583.6800000000001Z"
+      "backPath": "M438.9 1003.2Q627.0 1103.52 815.1 1003.2L902.88 1254H351.12000000000006Z"
     }
   },
   {
@@ -90,22 +90,22 @@ export const COLLECTION_01:CollectionItem[]=[
     "price": 3000,
     "kind": "hair",
     "box": [
-      167.495,
-      0.17499999999999982,
-      685.15,
-      752.6999999999999
+      119.773549,
+      -2.090592,
+      784.452902,
+      804.181185
     ],
-    "image": "/world/wardrobe-01/hair-long.png",
-    "width": 1536,
-    "height": 1024,
+    "image": "/world/hair-078/long.png",
+    "width": 1254,
+    "height": 1254,
     "crop": [
-      264,
-      15,
-      1007,
-      964
+      98,
+      44,
+      1057,
+      1154
     ],
     "hairLayers": {
-      "backPath": "M583.6800000000001 901.12H952.3199999999999V1024H583.6800000000001Z"
+      "backPath": "M460 750Q627 900 794 750L850 1254H400Z"
     }
   },
   {
@@ -115,22 +115,22 @@ export const COLLECTION_01:CollectionItem[]=[
     "price": 3000,
     "kind": "hair",
     "box": [
-      90.29500000000002,
-      -4.65,
-      839.55,
-      675.5
+      77.884082,
+      -2.111954,
+      868.231837,
+      746.223909
     ],
-    "image": "/world/wardrobe-01/hair-twintail.png",
-    "width": 1536,
-    "height": 1024,
+    "image": "/world/hair-078/twintail.png",
+    "width": 1254,
+    "height": 1254,
     "crop": [
-      87,
-      27,
-      1362,
-      971
+      12,
+      50,
+      1231,
+      1060
     ],
     "hairLayers": {
-      "backPath": "M583.6800000000001 901.12H952.3199999999999V1024H583.6800000000001Z"
+      "backPath": "M0 540H220Q270 620 300 800L300 1254H0Z M1254 540H1034Q984 620 954 800L954 1254H1254Z"
     }
   },
   {
@@ -140,22 +140,22 @@ export const COLLECTION_01:CollectionItem[]=[
     "price": 3000,
     "kind": "hair",
     "box": [
-      213.815,
-      0.17499999999999982,
-      764.28,
-      651.375
+      142.541031,
+      5.83559,
+      863.917939,
+      750.32882
     ],
-    "image": "/world/wardrobe-01/hair-pony.png",
-    "width": 1536,
-    "height": 1024,
+    "image": "/world/hair-078/pony.png",
+    "width": 1254,
+    "height": 1254,
     "crop": [
-      223,
-      29,
-      1131,
-      964
+      170,
+      71,
+      1054,
+      1040
     ],
     "hairLayers": {
-      "backPath": "M583.6800000000001 901.12H952.3199999999999V1024H583.6800000000001Z"
+      "backPath": "M1254 420H1040L950 550Q940 650 900 720L900 1254H1254Z"
     }
   },
   {

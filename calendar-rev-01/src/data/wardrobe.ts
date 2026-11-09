@@ -1,3 +1,5 @@
+import {COLLECTION_077} from './collection077';
+import {SKIN_TONES_077,MAKEUP_077} from '../lib/avatarCosmetics077';
 import {EYE_STYLES} from '../lib/avatarEyes';
 import {COSTUMES} from './costumes';
 import {COLLECTION_03} from './collection03';
@@ -9,11 +11,13 @@ export interface Wearable {id:string;name:string;target:'avatar'|'cat'|'companio
 export const WEAR_SLOTS:[WearSlot,string][]=[['costume','전체 코스튬'],['hair','헤어'],['hat','모자'],['top','상의'],['outer','겉옷'],['bottom','하의'],['shoes','신발'],['face','눈'],['skin','피부'],['makeup','메이크업'],['glasses','안경'],['accessory','장식']];
 const art='/world/avatar-v3';
 export const WEARABLES:Wearable[]=[
+ ...SKIN_TONES_077.map((i):Wearable=>({id:i.id,name:i.name,target:'avatar',slot:'skin',price:0,mode:'feature',image:'/world/skin-077/'+i.id+'.png'})),
+ ...MAKEUP_077.map((i):Wearable=>({id:i.id,name:i.name,target:'avatar',slot:'makeup',price:800,mode:'feature',image:'/world/makeup-077/'+i.id+'.png'})),
  ...EYE_STYLES.map((i):Wearable=>({...i,target:'avatar',slot:'face',mode:'feature'})),
  ...COSTUMES.map((i):Wearable=>({id:i.id,name:i.name,target:'avatar',slot:'costume',price:i.price,mode:'image',image:i.image})),
  {id:'costume-none',name:'전체 코스튬 해제',target:'avatar',slot:'costume',price:0,mode:'base'},
  {id:'makeup-mukuro-six',name:'무쿠로 六 오드아이',target:'avatar',slot:'makeup',price:1000,mode:'feature'},
- ...[...COLLECTION_01,...COLLECTION_02,...COLLECTION_03].map((item):Wearable=>({id:item.id,name:item.name,target:'avatar',slot:item.slot,price:item.price,mode:'image',image:item.image})),
+ ...[...COLLECTION_01,...COLLECTION_02,...COLLECTION_03,...COLLECTION_077].map((item):Wearable=>({id:item.id,name:item.name,target:'avatar',slot:item.slot,price:item.price,mode:'image',image:item.image})),
  {id:'outer-none',name:'겉옷 해제',target:'avatar',slot:'outer',price:0,mode:'base'},
  {id:'hat-none',name:'모자 해제',target:'avatar',slot:'hat',price:0,mode:'base'},
  {id:'hair-chestnut',name:'기본 헤어',target:'avatar',slot:'hair',price:0,mode:'image',image:`${art}/hair-short.png`,renderKey:'hair-short'},

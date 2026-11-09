@@ -1,3 +1,4 @@
+import {skinFilter077,cosmetic077,cosmeticShadow077,SKIN_TONES_077} from './avatarCosmetics077';
 import {renderEyeStyle} from './avatarEyes';
 import {costumeSvg,mukuroIris} from './avatarCostumes';
 import {helmetLining,helmetFaceClip} from './avatarHelmets';
@@ -52,7 +53,8 @@ export function avatarSvgMarkup(gender:'male'|'female',input:Equipment={},uid='a
  const eyes=customOpen?(blinking?`<g class="${stateClass('open')}">${customOpen}</g><g class="${stateClass('closed')}">${customClosed}</g>`:options.eyeState==='closed'?customClosed:customOpen):e.face==='eyes-smile'?smileEyes:blinking
   ?`<g data-eye-state="open" class="${stateClass('open')}">${eyeSprite}</g><g data-eye-state="closed" class="${stateClass('closed')}">${closedEyes}</g>`:options.eyeState==='closed'&&e.face!=='eyes-smile'?closedEyes:eyeSprite;
  const faceBody=`<g id="${id('body')}">${base}</g>`;
- const skin=e.skin==='skin-warm'?`<use href="#${id('body')}" clip-path="url(#${id('skin')})" filter="url(#${id('warm')})" data-layer="skin"/>`:'';
+ const customSkin=SKIN_TONES_077.some(i=>i.id===e.skin),skinFilter=customSkin?'skin-tone':'warm';
+ const skin=e.skin==='skin-warm'||customSkin?`<use href="#${id('body')}" clip-path="url(#${id('skin')})" filter="url(#${id(skinFilter)})" data-layer="skin"/>`:'';
  // Masks hide baked-in basics only where replacement clothing is equipped.
  const hasTop=e.top!=='top-base';
  const hasBottom=e.bottom!=='bottom-base';
@@ -79,6 +81,10 @@ export function avatarSvgMarkup(gender:'male'|'female',input:Equipment={},uid='a
  const freckles=e.makeup==='makeup-freckles'?`<g fill="#a46e4f" opacity=".65">${[[323,491],[344,504],[367,490],[389,505],[635,505],[657,490],[680,504],[701,491]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="4.5"/>`).join('')}</g>`:'';
  const shadow=(closed:boolean)=>`<g opacity=".55" transform="translate(0 ${eyeY})"><ellipse cx="387" cy="${closed?409:365}" rx="69" ry="${closed?20:29}" fill="url(#${id('shadow')})"/><ellipse cx="628" cy="${closed?409:365}" rx="69" ry="${closed?20:29}" fill="url(#${id('shadow')})"/></g>`;
  const eyeMakeup=e.makeup==='makeup-mauve'?(blinking?`<g data-makeup-state="open" class="${stateClass('open')}">${shadow(false)}</g><g data-makeup-state="closed" class="${stateClass('closed')}">${shadow(true)}</g>`:shadow(e.face==='eyes-smile')):'';
+ const makeupOpen=cosmetic077(e.makeup,e.face,false,id('cosmetics'),gender),makeupClosed=cosmetic077(e.makeup,e.face,true,id('cosmetics'),gender);
+ const shadowOpen=cosmeticShadow077(e.makeup,false,id('shadow077')),shadowClosed=cosmeticShadow077(e.makeup,true,id('shadow077'));
+ const addedShadow=blinking?`<g class="${stateClass('open')}">${shadowOpen}</g><g class="${stateClass('closed')}">${shadowClosed}</g>`:options.eyeState==='closed'?shadowClosed:shadowOpen;
+ const addedMakeup=blinking?`<g class="${stateClass('open')}">${makeupOpen}</g><g class="${stateClass('closed')}">${makeupClosed}</g>`:options.eyeState==='closed'?makeupClosed:makeupOpen;
  const blush=hasBlush?`<g data-layer="makeup"><g opacity="${e.makeup==='makeup-rose'?.7:peach?.48:.4}"><ellipse cx="350" cy="503" rx="63" ry="33" fill="url(#${id('blush')})"/><ellipse cx="674" cy="503" rx="63" ry="33" fill="url(#${id('blush')})"/></g>${freckles}${eyeMakeup}</g>`:'';
  const glassesStyle:Record<string,{color:string;shape:'round'|'rect'|'oval';width:number}>={
   'glasses-round':{color:'#6d4d3b',shape:'round',width:8},
@@ -101,8 +107,10 @@ export function avatarSvgMarkup(gender:'male'|'female',input:Equipment={},uid='a
  const accessory=fittedAccessory(c.accessory,uid,resolve,id('alpha'),'over-outer');
  const ribbon=!c.hat?.helmet&&e.accessory==='ribbon-avatar'?`<svg x="675" y="110" width="145" height="110" viewBox="0 0 1536 1024" preserveAspectRatio="xMidYMid meet"><image href="${safe(resolve('/world/wearables/shared/ribbon-red.png'))}" width="1536" height="1024" filter="url(#${id('alpha')})"/></svg>`:'';
  const costumeHeadwear=c.hat?.id.startsWith('c02-')===true;
- const cameraTop=c.hat?.helmet?Math.min(-40,Math.floor(c.hat.box[1]-16)):costumeHeadwear?-150:0;
- return `<svg class="raster-avatar-svg" width="1024" height="1536" preserveAspectRatio="xMidYMax meet" viewBox="0 ${cameraTop} 1024 ${1536-cameraTop}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="--avatar-phase:${phase}s"><defs>
+ const hairTop=showHair?Math.min(-50,(c.hair?.box[1]??hairBox[1])-18):0;
+ const cameraLeft=showHair?Math.min(0,(c.hair?.box[0]??hairBox[0])-18):0,cameraRight=showHair?Math.max(1024,(c.hair?c.hair.box[0]+c.hair.box[2]:hairBox[0]+hairBox[2])+18):1024;
+ const cameraTop=c.hat?.helmet?Math.min(hairTop,-40,Math.floor(c.hat.box[1]-16)):costumeHeadwear?Math.min(hairTop,-150):hairTop;
+ return `<svg class="raster-avatar-svg" width="1024" height="1536" preserveAspectRatio="xMidYMax meet" viewBox="${cameraLeft} ${cameraTop} ${cameraRight-cameraLeft} ${1536-cameraTop}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="--avatar-phase:${phase}s"><defs>
  ${collectionCuffMask(c.shoes,id('collection-cuff'))}
  ${cape?hairLayerMasks(c.outer!.width,c.outer!.height,CAPE_FIT.backPath,id('cape-rear'),id('cape-front')):''}
  ${headwearDefs(c.hat,uid)}
@@ -121,6 +129,7 @@ export function avatarSvgMarkup(gender:'male'|'female',input:Equipment={},uid='a
  </style>
  <filter id="${id('alpha')}" color-interpolation-filters="sRGB"><feComponentTransfer><feFuncA type="linear" slope="1.045" intercept="-0.025"/></feComponentTransfer></filter>
  <filter id="${id('alpha')}-costume" color-interpolation-filters="sRGB"><feComponentTransfer><feFuncA type="linear" slope="2" intercept="-0.8"/></feComponentTransfer></filter>
+ ${skinFilter077(e.skin,id('skin-tone'))}
  <filter id="${id('warm')}" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values=".96 0 0 0 0 0 .86 0 0 .015 0 0 .78 0 .025 0 0 0 1 0"/></filter>
  <!-- Native-image coordinates: the rear cuff goes behind the shin, while the tongue/laces stay in front. -->
  <mask id="${id('boot-front')}" maskUnits="userSpaceOnUse" x="0" y="0" width="1774" height="887">
@@ -150,10 +159,10 @@ export function avatarSvgMarkup(gender:'male'|'female',input:Equipment={},uid='a
  <g data-layer="garment-back">${garmentBack}</g>
  <g data-layer="outer-back">${outerBack}</g>
  <g data-layer="shoes-back">${shoesBack}</g>
- ${helmetLining(c.hat,uid)}<g ${hatClip}><g mask="url(#${id('body-visible')})"><use href="#${id('body')}" data-layer="base"/>${skin}</g></g>${faceVisible?`<g ${faceClip}>${blush}</g>`:''}<g data-layer="eyes" ${faceClip}>${faceVisible?eyes:''}</g>
+ ${helmetLining(c.hat,uid)}<g ${hatClip}><g mask="url(#${id('body-visible')})"><use href="#${id('body')}" data-layer="base"/>${skin}</g></g>${faceVisible?`<g ${faceClip}>${blush}</g>`:''}<g data-layer="eyes" ${faceClip}>${faceVisible?addedShadow+eyes+addedMakeup:''}</g>
  <!-- Current trousers are worn over shoes: back cuff → shin → front shoe → trouser hem. -->
- <g data-layer="shoes-front">${shoesFront}</g><g data-layer="bottom">${bottom}</g><g data-layer="top" ${innerTopAttr}>${top}</g>${!c.top&&hasTop?`<use href="#${id('body')}" clip-path="url(#${id('neck')})" ${e.skin==='skin-warm'?`filter="url(#${id('warm')})"`:''} data-layer="legacy-neck-occlusion"/>`:''}<g data-layer="accessory-under-outer">${accessoryInner}</g><g data-layer="outer">${outer}</g>${cape?`<use href="#${id('body')}" clip-path="url(#${id('bare-arms')})" ${e.skin==='skin-warm'?`filter="url(#${id('warm')})"`:''} data-layer="arms-over-cape"/>${capeSleeves}`:''}
+ <g data-layer="shoes-front">${shoesFront}</g><g data-layer="bottom">${bottom}</g><g data-layer="top" ${innerTopAttr}>${top}</g>${!c.top&&hasTop?`<use href="#${id('body')}" clip-path="url(#${id('neck')})" ${(e.skin==='skin-warm'||customSkin)?`filter="url(#${id(skinFilter)})"`:''} data-layer="legacy-neck-occlusion"/>`:''}<g data-layer="accessory-under-outer">${accessoryInner}</g><g data-layer="outer">${outer}</g>${cape?`<use href="#${id('body')}" clip-path="url(#${id('bare-arms')})" ${(e.skin==='skin-warm'||customSkin)?`filter="url(#${id(skinFilter)})"`:''} data-layer="arms-over-cape"/>${capeSleeves}`:''}
 
- ${c.outer?`<use href="#${id('body')}" clip-path="url(#${id('collar-skin')})" ${e.skin==='skin-warm'?`filter="url(#${id('warm')})"`:''} data-layer="skin-over-rear-collar"/>`:''}
+ ${c.outer?`<use href="#${id('body')}" clip-path="url(#${id('collar-skin')})" ${(e.skin==='skin-warm'||customSkin)?`filter="url(#${id(skinFilter)})"`:''} data-layer="skin-over-rear-collar"/>`:''}
  ${faceVisible?`<g ${faceClip}>${glasses}</g>`:''}<g data-layer="accessory">${accessory}</g>${showHair?`<g data-layer="hair-front" ${hatClip}>${hairArt('front')}</g>`:''}${hat}${ribbon}</g></svg>`;
 }

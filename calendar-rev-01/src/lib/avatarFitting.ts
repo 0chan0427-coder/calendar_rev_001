@@ -1,3 +1,4 @@
+import {OUTER_FITS_077} from './outerFits077';
 import {helmetDefs} from './avatarHelmets';
 import type { CollectionItem, Box } from '../data/collection01';
 import { collectionAsset, hairLayerMasks } from './avatarCollection';
@@ -41,6 +42,7 @@ const sleeve = 'M0 0H480V420Q480 590 485 660L450 1100H0Z';
 const neck = (left: number, right: number, y: number, depth: number) => `M${left} 0H${right}V${y}Q${right} ${depth} 768 ${depth}Q${left} ${depth} ${left} ${y}Z`;
 /** Registered source landmarks, not positions inferred from an image's bounding rectangle. */
 export const GARMENT_FITS: Record<string, GarmentFit> = {
+    ...OUTER_FITS_077,
     'top-blouse': { center: 768, scaleX: .43, bodyPath: body, bands: [[157, 585], [335, 652], [870, 965]], sleevePath: sleeve, shoulder: [460, 250], cuff: [225, 690], targetCuff: [294, 862], backPath: neck(568, 970, 157, 333) },
     'top-cable': { center: 768, scaleX: .46, bodyPath: body, bands: [[165, 590], [275, 650], [790, 970]], sleevePath: sleeve, shoulder: [480, 300], cuff: [160, 840], targetCuff: [244, 962], backPath: neck(585, 950, 168, 273) },
     'top-stripe': { center: 768, scaleX: .43, bodyPath: 'M410 0H1126V500L1180 1024H356L410 500Z', bands: [[171, 590], [298, 655], [856, 969]], sleevePath: 'M0 0H460V550L440 1024H0Z', shoulder: [430, 300], cuff: [240, 638], targetCuff: [304, 846], backPath: neck(515, 1020, 175, 296) + ' M90 535Q255 578 397 702L343 732Q213 651 107 575Z M1446 535Q1281 578 1139 702L1193 732Q1323 651 1429 575Z' },
@@ -148,7 +150,7 @@ export function fittedGarment(item: CollectionItem | undefined, uid: string, res
             }
         }
     }
-    return `<g data-collection="${item.id}" data-garment-layer="${layer}" filter="url(#${/^c0[23]-/.test(item.id)?alphaId+'-costume':alphaId})"><defs>${defs}</defs>${showSleeves ? sleeves : ''}${onlySleeves ? '' : bodice}</g>`;
+    return `<g data-collection="${item.id}" data-garment-layer="${layer}" filter="url(#${/^(c0[23]-|outer077-)/.test(item.id)?alphaId+'-costume':alphaId})"><defs>${defs}</defs>${showSleeves ? sleeves : ''}${onlySleeves ? '' : bodice}</g>`;
 }
 export interface HeadwearFit {
     box?: Box;
@@ -171,7 +173,7 @@ export const HEADWEAR_FITS: Record<string, HeadwearFit> = {
 };
 export function headwearDefs(item: CollectionItem | undefined, uid: string) { if (!item)
     return ''; if(item.helmet)return helmetDefs(item,uid);const f = HEADWEAR_FITS[item.id]; if (!f)
-    return ''; const [x, y, w, h] = f.box || item.box, [cx, cy, cw, ch] = item.crop; return hairLayerMasks(item.width, item.height, f.backPath, uid + '-hat-back', uid + '-hat-front', f.frontKeepPath) + (f.headPath ? `<clipPath id="${uid}-head-visible"><path d="${f.headPath}" transform="matrix(${w / cw} 0 0 ${h / ch} ${x - cx * w / cw} ${y - cy * h / ch})"/></clipPath>` : ''); }
+    return ''; const [x, y, w, h] = f.box || item.box, [cx, cy, cw, ch] = item.crop; return hairLayerMasks(item.width, item.height, f.backPath, uid + '-hat-back', uid + '-hat-front', f.frontKeepPath) + (f.headPath ? `<clipPath id="${uid}-head-visible"><path d="${f.headPath}" transform="matrix(${w / cw} 0 0 ${h / ch} ${x - cx * w / cw} ${y - cy * h / ch})"/><rect x="-2000" y="550" width="6000" height="3000"/></clipPath>` : ''); }
 export function fittedHeadwear(item: CollectionItem | undefined, uid: string, resolve: AssetResolver, alphaId: string, layer: 'front' | 'back') { if (!item)
     return ''; if(item.helmet)return layer==='front'?collectionAsset(item,resolve,alphaId):'';const f = HEADWEAR_FITS[item.id]; return collectionAsset(item, resolve, alphaId, f?.box, undefined, f ? `mask="url(#${uid}-hat-${layer})"` : ''); }
 

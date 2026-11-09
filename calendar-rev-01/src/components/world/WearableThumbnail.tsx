@@ -10,8 +10,9 @@ export default function WearableThumbnail({item,gender}:{item:Wearable;gender:'m
  const uid=useId().replace(/[^a-z0-9]/gi,'');
  const collection=collectionItem(item.id);
  const key=item.id==='hair-chestnut'&&gender==='female'?'hair-bob':item.renderKey;
+ if(item.image&&/^(makeup077-|skin077-)/.test(item.id))return <WorldImageCanvas interactive={false} src={item.image} className="wearable-thumbnail" label={item.name}/>;
  const art=collection||(key?RASTER_ASSETS[key as RasterKey]:undefined);
- if(art)return <WorldImageCanvas interactive={false} src={art.image} crop={art.crop} sourceSize={[art.width,art.height]} className="wearable-thumbnail" label={item.name} opaque/>;
+ if(art)return <WorldImageCanvas interactive={false} src={art.image} crop={art.crop} sourceSize={[art.width,art.height]} className="wearable-thumbnail" label={item.name} opaque cleanAlpha={/^(hair077-|outer077-)/.test(item.id)}/>;
  if(item.target!=='avatar'){
   if(item.mode==='tint')return <span className="wearable-swatch" style={{background:item.color}} role="img" aria-label={item.name}/>;
   if(item.image)return <WorldImageCanvas interactive={false} src={item.image} className="wearable-thumbnail" label={item.name}/>;

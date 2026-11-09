@@ -4,7 +4,7 @@ const safe=(s:string)=>s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/<
 export function collectionAsset(item:CollectionItem|undefined,resolve:AssetResolver,alphaId:string,box?:Box,crop?:Box,imageExtra=''){
  if(!item)return '';
  const b=box||item.box;
- const opacityId=/^c0[23]-/.test(item.id)?alphaId+'-costume':alphaId;
+ const opacityId=/^(c0[23]-|hair077-|outer077-)/.test(item.id)?alphaId+'-costume':alphaId;
  return `<svg data-collection="${item.id}" x="${b[0]}" y="${b[1]}" width="${b[2]}" height="${b[3]}" viewBox="${(crop||item.crop).join(' ')}" preserveAspectRatio="none" overflow="hidden"><image href="${safe(resolve(item.image))}" width="${item.width}" height="${item.height}" filter="url(#${opacityId})" ${imageExtra}/></svg>`;
 }
 /** Complementary masks split source art without cutting a generic hole around the face. */
@@ -14,6 +14,7 @@ export function hairLayerMasks(width:number,height:number,backPath:string,backId
 /** One transform for the whole hairstyle keeps the crown, part and tie aligned. */
 export function collectionHair(item:CollectionItem|undefined,resolve:AssetResolver,alphaId:string,maskId:string,layer:'front'|'back'){
  if(!item||(!item.hairLayers&&layer==='back'))return '';
+ if(item.hairSections)return item.hairSections.map(section=>collectionAsset(item,resolve,alphaId,section.box,section.crop,item.hairLayers?`mask="url(#${maskId})"`:'')).join('');
  return collectionAsset(item,resolve,alphaId,undefined,undefined,item.hairLayers?`mask="url(#${maskId})"`:'');
 }
 export function collectionShoes(item:CollectionItem|undefined,gender:'male'|'female',resolve:AssetResolver,alphaId:string,frontMaskId:string,front:boolean){

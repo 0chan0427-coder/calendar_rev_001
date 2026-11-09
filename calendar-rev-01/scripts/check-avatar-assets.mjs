@@ -67,3 +67,5 @@ await import("./check-world-069.mjs");
 await import("./check-thumbnails-070.mjs");
 
 await import("./check-interiors-072.mjs");
+
+import './check-avatar-077.mjs';

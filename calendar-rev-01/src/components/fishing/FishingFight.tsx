@@ -1,6 +1,6 @@
 import {useCallback,useEffect,useRef,useState} from 'react';
 import {updateFishingFight,pauseFishingFight,type FishingCast,type FishingResult} from '../../services/fishing';
-import {fishPressure,stepFishingFight,type FightState} from '../../data/fishingFight';
+import {fishPressure,stepFishingFight,fightRules,type FightState} from '../../data/fishingFight';
 export interface FightVisual{tension:number;progress:number;force:number;holding:boolean}
 export interface FightControl{pause:()=>Promise<boolean>;resume:()=>Promise<void>}
 type Mode='loading'|'playing'|'paused'|'network'|'ending';
@@ -79,16 +79,18 @@ export default function FishingFight({cast,onResolved,onVisual,onControl,onCance
  },[cast.id]);
  useEffect(()=>{if(mode!=='paused')return;const timer=setInterval(()=>{const time=performance.now();setPauseClock(time);if(time-pauseReadAt.current>=remainingPause)void resume();},250);return()=>clearInterval(timer);},[mode,remainingPause,resume]);
  const pauseLeft=Math.max(0,remainingPause-Math.max(0,pauseClock-pauseReadAt.current));
- const force=fishPressure(initial.profile,state.tick),next=fishPressure(initial.profile,state.tick+5),danger=state.tension>=8000||state.tension<=2000;
+ const rules=fightRules(initial.profile),min=rules.min/100,max=rules.max/100;
+ const force=fishPressure(initial.profile,state.tick),next=fishPressure(initial.profile,state.tick+5),danger=state.tension>rules.max||state.tension<rules.min;
+ const warning=rules.modern?(state.high>0?`줄 끊어짐까지 ${Math.max(0,(rules.escape-state.high)/10).toFixed(1)}초`:state.low>0?`바늘 빠짐까지 ${Math.max(0,(rules.escape-state.low)/10).toFixed(1)}초`:`적정 구간 ${min}~${max}% · 위험 구간 연속 3초면 놓침`):(state.tension>=8800?`줄 끊어짐 위험 ${Math.min(100,state.high*5)}%`:state.tension<=1200?`바늘 빠짐 위험 ${Math.min(100,state.low*4)}%`:'적정 구간 20~80%');
  const terminal=state.status!=='fighting';
  return <section className={`fishing-fight ${danger?'fight-danger':''}`} aria-label="물고기와 힘겨루기">
  <div className="fight-resistance" role="status">{mode==='playing'?(next>=70&&force<70?'곧 강하게 저항해요 · 줄을 풀 준비':force>=70?'강한 저항 · 무리하게 당기지 마세요':force<=35?'저항이 약해요 · 당길 기회예요':'저항하는 중 · 장력을 살펴보세요'):mode==='ending'||terminal?'포획 결과 확인 중…':mode==='paused'?'잠시 중단됨':mode==='network'?'연결 확인 필요':'낚시 상태 확인 중…'}</div>
- <div className="fight-gauges"><div><label>줄 장력 <b>{Math.round(state.tension/100)}%</b></label><div className="fight-tension" role="progressbar" aria-label="줄 장력" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(state.tension/100)}><span className="fight-safe-zone"/><i style={{left:state.tension/100+'%'}}/></div><small>{state.tension>=8000?`줄 끊어짐 위험 ${Math.min(100,state.high*5)}%`:state.tension<=2000?`바늘 빠짐 위험 ${Math.min(100,state.low*4)}%`:'적정 구간 20~80%'}</small></div><div><label>끌어온 거리 <b>{Math.round(state.progress/100)}%</b></label><progress max={10000} value={state.progress} aria-label="끌어온 거리"/><small>물고기를 끝까지 끌어오면 포획 · 최대 35초</small></div></div>
+ <div className="fight-gauges"><div><label>줄 장력 <b>{Math.round(state.tension/100)}%</b></label><div className="fight-tension" style={{background:`linear-gradient(to right,#bf846e 0% ${min}%,#92b7a0 ${min}% ${max}%,#bf846e ${max}% 100%)`}} role="progressbar" aria-label="줄 장력" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(state.tension/100)}><span className="fight-safe-zone" style={{left:min+"%",right:100-max+"%"}}/><i style={{left:state.tension/100+'%'}}/></div><small role="status">{warning}</small></div><div><label>끌어온 거리 <b>{Math.round(state.progress/100)}%</b></label><progress max={10000} value={state.progress} aria-label="끌어온 거리"/><small>물고기를 끝까지 끌어오면 포획 · 최대 35초</small></div></div>
  {error&&<p className="fishing-error" role="alert">{error}</p>}
  {mode==='paused'||mode==='network'?<div className="fight-paused"><p>{mode==='paused'?`남은 복귀 보호 시간 ${Math.ceil(pauseLeft/1000)}초 · 한 판에 총 10초예요.`:'서버에서 마지막 조작을 확인한 뒤 10초 이상 연결이 끊기면 물고기를 놓칠 수 있어요.'}</p><button onClick={()=>void resume()}>낚시 계속하기</button></div>:<div className="fight-control-row"><button type="button" className={`fight-hold ${holding?'is-holding':''}`} aria-pressed={holding} disabled={mode!=='playing'||terminal}
  onPointerDown={e=>{if(e.button!==0||pointer.current!==null||modeRef.current!=='playing')return;e.preventDefault();pointer.current=e.pointerId;e.currentTarget.setPointerCapture(e.pointerId);holdingRef.current=true;setHolding(true);}}
  onPointerUp={e=>{if(pointer.current===e.pointerId){e.preventDefault();release();}}} onPointerCancel={release} onLostPointerCapture={release} onContextMenu={e=>e.preventDefault()} onBlur={release}>
  {mode==='ending'||terminal?'판정 확인 중…':holding?'당기는 중 · 떼면 줄 풀기':'누르고 있으면 당기기'}</button><button className="fight-giveup" onClick={onCancel} disabled={mode==='loading'||mode==='ending'}>포기</button></div>}
- <p className="fight-help">누르고 있으면 감고, 떼면 줄을 풀어요. PC는 스페이스바도 가능해요. 너무 높거나 낮은 장력이 지속되면 놓쳐요.</p>
+ <p className="fight-help">누르고 있으면 감고, 떼면 줄을 풀어요. PC는 스페이스바도 가능해요. 초록색 구간에서 당기면 거리가 늘어요. {rules.modern?'위험 구간에서 연속 3초 머물면 놓치며, 초록색으로 돌아오면 위험 시간이 초기화돼요.':'너무 높거나 낮은 장력이 지속되면 놓쳐요.'}</p>
  </section>;
 }

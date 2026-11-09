@@ -1,3 +1,4 @@
+import {paintedEyes080} from './avatarPaintedEyes080';
 import {renderAnimeEye079} from './avatarAnimeEyes079';
 import {irisPalette079} from './avatarColors079';
 /** Native eye shapes share the established face anchors; iris art is clipped inside each eyelid. */
@@ -20,7 +21,8 @@ const shapes:Record<string,{path:string;brow:string;cy:number;rx:number;ry:numbe
  'eyes-sleepy':{path:'M330 413Q389 406 450 413Q442 445 390 448Q340 446 330 429Z',brow:'M332 339Q388 333 446 339',cy:427,rx:30,ry:34},
  'eyes-villain':{path:'M327 386L451 410L440 444Q380 461 337 431Z',brow:'M326 326L449 370',cy:421,rx:26,ry:38,weight:14},
 };
-export function renderEyeStyle(style:string,makeup:string,uid:string,state:'open'|'closed'='open',colorId?:string):string|undefined{
+export function renderEyeStyle(style:string,makeup:string,uid:string,state:'open'|'closed'='open',colorId?:string,resolve:(p:string)=>string=p=>p):string|undefined{
+ const painted=paintedEyes080(style,makeup,uid,state,colorId,resolve);if(painted)return painted;
  const anime=renderAnimeEye079(style,makeup,uid,state,colorId);if(anime)return anime;
  if(!EYE_STYLES.some(s=>s.id===style))return;
  const closed=state==='closed';

@@ -1,3 +1,4 @@
+import {mouthSkinPatch080,renderMouth080} from './avatarMouth080';
 import {hairColorFilter079,defaultEyeColor079} from './avatarColors079';
 import {originalBaseHair078} from '../data/hair078';
 import {skinFilter077,cosmetic077,cosmeticShadow077,SKIN_TONES_077} from './avatarCosmetics077';
@@ -53,10 +54,10 @@ export function avatarSvgMarkup(gender:'male'|'female',input:Equipment={},uid='a
  const brows=`<g clip-path="url(#${id('brows')})">${bareEyeSprite}</g>`;
  const closedEyes=`${brows}<g transform="translate(0 ${eyeY})" stroke="#673521" stroke-width="11" fill="none" stroke-linecap="round"><path d="M329 399 Q387 435 446 399 M568 399 Q628 435 688 399"/><path d="M332 401L323 395 M443 401L451 395 M571 401L562 395 M685 401L694 395" stroke-width="7"/></g>`;
  const smileEyes=`${brows}<g transform="translate(0 ${eyeY})" stroke="#673521" stroke-width="13" fill="none" stroke-linecap="round"><path d="M329 420 Q387 359 446 420 M568 420 Q628 359 688 420"/></g>`;
- const customOpen=renderEyeStyle(e.face!,e.makeup!,id('custom-eyes'),'open',e.eyeColor),customClosed=renderEyeStyle(e.face!,e.makeup!,id('custom-eyes'),'closed',e.eyeColor);
+ const customOpen=renderEyeStyle(e.face!,e.makeup!,id('custom-eyes'),'open',e.eyeColor,resolve),customClosed=renderEyeStyle(e.face!,e.makeup!,id('custom-eyes'),'closed',e.eyeColor,resolve);
  const eyes=customOpen?(blinking?`<g class="${stateClass('open')}">${customOpen}</g><g class="${stateClass('closed')}">${customClosed}</g>`:options.eyeState==='closed'?customClosed:customOpen):e.face==='eyes-smile'?smileEyes:blinking
   ?`<g data-eye-state="open" class="${stateClass('open')}">${eyeSprite}</g><g data-eye-state="closed" class="${stateClass('closed')}">${closedEyes}</g>`:options.eyeState==='closed'&&e.face!=='eyes-smile'?closedEyes:eyeSprite;
- const faceBody=`<g id="${id('body')}">${base}</g>`;
+ const faceBody=`<g id="${id('body')}">${base}${mouthSkinPatch080(e.mouth,base,id('mouth-clean'))}</g>`;
  const customSkin=SKIN_TONES_077.some(i=>i.id===e.skin),skinFilter=customSkin?'skin-tone':'warm';
  const skin=e.skin==='skin-warm'||customSkin?`<use href="#${id('body')}" clip-path="url(#${id('skin')})" filter="url(#${id(skinFilter)})" data-layer="skin"/>`:'';
  // Masks hide baked-in basics only where replacement clothing is equipped.
@@ -85,7 +86,7 @@ export function avatarSvgMarkup(gender:'male'|'female',input:Equipment={},uid='a
  const freckles=e.makeup==='makeup-freckles'?`<g fill="#a46e4f" opacity=".65">${[[323,491],[344,504],[367,490],[389,505],[635,505],[657,490],[680,504],[701,491]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="4.5"/>`).join('')}</g>`:'';
  const shadow=(closed:boolean)=>`<g opacity=".55" transform="translate(0 ${eyeY})"><ellipse cx="387" cy="${closed?409:365}" rx="69" ry="${closed?20:29}" fill="url(#${id('shadow')})"/><ellipse cx="628" cy="${closed?409:365}" rx="69" ry="${closed?20:29}" fill="url(#${id('shadow')})"/></g>`;
  const eyeMakeup=e.makeup==='makeup-mauve'?(blinking?`<g data-makeup-state="open" class="${stateClass('open')}">${shadow(false)}</g><g data-makeup-state="closed" class="${stateClass('closed')}">${shadow(true)}</g>`:shadow(e.face==='eyes-smile')):'';
- const makeupOpen=cosmetic077(e.makeup,e.face,false,id('cosmetics'),gender),makeupClosed=cosmetic077(e.makeup,e.face,true,id('cosmetics'),gender);
+ const makeupOpen=cosmetic077(e.makeup,e.face,false,id('cosmetics'),gender,e.mouth==='mouth080-default'),makeupClosed=cosmetic077(e.makeup,e.face,true,id('cosmetics'),gender,e.mouth==='mouth080-default');
  const shadowOpen=cosmeticShadow077(e.makeup,false,id('shadow077')),shadowClosed=cosmeticShadow077(e.makeup,true,id('shadow077'));
  const addedShadow=blinking?`<g class="${stateClass('open')}">${shadowOpen}</g><g class="${stateClass('closed')}">${shadowClosed}</g>`:options.eyeState==='closed'?shadowClosed:shadowOpen;
  const addedMakeup=blinking?`<g class="${stateClass('open')}">${makeupOpen}</g><g class="${stateClass('closed')}">${makeupClosed}</g>`:options.eyeState==='closed'?makeupClosed:makeupOpen;
@@ -163,7 +164,7 @@ export function avatarSvgMarkup(gender:'male'|'female',input:Equipment={},uid='a
  <g data-layer="garment-back">${garmentBack}</g>
  <g data-layer="outer-back">${outerBack}</g>
  <g data-layer="shoes-back">${shoesBack}</g>
- ${helmetLining(c.hat,uid)}<g ${hatClip}><g mask="url(#${id('body-visible')})"><use href="#${id('body')}" data-layer="base"/>${skin}</g></g>${faceVisible?`<g ${faceClip}>${blush}</g>`:''}<g data-layer="eyes" ${faceClip}>${faceVisible?addedShadow+eyes+addedMakeup:''}</g>
+ ${helmetLining(c.hat,uid)}<g ${hatClip}><g mask="url(#${id('body-visible')})"><use href="#${id('body')}" data-layer="base"/>${skin}</g></g>${faceVisible?`<g ${faceClip}>${blush}</g>`:''}<g data-layer="eyes" ${faceClip}>${faceVisible?addedShadow+eyes+addedMakeup+renderMouth080(e.mouth,e.lipColor,gender,id('mouth')):''}</g>
  <!-- Current trousers are worn over shoes: back cuff → shin → front shoe → trouser hem. -->
  <g data-layer="shoes-front">${shoesFront}</g><g data-layer="bottom">${bottom}</g><g data-layer="top" ${innerTopAttr}>${top}</g>${!c.top&&hasTop?`<use href="#${id('body')}" clip-path="url(#${id('neck')})" ${(e.skin==='skin-warm'||customSkin)?`filter="url(#${id(skinFilter)})"`:''} data-layer="legacy-neck-occlusion"/>`:''}<g data-layer="accessory-under-outer">${accessoryInner}</g><g data-layer="outer">${outer}</g>${cape?`<use href="#${id('body')}" clip-path="url(#${id('bare-arms')})" ${(e.skin==='skin-warm'||customSkin)?`filter="url(#${id(skinFilter)})"`:''} data-layer="arms-over-cape"/>${capeSleeves}`:''}
 

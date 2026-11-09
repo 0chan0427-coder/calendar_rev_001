@@ -1,12 +1,12 @@
 import {MAKEUP_077} from './avatarCosmetics077';
 import {irisPalette079} from './avatarColors079';
 export const ANIME_EYES_079=[
- {id:'eyes079-clear',name:'차분한 애니 눈매',price:800},
- {id:'eyes079-soft',name:'부드러운 애니 눈매',price:800},
+ {id:'eyes079-clear',name:'차분한 눈매',price:800},
+ {id:'eyes079-soft',name:'부드러운 눈매',price:800},
  {id:'eyes079-cat',name:'가는 고양이 눈매',price:800},
- {id:'eyes079-almond',name:'담담한 애니 반눈',price:800},
+ {id:'eyes079-almond',name:'담담한 반눈',price:800},
  {id:'eyes079-doll',name:'반짝이는 큰 눈매',price:800},
- {id:'eyes079-heroine',name:'선명한 애니 눈매',price:800},
+ {id:'eyes079-heroine',name:'선명한 눈매',price:800},
 ] as const;
 const shapes:Record<string,{lid:string;upper:string;brow:string;cy:number;rx:number;ry:number;lash:number;closed:string}>={
  'eyes079-clear':{lid:'M321 402Q350 360 389 363Q432 366 458 400Q443 451 390 458Q340 453 321 402Z',upper:'M320 401Q350 359 389 363Q432 366 458 400',brow:'M330 324Q387 307 445 327',cy:411,rx:36,ry:48,lash:9,closed:'M324 409Q385 448 455 408'},

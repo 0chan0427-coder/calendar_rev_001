@@ -24,7 +24,7 @@ interface Props {gender:'male'|'female';equipment?:Equipment;className?:string;a
 export default function CharacterAvatar({gender,equipment={},className='',alt='씩씩이 미니미',blink=true}:Props){
  const form=transformation082(equipment.costume),rootRef=useRef<HTMLDivElement>(null);
  const [formStyle,setFormStyle]=useState<CSSProperties>({});
- useEffect(()=>{if(!form||!rootRef.current)return;const root=rootRef.current;const measure=()=>{const {width,height}=root.getBoundingClientRect();const bounded=Boolean(root.closest('.wardrobe-preview,.profile-photo'));const size=transformationLayout082(form.frame,width,height,bounded);setFormStyle({position:'absolute',left:`calc(50% - ${size.width/2}px)`,bottom:0,width:size.width,height:size.height,maxWidth:'none',maxHeight:'none'});};measure();const observer=new ResizeObserver(measure);observer.observe(root);return()=>observer.disconnect();},[form?.id]);
+ useEffect(()=>{if(!form||!rootRef.current)return;const root=rootRef.current;const measure=()=>{const {width,height}=root.getBoundingClientRect();const bounded=Boolean(root.closest('.wardrobe-preview,.profile-photo'));const size=transformationLayout082(form.frame,width,height,bounded,form.group);setFormStyle({position:'absolute',left:`calc(50% - ${size.width/2}px)`,bottom:bounded?`calc(50% - ${size.height/2}px)`:0,width:size.width,height:size.height,maxWidth:'none',maxHeight:'none'});};measure();const observer=new ResizeObserver(measure);observer.observe(root);return()=>observer.disconnect();},[form?.id]);
  const uid=useId().replace(/[^a-z0-9]/gi,'');
  const motion=useAvatarMotionEnabled();
  const phase=-(Array.from(uid).reduce((sum,char)=>sum+char.charCodeAt(0),0)%50)/10;

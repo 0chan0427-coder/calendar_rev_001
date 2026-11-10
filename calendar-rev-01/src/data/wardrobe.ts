@@ -1,3 +1,5 @@
+import {JOBS_082} from './jobs082';
+import {TRANSFORMATIONS_082,transformation082} from './transformations082';
 import {MOUTHS_080,LIP_COLORS_080} from './avatarMouth080';
 import {HAIR_COLORS_079,EYE_COLORS_079,HAIR_COLOR_ORIGINAL_079,EYE_COLOR_ORIGINAL_079} from './avatarColors079';
 import {ANIME_EYES_079} from '../lib/avatarAnimeEyes079';
@@ -14,6 +16,7 @@ export interface Wearable {id:string;name:string;target:'avatar'|'cat'|'companio
 export const WEAR_SLOTS:[WearSlot,string][]=[['costume','전체 코스튬'],['hair','헤어'],['hat','모자'],['top','상의'],['outer','겉옷'],['bottom','하의'],['shoes','신발'],['face','눈'],['mouth','입'],['skin','피부'],['makeup','메이크업'],['glasses','안경'],['accessory','장식']];
 const art='/world/avatar-v3';
 export const WEARABLES:Wearable[]=[
+ ...TRANSFORMATIONS_082.map((i):Wearable=>({id:i.id,name:i.name,target:'avatar',slot:'costume',price:i.price,mode:'image',image:i.image})),
  ...MOUTHS_080.map((i):Wearable=>({...i,target:'avatar',slot:'mouth',mode:'feature'})),
  ...LIP_COLORS_080.map((i):Wearable=>({...i,target:'avatar',slot:'lipColor',price:0,mode:'feature',hidden:true})),
  ...ANIME_EYES_079.map((i):Wearable=>({...i,target:'avatar',slot:'face',mode:'feature'})),
@@ -25,7 +28,7 @@ export const WEARABLES:Wearable[]=[
  ...COSTUMES.map((i):Wearable=>({id:i.id,name:i.name,target:'avatar',slot:'costume',price:i.price,mode:'image',image:i.image})),
  {id:'costume-none',name:'전체 코스튬 해제',target:'avatar',slot:'costume',price:0,mode:'base'},
  {id:'makeup-mukuro-six',name:'무쿠로 六 오드아이',target:'avatar',slot:'makeup',price:1000,mode:'feature'},
- ...[...COLLECTION_01,...COLLECTION_02,...COLLECTION_03,...COLLECTION_077].map((item):Wearable=>({id:item.id,name:item.name,target:'avatar',slot:item.slot,price:item.price,mode:'image',image:item.image})),
+ ...[...COLLECTION_01,...COLLECTION_02,...COLLECTION_03,...COLLECTION_077,...JOBS_082].map((item):Wearable=>({id:item.id,name:item.name,target:'avatar',slot:item.slot,price:item.price,mode:'image',image:item.image})),
  {id:'outer-none',name:'겉옷 해제',target:'avatar',slot:'outer',price:0,mode:'base'},
  {id:'hat-none',name:'모자 해제',target:'avatar',slot:'hat',price:0,mode:'base'},
  {id:'hair-chestnut',name:'기본 헤어',target:'avatar',slot:'hair',price:0,mode:'image',image:`${art}/hair-short.png`,renderKey:'hair-short'},
@@ -72,4 +75,4 @@ export const isCat=(id:string)=>/cat|고양/i.test(id);
 export const companionFamily=(id:string)=>id.replace(/^adult-/,'').split('-')[0];
 export const companionWearTarget=(id:string):'cat'|'companion'|undefined=>isCat(id)?'cat':WEARABLES.some(i=>i.target==='companion'&&i.species===companionFamily(id))?'companion':undefined;
 
-export function avatarItemVisible(item:Wearable,e:Equipment):boolean {if(e[item.slot]!==item.id)return false;const c=COSTUMES.find(i=>i.id===e.costume);if(!c)return true;if(item.slot==='costume')return true;if(item.slot==='mouth'&&c.id==='c04-set-armstrong')return false;return c.face!=='closed'&&['face','mouth','makeup','glasses'].includes(item.slot);}
+export function avatarItemVisible(item:Wearable,e:Equipment):boolean {if(e[item.slot]!==item.id)return false;if(transformation082(e.costume))return item.slot==='costume';const c=COSTUMES.find(i=>i.id===e.costume);if(!c)return true;if(item.slot==='costume')return true;if(item.slot==='mouth'&&c.id==='c04-set-armstrong')return false;return c.face!=='closed'&&['face','mouth','makeup','glasses'].includes(item.slot);}

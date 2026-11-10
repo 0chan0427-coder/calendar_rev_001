@@ -1,3 +1,4 @@
+import {JOBS_082} from './jobs082';
 import {COLLECTION_077} from './collection077';
 import {COLLECTION_03} from './collection03';
 import {COLLECTION_02} from './collection02';
@@ -5,7 +6,7 @@ import type {WearSlot} from './wardrobe';
 export type Box=[number,number,number,number];
 /** Source-image coordinates. Back paths identify rear locks only, never a face cutout. */
 export interface HairLayers {backPath:string}
-export interface CollectionItem {id:string;slot:WearSlot;name:string;price:number;kind:string;box:Box;image:string;width:number;height:number;crop:Box;feet?:[Box,Box];hairLayers?:HairLayers;hairSections?:{crop:Box;box:Box}[];cuffPath?:string;helmet?:{mode:'open'|'closed';windowPath?:string;lining:string}}
+export interface CollectionItem {id:string;slot:WearSlot;name:string;price:number;kind:string;box:Box;image:string;width:number;height:number;crop:Box;feet?:[Box,Box];hairLayers?:HairLayers;hairSections?:{crop:Box;box:Box}[];cuffPath?:string;directFit082?:boolean;bottomBands?:[number,number][];helmet?:{mode:'open'|'closed';windowPath?:string;lining:string}}
 // One entry per original design. Source PNGs are unmodified; crops describe their alpha bounds.
 export const COLLECTION_01:CollectionItem[]=[
   {
@@ -991,4 +992,4 @@ export const COLLECTION_01:CollectionItem[]=[
     ]
   }
 ];
-export const collectionItem=(id?:string)=>[...COLLECTION_01,...COLLECTION_02,...COLLECTION_03,...COLLECTION_077].find(item=>item.id===id);
+export const collectionItem=(id?:string)=>[...COLLECTION_01,...COLLECTION_02,...COLLECTION_03,...COLLECTION_077,...JOBS_082].find(item=>item.id===id);

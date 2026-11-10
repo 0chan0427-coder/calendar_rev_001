@@ -1,3 +1,4 @@
+import {transformation082} from '../../data/transformations082';
 import {ORIGINAL_HAIR_IDS_078} from '../../data/hair078';
 import {collectionItem} from '../../data/collection01';
 import {useId} from 'react';
@@ -9,12 +10,13 @@ import WorldImageCanvas from './WorldImageCanvas';
 import SvgThumbnailCanvas from './SvgThumbnailCanvas';
 export default function WearableThumbnail({item,gender}:{item:Wearable;gender:'male'|'female'}){
  const uid=useId().replace(/[^a-z0-9]/gi,'');
- const collection=collectionItem(item.id);
+ const collection=collectionItem(item.id),form=transformation082(item.id);
+ if(form)return <WorldImageCanvas interactive={false} src={form.image} crop={form.crop} sourceSize={[form.width,form.height]} className="wearable-thumbnail" label={item.name} opaque cleanAlpha/>;
  if(ORIGINAL_HAIR_IDS_078.has(item.id))return <SvgThumbnailCanvas label={item.name} markup={wearableThumbnailSvg(item,gender,'thumb'+uid)}/>;
  const key=item.id==='hair-chestnut'&&gender==='female'?'hair-bob':item.renderKey;
  if(item.image&&/^(makeup077-|skin077-)/.test(item.id))return <WorldImageCanvas interactive={false} src={item.image} className="wearable-thumbnail" label={item.name}/>;
  const art=collection||(key?RASTER_ASSETS[key as RasterKey]:undefined);
- if(art)return <WorldImageCanvas interactive={false} src={art.image} crop={art.crop} sourceSize={[art.width,art.height]} className="wearable-thumbnail" label={item.name} opaque cleanAlpha={/^(hair077-|outer077-)/.test(item.id)}/>;
+ if(art)return <WorldImageCanvas interactive={false} src={art.image} crop={art.crop} sourceSize={[art.width,art.height]} className="wearable-thumbnail" label={item.name} opaque cleanAlpha={/^(job082-|hair077-|outer077-)/.test(item.id)}/>;
  if(item.target!=='avatar'){
   if(item.mode==='tint')return <span className="wearable-swatch" style={{background:item.color}} role="img" aria-label={item.name}/>;
   if(item.image)return <WorldImageCanvas interactive={false} src={item.image} className="wearable-thumbnail" label={item.name}/>;

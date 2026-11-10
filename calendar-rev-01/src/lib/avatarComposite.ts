@@ -18,7 +18,10 @@ async function rasterize(svg:string){
  const source=URL.createObjectURL(new Blob([avatarClipPaths(svg)],{type:'image/svg+xml'}));
  try{
   const img=new Image();img.src=source;await img.decode();
-  const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=1536;
+  const canvas=document.createElement('canvas');const root=new DOMParser().parseFromString(svg,'image/svg+xml').documentElement;
+  const width=Number(root.getAttribute('width'))||1024,height=Number(root.getAttribute('height'))||1536;
+  const scale=Math.min(1,2048/Math.max(width,height));
+  canvas.width=Math.max(1,Math.ceil(width*scale));canvas.height=Math.max(1,Math.ceil(height*scale));
   const context=canvas.getContext('2d');if(!context)throw Error('avatar canvas unavailable');
   context.clearRect(0,0,canvas.width,canvas.height);context.drawImage(img,0,0,canvas.width,canvas.height);
   const blob=await new Promise<Blob>((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(Error('avatar composition failed')),'image/png'));

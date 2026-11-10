@@ -4,7 +4,7 @@ const safe=(s:string)=>s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/<
 export function collectionAsset(item:CollectionItem|undefined,resolve:AssetResolver,alphaId:string,box?:Box,crop?:Box,imageExtra=''){
  if(!item)return '';
  const b=box||item.box;
- const opacityId=(/^(c0[23]-|hair077-|outer077-)/.test(item.id)||item.image.startsWith('/world/hair-078/'))?alphaId+'-costume':alphaId;
+ const opacityId=(/^(job082-|c0[23]-|hair077-|outer077-)/.test(item.id)||item.image.startsWith('/world/hair-078/'))?alphaId+'-costume':alphaId;
  return `<svg data-collection="${item.id}" x="${b[0]}" y="${b[1]}" width="${b[2]}" height="${b[3]}" viewBox="${(crop||item.crop).join(' ')}" preserveAspectRatio="none" overflow="hidden"><image href="${safe(resolve(item.image))}" width="${item.width}" height="${item.height}" filter="url(#${opacityId})" ${imageExtra}/></svg>`;
 }
 /** Complementary masks split source art without cutting a generic hole around the face. */
@@ -36,4 +36,11 @@ export function collectionCuffMask(item:CollectionItem|undefined,id:string){
   return `M${left} ${y-12}H${right}V${y+h*.07}Q${(left+right)/2} ${y+h*.25} ${left} ${y+h*.07}Z`;
  }).join(' ');
  return `<mask id="${id}" maskUnits="userSpaceOnUse" x="0" y="0" width="${item.width}" height="${item.height}"><rect width="${item.width}" height="${item.height}" fill="white"/><path d="${paths}" fill="black"/></mask>`;
+}
+
+/** Waist/crotch/hem anchors keep long trousers aligned without shrinking the pelvis. */
+export function collectionBottom(item:CollectionItem|undefined,resolve:AssetResolver,alphaId:string){
+ if(!item?.bottomBands)return collectionAsset(item,resolve,alphaId);
+ const [x,,w]=item.box,[cx,,cw]=item.crop;
+ return item.bottomBands.slice(0,-1).map(([sy,ty],i)=>{const [ey,by]=item.bottomBands![i+1];return collectionAsset(item,resolve,alphaId,[x,ty,w,by-ty+.35],[cx,sy,cw,ey-sy+.35*(ey-sy)/(by-ty)]);}).join('');
 }

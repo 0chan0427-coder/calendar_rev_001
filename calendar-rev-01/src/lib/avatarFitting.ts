@@ -1,3 +1,4 @@
+import {JOB_GARMENT_FITS_082,JOB_HEADWEAR_FITS_082} from '../data/jobs082';
 import {OUTER_FITS_077} from './outerFits077';
 import {helmetDefs} from './avatarHelmets';
 import type { CollectionItem, Box } from '../data/collection01';
@@ -43,6 +44,7 @@ const neck = (left: number, right: number, y: number, depth: number) => `M${left
 /** Registered source landmarks, not positions inferred from an image's bounding rectangle. */
 export const GARMENT_FITS: Record<string, GarmentFit> = {
     ...OUTER_FITS_077,
+    ...JOB_GARMENT_FITS_082,
     'top-blouse': { center: 768, scaleX: .43, bodyPath: body, bands: [[157, 585], [335, 652], [870, 965]], sleevePath: sleeve, shoulder: [460, 250], cuff: [225, 690], targetCuff: [294, 862], backPath: neck(568, 970, 157, 333) },
     'top-cable': { center: 768, scaleX: .46, bodyPath: body, bands: [[165, 590], [275, 650], [790, 970]], sleevePath: sleeve, shoulder: [480, 300], cuff: [160, 840], targetCuff: [244, 962], backPath: neck(585, 950, 168, 273) },
     'top-stripe': { center: 768, scaleX: .43, bodyPath: 'M410 0H1126V500L1180 1024H356L410 500Z', bands: [[171, 590], [298, 655], [856, 969]], sleevePath: 'M0 0H460V550L440 1024H0Z', shoulder: [430, 300], cuff: [240, 638], targetCuff: [304, 846], backPath: neck(515, 1020, 175, 296) + ' M90 535Q255 578 397 702L343 732Q213 651 107 575Z M1446 535Q1281 578 1139 702L1193 732Q1323 651 1429 575Z' },
@@ -86,6 +88,13 @@ export function fittedGarment(item: CollectionItem | undefined, uid: string, res
     const f = item && GARMENT_FITS[item.id];
     if (!item || !f)
         return '';
+    if(item.directFit082){
+        if(layer==='back')return '';
+        const art=collectionAsset(item,resolve,alphaId);
+        if(showSleeves&&!onlySleeves)return art;
+        const clip=uid+'-'+item.id+'-direct-part',path=onlySleeves?'M0 600H365V1110H0Z M659 600H1024V1110H659Z':'M345 540H679V1350H345Z';
+        return `<defs><clipPath id="${clip}"><path d="${path}"/></clipPath></defs><g clip-path="url(#${clip})">${art}</g>`;
+    }
     const prefix = uid + '-' + item.id + '-' + layer;
     const textureId=prefix+'-texture';
     const img=(extra='')=>`<use href="#${textureId}" ${extra}/>`;
@@ -159,6 +168,7 @@ export interface HeadwearFit {
     frontKeepPath?: string;
 }
 export const HEADWEAR_FITS: Record<string, HeadwearFit> = {
+    ...JOB_HEADWEAR_FITS_082,
     'hat-wizard': { backPath: 'M-200 805Q350 800 768 718Q1160 800 1750 805V2500H-200Z', headPath: 'M-1000 805Q350 800 768 718Q1160 800 2500 805V4000H-1000Z' },
     'hat-straw': { backPath: 'M-200 580Q350 650 768 698Q1200 670 1750 585V2500H-200Z', frontKeepPath: 'M990 520L1280 510L1395 805H1025Z', headPath: 'M-1000 580Q350 650 768 698Q1200 670 2500 585V4000H-1000Z' },
     'hat-beret': { backPath: 'M-200 880Q300 865 768 797Q1250 865 1750 880V2500H-200Z', headPath: 'M-1000 880Q300 865 768 797Q1250 865 2500 880V4000H-1000Z' },

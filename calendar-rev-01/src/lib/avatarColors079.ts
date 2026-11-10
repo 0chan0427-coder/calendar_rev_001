@@ -1,3 +1,4 @@
+import {JOB_HAIR_LUMA_082} from '../data/jobs082';
 import {EYE_COLORS_079,HAIR_COLORS_079} from '../data/avatarColors079';
 import {HAIR_LUMA_079} from '../data/hairLuma079';
 const rgb=(hex:string)=>[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)/255);
@@ -7,7 +8,7 @@ export function irisPalette079(id:string|undefined):string[]|undefined{const c=E
 /** Hair alone is mapped through its measured luminance range; alpha is untouched. */
 export function hairColorFilter079(colorId:string|undefined,path:string,uid:string):string{
  const color=HAIR_COLORS_079.find(c=>c.id===colorId);if(!color)return '';
- const q=HAIR_LUMA_079[path]||[.08,.22,.45,.75];const base=rgb(color.color);
+ const q=JOB_HAIR_LUMA_082[path]||HAIR_LUMA_079[path]||[.08,.22,.45,.75];const base=rgb(color.color);
  const levels=[0,...q,1],colors=[[.025,.018,.03],mix(base,[.035,.025,.055],.65),mix(base,[.035,.025,.055],.25),base,mix(base,[1,.99,1],.48),[1,1,1]];
  const tables=[0,1,2].map(channel=>Array.from({length:96},(_,i)=>{const x=i/95;let j=0;while(j<levels.length-2&&x>levels[j+1])j++;const t=Math.max(0,Math.min(1,(x-levels[j])/(levels[j+1]-levels[j]||1)));return (colors[j][channel]*(1-t)+colors[j+1][channel]*t).toFixed(4);}).join(' '));
  return `<filter id="${uid}" color-interpolation-filters="sRGB"><feColorMatrix type="saturate" values="0"/><feComponentTransfer>${['R','G','B'].map((v,i)=>`<feFunc${v} type="table" tableValues="${tables[i]}"/>`).join('')}<feFuncA type="identity"/></feComponentTransfer></filter>`;

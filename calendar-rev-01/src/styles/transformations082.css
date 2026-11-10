@@ -1,0 +1,5 @@
+.transformed-avatar082{overflow:visible}
+.transformed-avatar082 .character-artboard{aspect-ratio:auto;max-width:none;max-height:none}
+.transformed-avatar082 .avatar-composite{object-fit:contain}
+.wardrobe-preview:has(.transformed-avatar082){padding:6px!important}
+.wardrobe-preview .transformed-avatar082{width:100%!important;height:100%!important;min-width:0}

@@ -1,3 +1,4 @@
+import {JOB_ACCESSORY_FITS_082} from '../data/jobs082';
 import type {Box,CollectionItem} from '../data/collection01';
 import {collectionAsset,hairLayerMasks} from './avatarCollection';
 import type {AssetResolver} from './avatarRaster';
@@ -10,6 +11,7 @@ export interface AccessoryFit {
  rearPath?:string;
 }
 export const ACCESSORY_FITS:Record<string,AccessoryFit>={
+ ...JOB_ACCESSORY_FITS_082,
  'acc-scarf':{anchor:'neck',box:[370,565,284,340],surface:'over-outer',rearPath:'M0 0H1536V140H1040Q1000 230 900 275Q770 320 650 270Q550 220 485 140H0Z'},
  'acc-bow':{anchor:'collar',box:[414,615,196,112],surface:'over-outer'},
  'acc-moon':{anchor:'neck',box:[439,593,146,210],surface:'under-outer',rearPath:'M0 0H1536V75H0Z'},

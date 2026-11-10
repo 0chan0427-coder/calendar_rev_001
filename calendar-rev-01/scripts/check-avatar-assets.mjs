@@ -74,3 +74,5 @@ await import('./check-hair-078.mjs');
 await import('./check-avatar-079.mjs');
 
 await import("./check-avatar-080.mjs");
+
+await import("./check-avatar-082.mjs");
